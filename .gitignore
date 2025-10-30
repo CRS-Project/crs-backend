@@ -1,0 +1,9 @@
+.env
+.env.prod
+
+tmp/
+assets/
+logs/
+tests/
+
+.idea

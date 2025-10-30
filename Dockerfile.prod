@@ -1,0 +1,26 @@
+# ========= Builder =========
+FROM golang:1.25-alpine AS builder
+
+WORKDIR /app
+
+# Copy dan download dependencies
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy seluruh source code
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o main .
+
+# ========= Production =========
+FROM gcr.io/distroless/base-debian12
+
+WORKDIR /app
+
+# Copy hasil build dari builder
+COPY --from=builder /app/main .
+
+COPY --from=builder /app/internal/pkg/email/template ./internal/pkg/email/template
+
+# Jalankan binary
+CMD ["./main"]
