@@ -60,10 +60,10 @@ func (s *authService) Register(ctx context.Context, req dto.RegisterRequest, aut
 	}
 
 	userCreation := entity.User{
-		Username:    req.Username,
-		Email:       req.Email,
-		Password:    req.Password,
-		PhoneNumber: req.PhoneNumber,
+		Name:     req.Username,
+		Email:    req.Email,
+		Password: req.Password,
+		// PhoneNumber: req.PhoneNumber,
 	}
 
 	if authtoken != "" {
@@ -94,19 +94,19 @@ func (s *authService) Register(ctx context.Context, req dto.RegisterRequest, aut
 
 		token = fmt.Sprintf("%s/auth/verify?token=%s", os.Getenv("APP_URL"), token)
 		if err := s.mailService.MakeMail("./internal/pkg/email/template/verification_email.html", map[string]any{
-			"Username": createResult.Username,
-			"Verify":   token,
+			// "Username": createResult.Username,
+			"Verify": token,
 		}).Send(createResult.Email, "Verify Your Account").Error; err != nil {
 			return dto.RegisterResponse{}, err
 		}
 	}
 
 	return dto.RegisterResponse{
-		ID:          createResult.ID.String(),
-		Username:    createResult.Username,
-		Email:       createResult.Email,
-		PhoneNumber: createResult.PhoneNumber,
-		Role:        string(createResult.Role),
+		ID: createResult.ID.String(),
+		// Username:    createResult.Username,
+		Email: createResult.Email,
+		// PhoneNumber: createResult.PhoneNumber,
+		Role: string(createResult.Role),
 	}, nil
 }
 
@@ -172,11 +172,11 @@ func (s *authService) GetMe(ctx context.Context, userId string) (dto.GetMe, erro
 
 	return dto.GetMe{
 		PersonalInfo: dto.PersonalInfo{
-			ID:          userId,
-			Username:    user.Username,
-			Email:       user.Email,
-			PhoneNumber: user.PhoneNumber,
-			Role:        string(user.Role),
+			ID: userId,
+			// Username:    user.Username,
+			Email: user.Email,
+			// PhoneNumber: user.PhoneNumber,
+			Role: string(user.Role),
 		},
 	}, nil
 }
