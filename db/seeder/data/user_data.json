@@ -1,11 +1,13 @@
 [
   {
     "id": "a1a2b473-f398-4489-b7ef-6984b60e4f10",
-    "username": "admin crs",
-    "email": "admin@email.com",
-    "password": "crsPassword.1",
+    "name": "super admin",
+    "email": "administrator@email.com",
+    "password": "Admin123Super!",
     "is_verified": true,
-    "phone_number": "0888888888",
-    "role": "ADMIN"
+    "role": "SUPER ADMIN",
+    "initial": "SADMIN",
+    "institution": "ADMIN",
+    "dicipline_id": ""
   }
 ]

@@ -24,6 +24,8 @@ type User struct {
 	Institution  string  `json:"institution" gorm:"not null"`
 	PhotoProfile *string `json:"photo_profile" gorm:""`
 
+	DiciplineID uuid.UUID `json:"dicipline_id" gorm:"not null"`
+
 	Timestamp
 }
 
