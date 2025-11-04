@@ -4,18 +4,19 @@ import (
 	"context"
 
 	"github.com/CRS-Project/crs-backend/internal/entity"
+	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type (
 	PackageRepository interface {
-		GetByID(ctx context.Context, tx *gorm.DB, pkgID uuid.UUID, preload ...string) (entity.Package, error)
-		GetByName(ctx context.Context, tx *gorm.DB, pkgName string, preload ...string) (entity.Package, error)
-		Create(ctx context.Context, tx *gorm.DB, pkg entity.Package, preload ...string) (entity.Package, error)
-		GetAll(ctx context.Context, tx *gorm.DB, preload ...string) ([]entity.Package, error)
-		Update(ctx context.Context, tx *gorm.DB, pkg entity.Package, preload ...string) error
-		Delete(ctx context.Context, tx *gorm.DB, pkg entity.Package, preload ...string) error
+		GetByID(ctx context.Context, tx *gorm.DB, pkgID uuid.UUID, preloads ...string) (entity.Package, error)
+		GetByName(ctx context.Context, tx *gorm.DB, pkgName string, preloads ...string) (entity.Package, error)
+		Create(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) (entity.Package, error)
+		GetAll(ctx context.Context, tx *gorm.DB, metaReq meta.Meta, preloads ...string) ([]entity.Package, meta.Meta, error)
+		Update(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) error
+		Delete(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) error
 	}
 
 	packageRepository struct {
@@ -29,9 +30,13 @@ func NewPackage(db *gorm.DB) PackageRepository {
 	}
 }
 
-func (r *packageRepository) GetByID(ctx context.Context, tx *gorm.DB, pkgID uuid.UUID, preload ...string) (entity.Package, error) {
+func (r *packageRepository) GetByID(ctx context.Context, tx *gorm.DB, pkgID uuid.UUID, preloads ...string) (entity.Package, error) {
 	if tx == nil {
 		tx = r.db
+	}
+
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
 	}
 
 	var pkg entity.Package
@@ -42,9 +47,13 @@ func (r *packageRepository) GetByID(ctx context.Context, tx *gorm.DB, pkgID uuid
 	return pkg, nil
 }
 
-func (r *packageRepository) GetByName(ctx context.Context, tx *gorm.DB, pkgName string, preload ...string) (entity.Package, error) {
+func (r *packageRepository) GetByName(ctx context.Context, tx *gorm.DB, pkgName string, preloads ...string) (entity.Package, error) {
 	if tx == nil {
 		tx = r.db
+	}
+
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
 	}
 
 	var pkg entity.Package
@@ -55,34 +64,49 @@ func (r *packageRepository) GetByName(ctx context.Context, tx *gorm.DB, pkgName 
 	return pkg, nil
 }
 
-func (r *packageRepository) Create(ctx context.Context, tx *gorm.DB, pkg entity.Package, preload ...string) (entity.Package, error) {
+func (r *packageRepository) Create(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) (entity.Package, error) {
 	if tx == nil {
 		tx = r.db
 	}
 
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
+	}
+
 	if err := tx.WithContext(ctx).Create(&pkg).Error; err != nil {
-		return pkg, err
+		return entity.Package{}, err
 	}
 
 	return pkg, nil
 }
 
-func (r *packageRepository) GetAll(ctx context.Context, tx *gorm.DB, preload ...string) ([]entity.Package, error) {
+func (r *packageRepository) GetAll(ctx context.Context, tx *gorm.DB, metaReq meta.Meta, preloads ...string) ([]entity.Package, meta.Meta, error) {
 	if tx == nil {
 		tx = r.db
+	}
+
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
 	}
 
 	var pkgs []entity.Package
-	if err := tx.WithContext(ctx).Find(&pkgs).Error; err != nil {
-		return []entity.Package{}, err
+
+	tx = tx.WithContext(ctx).Model(&entity.Package{})
+
+	if err := WithFilters(tx, &metaReq, AddModels(entity.Package{})).Find(&pkgs).Error; err != nil {
+		return nil, meta.Meta{}, err
 	}
 
-	return pkgs, nil
+	return pkgs, metaReq, nil
 }
 
-func (r *packageRepository) Update(ctx context.Context, tx *gorm.DB, pkg entity.Package, preload ...string) error {
+func (r *packageRepository) Update(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) error {
 	if tx == nil {
 		tx = r.db
+	}
+
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
 	}
 
 	if err := tx.WithContext(ctx).Model(&pkg).Update("name", pkg.Name).Error; err != nil {
@@ -92,9 +116,13 @@ func (r *packageRepository) Update(ctx context.Context, tx *gorm.DB, pkg entity.
 	return nil
 }
 
-func (r *packageRepository) Delete(ctx context.Context, tx *gorm.DB, pkg entity.Package, preload ...string) error {
+func (r *packageRepository) Delete(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) error {
 	if tx == nil {
 		tx = r.db
+	}
+
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
 	}
 
 	if err := tx.WithContext(ctx).Delete(&pkg).Error; err != nil {

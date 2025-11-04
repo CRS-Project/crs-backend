@@ -9,9 +9,9 @@ import (
 func Package(app *gin.Engine, packagecontroller controller.PackageController, middleware middleware.Middleware) {
 	routes := app.Group("api/v1/package")
 	{
-		routes.GET("/", packagecontroller.GetPackages)
-		routes.POST("/add", packagecontroller.CreatePackage)
-		routes.POST("/edit", packagecontroller.UpdatePackage)
+		routes.GET("/", packagecontroller.GetAll)
+		routes.POST("/", packagecontroller.CreatePackage)
+		routes.PUT("/", packagecontroller.UpdatePackage)
 		routes.DELETE("/delete", packagecontroller.DeletePackage)
 	}
 }

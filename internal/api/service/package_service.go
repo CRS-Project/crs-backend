@@ -7,6 +7,7 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
+	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -15,7 +16,7 @@ import (
 type (
 	PackageService interface {
 		CreatePackage(ctx *gin.Context, req dto.CreatePackageRequest) (dto.PackageInfo, error)
-		GetPackages(ctx *gin.Context) ([]dto.PackageInfo, error)
+		GetAll(ctx *gin.Context, metaReq meta.Meta) ([]dto.PackageInfo, meta.Meta, error)
 		UpdatePackage(ctx *gin.Context, req dto.UpdatePackageRequest) error
 		DeletePackage(ctx *gin.Context, req dto.DeletePackageRequest) error
 	}
@@ -34,7 +35,7 @@ func NewPackage(packageRepository repository.PackageRepository, db *gorm.DB) Pac
 }
 
 func (s *packageService) CreatePackage(ctx *gin.Context, req dto.CreatePackageRequest) (dto.PackageInfo, error) {
-	_, err := s.packageRepository.GetByName(ctx, s.db, req.Name)
+	_, err := s.packageRepository.GetByName(ctx, nil, req.Name)
 	if err == nil {
 		return dto.PackageInfo{}, myerror.New("package with this name already exists", http.StatusConflict)
 	}
@@ -43,7 +44,7 @@ func (s *packageService) CreatePackage(ctx *gin.Context, req dto.CreatePackageRe
 		Name: req.Name,
 	}
 
-	pkgResult, err := s.packageRepository.Create(ctx, s.db, pkgCreation)
+	pkgResult, err := s.packageRepository.Create(ctx, nil, pkgCreation)
 	if err != nil {
 		return dto.PackageInfo{}, err
 	}
@@ -54,10 +55,10 @@ func (s *packageService) CreatePackage(ctx *gin.Context, req dto.CreatePackageRe
 	}, nil
 }
 
-func (s *packageService) GetPackages(ctx *gin.Context) ([]dto.PackageInfo, error) {
-	pkgs, err := s.packageRepository.GetAll(ctx, s.db)
+func (s *packageService) GetAll(ctx *gin.Context, metaReq meta.Meta) ([]dto.PackageInfo, meta.Meta, error) {
+	pkgs, metaRes, err := s.packageRepository.GetAll(ctx, nil, metaReq)
 	if err != nil {
-		return []dto.PackageInfo{}, err
+		return nil, meta.Meta{}, err
 	}
 
 	var pkgInfos []dto.PackageInfo
@@ -68,7 +69,7 @@ func (s *packageService) GetPackages(ctx *gin.Context) ([]dto.PackageInfo, error
 		})
 	}
 
-	return pkgInfos, nil
+	return pkgInfos, metaRes, nil
 }
 
 func (s *packageService) UpdatePackage(ctx *gin.Context, req dto.UpdatePackageRequest) error {
@@ -77,7 +78,7 @@ func (s *packageService) UpdatePackage(ctx *gin.Context, req dto.UpdatePackageRe
 		return err
 	}
 
-	_, err = s.packageRepository.GetByID(ctx, s.db, uuid)
+	_, err = s.packageRepository.GetByID(ctx, nil, uuid)
 	if err != nil {
 		return err
 	}
@@ -86,7 +87,7 @@ func (s *packageService) UpdatePackage(ctx *gin.Context, req dto.UpdatePackageRe
 		ID:   uuid,
 		Name: req.Name,
 	}
-	if err = s.packageRepository.Update(ctx, s.db, pkg); err != nil {
+	if err = s.packageRepository.Update(ctx, nil, pkg); err != nil {
 		return err
 	}
 
@@ -99,12 +100,12 @@ func (s *packageService) DeletePackage(ctx *gin.Context, req dto.DeletePackageRe
 		return err
 	}
 
-	pkg, err := s.packageRepository.GetByID(ctx, s.db, uuid)
+	pkg, err := s.packageRepository.GetByID(ctx, nil, uuid)
 	if err != nil {
 		return err
 	}
 
-	if err = s.packageRepository.Delete(ctx, s.db, pkg); err != nil {
+	if err = s.packageRepository.Delete(ctx, nil, pkg); err != nil {
 		return err
 	}
 

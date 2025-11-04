@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/CRS-Project/crs-backend/internal/api/service"
 	"github.com/CRS-Project/crs-backend/internal/dto"
+	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/CRS-Project/crs-backend/internal/pkg/response"
 	"github.com/gin-gonic/gin"
 )
@@ -10,7 +11,7 @@ import (
 type (
 	PackageController interface {
 		CreatePackage(ctx *gin.Context)
-		GetPackages(ctx *gin.Context)
+		GetAll(ctx *gin.Context)
 		UpdatePackage(ctx *gin.Context)
 		DeletePackage(ctx *gin.Context)
 	}
@@ -42,14 +43,14 @@ func (c *packageController) CreatePackage(ctx *gin.Context) {
 	response.NewSuccess("success create package", res).Send(ctx)
 }
 
-func (c *packageController) GetPackages(ctx *gin.Context) {
-	res, err := c.packageService.GetPackages(ctx)
+func (c *packageController) GetAll(ctx *gin.Context) {
+	res, metaRes, err := c.packageService.GetAll(ctx, meta.New(ctx))
 	if err != nil {
 		response.NewFailed("failed to get packages", err).Send(ctx)
 		return
 	}
 
-	response.NewSuccess("success get package", res).Send(ctx)
+	response.NewSuccess("success get package", res, metaRes).Send(ctx)
 }
 
 func (c *packageController) UpdatePackage(ctx *gin.Context) {
