@@ -27,6 +27,8 @@ type User struct {
 	UserDisciplineNumberID uuid.UUID `json:"user_discipline_number_id" gorm:"not null"`
 
 	Timestamp
+
+	UserDisciplineNumber UserDisciplineNumber `json:"user_discipline_number" gorm:"foreignKey:UserDisciplineNumberID"`
 }
 
 func (u *User) TableName() string {

@@ -165,18 +165,30 @@ func (s *authService) Login(ctx context.Context, req dto.LoginRequest) (dto.Logi
 }
 
 func (s *authService) GetMe(ctx context.Context, userId string) (dto.GetMe, error) {
-	user, err := s.userRepository.GetById(ctx, nil, userId)
+	user, err := s.userRepository.GetById(ctx, nil, userId, "UserDisciplineNumber.UserDiscipline")
 	if err != nil {
 		return dto.GetMe{}, err
 	}
 
+	pac := "no package"
+	if user.UserDisciplineNumber.Package != nil {
+		pac = user.UserDisciplineNumber.Package.Name
+	}
+
 	return dto.GetMe{
 		PersonalInfo: dto.PersonalInfo{
-			ID: userId,
-			// Username:    user.Username,
-			Email: user.Email,
-			// PhoneNumber: user.PhoneNumber,
-			Role: string(user.Role),
+			ID:           userId,
+			Name:         user.Name,
+			Email:        user.Email,
+			Institution:  user.Institution,
+			PhotoProfile: user.PhotoProfile,
+			Initial:      user.Initial,
+			Role:         string(user.Role),
+		},
+		UserDisciplineInfo: dto.UserDisciplineInfo{
+			Initial: user.UserDisciplineNumber.UserDiscipline.Initial,
+			Number:  user.UserDisciplineNumber.Number,
+			Package: &pac,
 		},
 	}, nil
 }
