@@ -30,6 +30,7 @@ type (
 	GetMe struct {
 		PersonalInfo       PersonalInfo       `json:"personal_info"`
 		UserDisciplineInfo UserDisciplineInfo `json:"user_discipline_info"`
+		PackageAccess      []PackageInfo      `json:"package_access"`
 	}
 
 	PersonalInfo struct {

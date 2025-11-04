@@ -9,7 +9,6 @@ import (
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -73,20 +72,12 @@ func (s *packageService) GetAll(ctx *gin.Context, metaReq meta.Meta) ([]dto.Pack
 }
 
 func (s *packageService) UpdatePackage(ctx *gin.Context, req dto.UpdatePackageRequest) error {
-	uuid, err := uuid.Parse(req.ID)
+	pkg, err := s.packageRepository.GetByID(ctx, nil, req.ID)
 	if err != nil {
 		return err
 	}
+	pkg.Name = req.Name
 
-	_, err = s.packageRepository.GetByID(ctx, nil, uuid)
-	if err != nil {
-		return err
-	}
-
-	pkg := entity.Package{
-		ID:   uuid,
-		Name: req.Name,
-	}
 	if err = s.packageRepository.Update(ctx, nil, pkg); err != nil {
 		return err
 	}
@@ -95,12 +86,7 @@ func (s *packageService) UpdatePackage(ctx *gin.Context, req dto.UpdatePackageRe
 }
 
 func (s *packageService) DeletePackage(ctx *gin.Context, req dto.DeletePackageRequest) error {
-	uuid, err := uuid.Parse(req.ID)
-	if err != nil {
-		return err
-	}
-
-	pkg, err := s.packageRepository.GetByID(ctx, nil, uuid)
+	pkg, err := s.packageRepository.GetByID(ctx, nil, req.ID)
 	if err != nil {
 		return err
 	}

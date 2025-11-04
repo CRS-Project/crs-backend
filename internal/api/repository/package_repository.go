@@ -5,13 +5,12 @@ import (
 
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type (
 	PackageRepository interface {
-		GetByID(ctx context.Context, tx *gorm.DB, pkgID uuid.UUID, preloads ...string) (entity.Package, error)
+		GetByID(ctx context.Context, tx *gorm.DB, pkgID string, preloads ...string) (entity.Package, error)
 		GetByName(ctx context.Context, tx *gorm.DB, pkgName string, preloads ...string) (entity.Package, error)
 		Create(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) (entity.Package, error)
 		GetAll(ctx context.Context, tx *gorm.DB, metaReq meta.Meta, preloads ...string) ([]entity.Package, meta.Meta, error)
@@ -30,7 +29,7 @@ func NewPackage(db *gorm.DB) PackageRepository {
 	}
 }
 
-func (r *packageRepository) GetByID(ctx context.Context, tx *gorm.DB, pkgID uuid.UUID, preloads ...string) (entity.Package, error) {
+func (r *packageRepository) GetByID(ctx context.Context, tx *gorm.DB, pkgID string, preloads ...string) (entity.Package, error) {
 	if tx == nil {
 		tx = r.db
 	}

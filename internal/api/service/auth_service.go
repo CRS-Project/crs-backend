@@ -133,14 +133,17 @@ func (s *authService) ChangePassword(ctx context.Context, req dto.ChangePassword
 }
 
 func (s *authService) GetMe(ctx context.Context, userId string) (dto.GetMe, error) {
-	user, err := s.userRepository.GetById(ctx, nil, userId, "UserDisciplineNumber.UserDiscipline")
+	user, err := s.userRepository.GetById(ctx, nil, userId, "UserDisciplineNumber.UserDiscipline", "UserPackage.Package")
 	if err != nil {
 		return dto.GetMe{}, err
 	}
 
-	pac := "no package"
-	if user.UserDisciplineNumber.Package != nil {
-		pac = user.UserDisciplineNumber.Package.Name
+	var pkgAccess []dto.PackageInfo
+	for _, pkg := range user.UserPackage {
+		pkgAccess = append(pkgAccess, dto.PackageInfo{
+			ID:   pkg.ID.String(),
+			Name: pkg.Package.Name,
+		})
 	}
 
 	return dto.GetMe{
@@ -156,7 +159,7 @@ func (s *authService) GetMe(ctx context.Context, userId string) (dto.GetMe, erro
 		UserDisciplineInfo: dto.UserDisciplineInfo{
 			Initial: user.UserDisciplineNumber.UserDiscipline.Initial,
 			Number:  user.UserDisciplineNumber.Number,
-			Package: &pac,
 		},
+		PackageAccess: pkgAccess,
 	}, nil
 }

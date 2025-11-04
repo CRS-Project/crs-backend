@@ -8,6 +8,4 @@ type UserDiscipline struct {
 	Initial string    `json:"initial" gorm:"not null"`
 
 	Timestamp
-
-	Package *Package `json:"package,omitempty" gorm:"foreignKey:PackageID"`
 }

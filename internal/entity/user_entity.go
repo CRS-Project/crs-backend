@@ -28,7 +28,8 @@ type User struct {
 
 	Timestamp
 
-	UserDisciplineNumber UserDisciplineNumber `json:"user_discipline_number" gorm:"foreignKey:UserDisciplineNumberID"`
+	UserDisciplineNumber *UserDisciplineNumber `json:"user_discipline_number" gorm:"foreignKey:UserDisciplineNumberID"`
+	UserPackage          []UserPackage         `json:"user_package" gorm:"foreignKey:UserID"`
 }
 
 func (u *User) TableName() string {

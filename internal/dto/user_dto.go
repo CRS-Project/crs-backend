@@ -16,17 +16,22 @@ type (
 		ID          string `json:"id"`
 		Name        string `json:"name"`
 		Email       string `json:"email"`
-		Password    string `json:"password"`
 		Initial     string `json:"initial"`
 		Institution string `json:"institution"`
+		IsVerified  bool   `json:"is_verified"`
 		Role        string `json:"role"`
 		Package     string `json:"package"`
 		Discipline  string `json:"discipline"`
 	}
 
-	UserResponse struct {
+	UserDetailResponse struct {
 		ID          string `json:"id"`
 		Name        string `json:"name"`
-		PhoneNumber string `json:"phone_number"`
+		Email       string `json:"email"`
+		Initial     string `json:"initial"`
+		Institution string `json:"institution"`
+		Package     string `json:"package"`
+		Discipline  string `json:"discipline"`
+		Role        string `json:"role"`
 	}
 )

@@ -37,11 +37,11 @@ func (c *userController) Create(ctx *gin.Context) {
 
 	user, err := c.userService.Create(ctx, req)
 	if err != nil {
-		response.NewFailed("failed register account", err).Send(ctx)
+		response.NewFailed("failed create account", err).Send(ctx)
 		return
 	}
 
-	response.NewSuccess("success register account", user).Send(ctx)
+	response.NewSuccess("success create account", user).Send(ctx)
 }
 
 func (c *userController) GetById(ctx *gin.Context) {

@@ -8,4 +8,6 @@ type UserPackage struct {
 	PackageID uuid.UUID `json:"package_id" gorm:"not null"`
 
 	Timestamp
+
+	Package *Package `json:"package,omitempty" gorm:"foreignKey:PackageID"`
 }
