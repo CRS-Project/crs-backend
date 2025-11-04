@@ -34,20 +34,24 @@ func NewRest() RestConfig {
 		// awsS3Service  storage.AwsS3 = storage.NewAwsS3()
 
 		//=========== (REPOSITORY) ===========//
-		userRepository repository.UserRepository = repository.NewUser(db)
+		userRepository           repository.UserRepository           = repository.NewUser(db)
+		userDisciplineRepository repository.UserDisciplineRepository = repository.NewUserDiscipline(db)
 
 		//=========== (SERVICE) ===========//
-		authService service.AuthService = service.NewAuth(userRepository, mailerService, oauthService, db)
-		userService service.UserService = service.NewUser(userRepository, db)
+		authService           service.AuthService           = service.NewAuth(userRepository, mailerService, oauthService, db)
+		userService           service.UserService           = service.NewUser(userRepository, db)
+		userDisciplineService service.UserDisciplineService = service.NewUserDiscipline(userDisciplineRepository, db)
 
 		//=========== (CONTROLLER) ===========//
-		authController controller.AuthController = controller.NewAuth(authService)
-		userController controller.UserController = controller.NewUser(userService)
+		authController           controller.AuthController           = controller.NewAuth(authService)
+		userController           controller.UserController           = controller.NewUser(userService)
+		userDisciplineController controller.UserDisciplineController = controller.NewUserDiscipline(userDisciplineService)
 	)
 
 	// Register all routes
 	routes.Auth(server, authController, middleware)
 	routes.User(server, userController, middleware)
+	routes.UserDiscipline(server, userDisciplineController, middleware)
 
 	return RestConfig{
 		server: server,

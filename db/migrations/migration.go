@@ -18,7 +18,13 @@ func Migrate(db *gorm.DB) error {
 
 	//migrate table
 	if err := db.AutoMigrate(
+		&entity.Package{},
 		&entity.User{},
+		&entity.UserDiscipline{},
+		&entity.UserDisciplineNumber{},
+		&entity.Comment{},
+		&entity.Comment{},
+		&entity.UserPackage{},
 	); err != nil {
 		return err
 	}
