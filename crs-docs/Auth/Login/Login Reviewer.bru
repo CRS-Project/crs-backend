@@ -1,0 +1,30 @@
+meta {
+  name: Login Reviewer
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}\api\v1\auth\login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "jane.smith.updated@example.com",
+    "password": "UpdatedPass456!"
+  }
+  
+}
+
+script:post-response {
+  const token = res('data.token')
+  bru.setEnvVar('token',token)
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

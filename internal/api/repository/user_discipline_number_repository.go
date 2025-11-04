@@ -10,6 +10,7 @@ import (
 type (
 	UserDisciplineNumberRepository interface {
 		CountByUserDisciplineID(ctx context.Context, tx *gorm.DB, userDisciplineId string) (int, error)
+		Update(ctx context.Context, tx *gorm.DB, userDisciplineNumber entity.UserDisciplineNumber) (entity.UserDisciplineNumber, error)
 	}
 
 	userDisciplineNumberRepository struct {
@@ -34,4 +35,17 @@ func (r *userDisciplineNumberRepository) CountByUserDisciplineID(ctx context.Con
 	}
 
 	return int(count), nil
+}
+
+func (r *userDisciplineNumberRepository) Update(ctx context.Context, tx *gorm.DB, userDisciplineNumber entity.UserDisciplineNumber) (entity.UserDisciplineNumber, error) {
+	if tx == nil {
+		tx = r.db
+	}
+	tx = tx.WithContext(ctx)
+
+	if err := tx.Save(&userDisciplineNumber).Error; err != nil {
+		return entity.UserDisciplineNumber{}, err
+	}
+
+	return userDisciplineNumber, nil
 }

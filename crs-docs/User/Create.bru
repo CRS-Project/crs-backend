@@ -1,0 +1,43 @@
+meta {
+  name: Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/api/v1/user
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // {
+  //   "name": "contractor 3",
+  //   "email": "con@gmail.com",
+  //   "password": "SecurePass123!",
+  //   "initial": "C3",
+  //   "institution": "PT Konstruksi Jaya",
+  //   "role": "CONTRACTOR",
+  //   "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a",
+  //   "discipline_id": null
+  // }
+  {
+    "name": "Jane Smith",
+    "email": "jane.smith@example.com",
+    "password": "ReviewPass456!",
+    "initial": "JS",
+    "institution": "Konsultan Teknik Nusantara",
+    "role": "REVIEWER",
+    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5",
+    "discipline_id": "ab6a24ac-d24b-4619-967d-3f1f00197b6c"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

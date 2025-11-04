@@ -1,0 +1,24 @@
+meta {
+  name: Delete
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{host}}/api/v1/user/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 0e7081c4-ea48-499a-a092-47e8aea08f56
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

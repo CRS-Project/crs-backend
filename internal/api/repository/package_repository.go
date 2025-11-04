@@ -39,7 +39,7 @@ func (r *packageRepository) GetByID(ctx context.Context, tx *gorm.DB, pkgID stri
 	}
 
 	var pkg entity.Package
-	if err := tx.WithContext(ctx).First(&pkg, pkgID).Error; err != nil {
+	if err := tx.WithContext(ctx).First(&pkg, "id = ?", pkgID).Error; err != nil {
 		return entity.Package{}, err
 	}
 

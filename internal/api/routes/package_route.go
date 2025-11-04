@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/CRS-Project/crs-backend/internal/api/controller"
+	"github.com/CRS-Project/crs-backend/internal/entity"
 	"github.com/CRS-Project/crs-backend/internal/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -9,9 +10,9 @@ import (
 func Package(app *gin.Engine, packagecontroller controller.PackageController, middleware middleware.Middleware) {
 	routes := app.Group("api/v1/package")
 	{
-		routes.GET("/", packagecontroller.GetAll)
-		routes.POST("/", packagecontroller.CreatePackage)
-		routes.PUT("/", packagecontroller.UpdatePackage)
-		routes.DELETE("/delete", packagecontroller.DeletePackage)
+		routes.GET("", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), packagecontroller.GetAll)
+		routes.POST("", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), packagecontroller.CreatePackage)
+		routes.PUT("", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), packagecontroller.UpdatePackage)
+		routes.DELETE("", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), packagecontroller.DeletePackage)
 	}
 }

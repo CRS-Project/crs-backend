@@ -1,0 +1,29 @@
+meta {
+  name: Get All
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/v1/user?take=10&page=1&sort=desc&sort_by=name&filter=CONTRACTOR&filter_by=role
+  body: none
+  auth: bearer
+}
+
+params:query {
+  take: 10
+  page: 1
+  sort: desc
+  sort_by: name
+  filter: CONTRACTOR
+  filter_by: role
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

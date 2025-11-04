@@ -1,0 +1,55 @@
+meta {
+  name: Update
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{host}}/api/v1/user/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: 5c982ba0-7fe2-44ab-95e5-fc05e92fcde3
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // {
+  //   "name": "Azka yang rill",
+  //   "email": "azkarizqullah99@example.com",
+  //   "password": "abc!",
+  //   "initial": "JSU",
+  //   "institution": "Konsultan Teknik Nusantara Jaya",
+  //   "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+  // }
+  
+  // {
+  //     "name": "Jane Smith",
+  //     "email": "jane.smith@example.com",
+  //     "initial": "JS",
+  //     "institution": "Konsultan Teknik Nusantara",
+  //     "package": "OLNG ITS",
+  //     "discipline": "Geotechnical",
+  //     "role": "REVIEWER"
+  // }
+  
+  {
+    "name": "Jane Smith Updated",
+    "email": "jane.smith.updated@example.com",
+    "password": "UpdatedPass456!",
+    "initial": "JSU",
+    "institution": "Konsultan Teknik Nusantara Jaya",
+    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2",
+    "discipline_id": "76876941-482b-433a-9d2a-a0922645b83a"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -13,6 +13,7 @@ type (
 		GetAll(ctx context.Context, tx *gorm.DB, metaReq meta.Meta, preloads ...string) ([]entity.UserDiscipline, error)
 		GetByID(ctx context.Context, tx *gorm.DB, userDisciplineId string, preloads ...string) (entity.UserDiscipline, error)
 		GetContractorDiscipline(ctx context.Context, tx *gorm.DB) (entity.UserDiscipline, error)
+		// Update(ctx context.Context)
 	}
 
 	userDisciplineRepository struct {
