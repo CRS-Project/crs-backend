@@ -1,0 +1,19 @@
+[
+  {
+    "id": "0b2560cc-d28c-4a87-abb9-d34f1b02caeb",
+    "number": 1,
+    "user_discipline_id": "bfef6872-e0f1-479a-a33b-2fed559b7980"
+  },
+  {
+    "id": "0b2560cc-d28c-4a87-abb9-d34f1b02caea",
+    "number": 1,
+    "user_discipline_id": "f952528e-5c14-4b77-a722-c8efa2736051",
+    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
+  },
+  {
+    "id": "0b2560cc-d28c-4a87-abb9-d34f1b02caea",
+    "number": 2,
+    "user_discipline_id": "f952528e-5c14-4b77-a722-c8efa2736051",
+    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
+  }
+]

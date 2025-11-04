@@ -24,9 +24,11 @@ type User struct {
 	Institution  string  `json:"institution" gorm:"not null"`
 	PhotoProfile *string `json:"photo_profile" gorm:""`
 
-	DiciplineID uuid.UUID `json:"dicipline_id" gorm:"not null"`
+	UserDisciplineNumberID uuid.UUID `json:"user_discipline_number_id" gorm:"not null"`
 
 	Timestamp
+
+	UserDisciplineNumber UserDisciplineNumber `json:"user_discipline_number" gorm:"foreignKey:UserDisciplineNumberID"`
 }
 
 func (u *User) TableName() string {

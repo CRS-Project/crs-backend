@@ -41,6 +41,10 @@ func (r *userRepository) GetById(ctx context.Context, tx *gorm.DB, userId string
 		tx = r.db
 	}
 
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
+	}
+
 	var user entity.User
 	if err := tx.WithContext(ctx).Take(&user, "id = ?", userId).Error; err != nil {
 		return entity.User{}, err
@@ -54,6 +58,10 @@ func (r *userRepository) GetByEmail(ctx context.Context, tx *gorm.DB, email stri
 		tx = r.db
 	}
 
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
+	}
+
 	var user entity.User
 	if err := tx.WithContext(ctx).Take(&user, "email = ?", email).Error; err != nil {
 		return entity.User{}, err
@@ -65,6 +73,10 @@ func (r *userRepository) GetByEmail(ctx context.Context, tx *gorm.DB, email stri
 func (r *userRepository) Update(ctx context.Context, tx *gorm.DB, user entity.User, preloads ...string) (entity.User, error) {
 	if tx == nil {
 		tx = r.db
+	}
+
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
 	}
 
 	if err := tx.WithContext(ctx).Save(&user).Error; err != nil {

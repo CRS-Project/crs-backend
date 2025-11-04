@@ -1,0 +1,107 @@
+[
+  {
+    "id": "33194288-bb67-4840-a31c-5dd0989613c3",
+    "name": "Process",
+    "initial": "PROC"
+  },
+  {
+    "id": "262f0f31-5ed9-48b5-8e0e-0aa1bd5bf295",
+    "name": "Process Safety",
+    "initial": "PROS"
+  },
+  {
+    "id": "8710ba80-06c6-42a4-b1ed-6ff8ec2edce9",
+    "name": "HSSE",
+    "initial": "HSSE"
+  },
+  {
+    "id": "f46a082d-15d4-4127-b5b6-5b7d4c3ffc7a",
+    "name": "Mechanical Static",
+    "initial": "MECS"
+  },
+  {
+    "id": "1372a057-579c-4043-b6e8-fa562ecd29a1",
+    "name": "Piping",
+    "initial": "PIPI"
+  },
+  {
+    "id": "0bdeb42c-d020-4aeb-a241-b484100b3c8f",
+    "name": "Mechanical Rotating",
+    "initial": "MECR"
+  },
+  {
+    "id": "c642199c-ee28-4355-bfc9-20ae4643cb00",
+    "name": "Material Selection",
+    "initial": "MATE"
+  },
+  {
+    "id": "482108e8-dbf7-44a6-aed1-644aa9432b2f",
+    "name": "Civil",
+    "initial": "CIVI"
+  },
+  {
+    "id": "673640ad-fbd0-4e8e-b1e4-cdc4207f3bae",
+    "name": "Structure",
+    "initial": "STRU"
+  },
+  {
+    "id": "038a8006-d453-41da-95dd-606dd5db000d",
+    "name": "Offshore",
+    "initial": "OFFS"
+  },
+  {
+    "id": "5a5f1e20-a7ca-4166-8f4a-6955a529cbef",
+    "name": "Environmental",
+    "initial": "ENVI"
+  },
+  {
+    "id": "99e9f99d-3b58-463c-a867-6eac410d24ff",
+    "name": "Sustainability",
+    "initial": "SUST"
+  },
+  {
+    "id": "2a2f9750-f989-462e-b17d-e17ab61f9866",
+    "name": "Project Management",
+    "initial": "PROJ"
+  },
+  {
+    "id": "d2055778-f402-4ce7-a66f-aa2343f3db21",
+    "name": "Electrical",
+    "initial": "ELEC"
+  },
+  {
+    "id": "6cb8d9b9-9e0d-4c52-af5d-81b255c7c705",
+    "name": "Instrumentation",
+    "initial": "INST"
+  },
+  {
+    "id": "8ee4bd05-97d6-4e1d-bc99-6242fe7011b5",
+    "name": "Social Impact",
+    "initial": "SOCI"
+  },
+  {
+    "id": "24b74b9f-05e8-49c4-8dcf-d41dfa51a1de",
+    "name": "Logistic & Marine Traffic",
+    "initial": "LOGI"
+  },
+  {
+    "id": "ab6a24ac-d24b-4619-967d-3f1f00197b6c",
+    "name": "Geotechnical",
+    "initial": "GEOT"
+  },
+  {
+    "id": "76876941-482b-433a-9d2a-a0922645b83a",
+    "name": "Telecom",
+    "initial": "TELE"
+  },
+  {
+    "id": "bfef6872-e0f1-479a-a33b-2fed559b7980",
+    "name": "Super Admin",
+    "initial": "ADMIN"
+  },
+  {
+    "id": "f952528e-5c14-4b77-a722-c8efa2736051",
+    "name": "Contractor",
+    "initial": "CONTRACTOR"
+  }
+]

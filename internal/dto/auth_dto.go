@@ -18,23 +18,27 @@ type (
 		Role             string `json:"role"`
 	}
 
-	ForgotPasswordRequest struct {
+	ForgetPasswordRequest struct {
 		Email string `json:"email" binding:"required,email"`
 	}
 
 	ChangePasswordRequest struct {
-		NewPassword string `json:"new_password"`
+		Email       string
+		NewPassword string `json:"new_password" binding:"required"`
 	}
 
 	GetMe struct {
-		PersonalInfo PersonalInfo `json:"personal_info"`
+		PersonalInfo       PersonalInfo       `json:"personal_info"`
+		UserDisciplineInfo UserDisciplineInfo `json:"user_discipline_info"`
 	}
 
 	PersonalInfo struct {
-		ID          string `json:"id"`
-		Username    string `json:"username"`
-		Email       string `json:"email"`
-		PhoneNumber string `json:"phone_number"`
-		Role        string `json:"role"`
+		ID           string  `json:"id"`
+		Name         string  `json:"name"`
+		Email        string  `json:"email"`
+		Initial      string  `json:"initial"`
+		Institution  string  `json:"institution"`
+		PhotoProfile *string `json:"photo_profile"`
+		Role         string  `json:"role"`
 	}
 )

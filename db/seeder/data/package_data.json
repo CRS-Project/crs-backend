@@ -1,6 +1,18 @@
 [
   {
-    "id": "c095da32-1506-4797-a7fa-5d661d9dd51b",
-    "name": "UUD"
+    "id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2",
+    "name": "FPSO ITS"
+  },
+  {
+    "id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5",
+    "name": "OLNG ITS"
+  },
+  {
+    "id": "f831510d-fc86-45f4-ab06-094a939ae29a",
+    "name": "FPSO ITB"
+  },
+  {
+    "id": "4661a21a-c28a-4560-aed3-c3f553288d99",
+    "name": "OLNG ITB"
   }
 ]

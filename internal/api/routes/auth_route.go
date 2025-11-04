@@ -10,11 +10,8 @@ func Auth(app *gin.Engine, authcontroller controller.AuthController, middleware 
 	routes := app.Group("/api/v1/auth")
 	{
 		routes.POST("/login", authcontroller.Login)
-		routes.POST("/register", authcontroller.Register)
-		routes.GET("/verify", authcontroller.Verify)
+		routes.POST("/forget", authcontroller.ForgetPassword)
+		routes.POST("/change", authcontroller.ChangePassword)
 		routes.GET("/me", middleware.Authenticate(), authcontroller.Me)
-
-		routes.GET("/google/login", authcontroller.LoginWithGoogle)
-		routes.GET("/google/callback", authcontroller.CallbackGoogle)
 	}
 }

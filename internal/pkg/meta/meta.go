@@ -28,18 +28,26 @@ type Meta struct {
 // Additional options can be applied to customize the Meta object.
 func New(ctx *gin.Context) Meta {
 	meta := Meta{
-		Take:   10,
+		Take:   10000000,
 		Page:   0,
 		Sort:   "asc",
 		SortBy: "id",
 	}
 
-	meta.Page = utils.ToInt(ctx.Query("page"))
-	meta.Take = utils.DefaultTake(utils.ToInt(ctx.Query("take")))
+	page := ctx.Query("page")
+	take := ctx.Query("take")
 	sort := ctx.Query("sort")
 	sortby := ctx.Query("sort_by")
 	filter := ctx.Query("filter")
 	filterby := ctx.Query("filter_by")
+
+	if page != "" {
+		meta.Page = utils.ToInt(page)
+	}
+
+	if take != "" {
+		meta.Take = utils.DefaultTake(utils.ToInt(take))
+	}
 
 	if sort != "" {
 		meta.Sort = sort

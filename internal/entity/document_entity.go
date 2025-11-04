@@ -9,7 +9,7 @@ import (
 type Document struct {
 	ID             uuid.UUID `json:"id" gorm:"type:uuid;primaryKey;default:uuid_generate_v4()"`
 	FilePath       *string   `json:"file_path" gorm:""`
-	Dicipline      string    `json:"dicipline" gorm:"not null"`
+	Discipline     string    `json:"discipline" gorm:"not null"`
 	DocumentNumber string    `json:"document_number" gorm:"not null"`
 	DocumentTitle  string    `json:"document_title" gorm:"not null"`
 	DocumentDate   string    `json:"document_date" gorm:"not null"`
