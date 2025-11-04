@@ -27,7 +27,7 @@ func NewRest() RestConfig {
 	server := NewRouter(app)
 	middleware := middleware.New(db)
 
-	var (
+  var (
 		//=========== (PACKAGE) ===========//
 		mailerService mailer.Mailer = mailer.New()
 		oauthService  oauth.Oauth   = oauth.New()
@@ -35,23 +35,28 @@ func NewRest() RestConfig {
 
 		//=========== (REPOSITORY) ===========//
 		userRepository                 repository.UserRepository                 = repository.NewUser(db)
+		packageRepository              repository.PackageRepository              = repository.NewPackage(db)
 		userDisciplineRepository       repository.UserDisciplineRepository       = repository.NewUserDiscipline(db)
 		userDisciplineNumberRepository repository.UserDisciplineNumberRepository = repository.NewUserDisciplineNumber(db)
 
 		//=========== (SERVICE) ===========//
 		authService           service.AuthService           = service.NewAuth(userRepository, mailerService, oauthService, db)
 		userService           service.UserService           = service.NewUser(userRepository, userDisciplineNumberRepository, db)
+		packageService        service.PackageService        = service.NewPackage(packageRepository, db)
 		userDisciplineService service.UserDisciplineService = service.NewUserDiscipline(userDisciplineRepository, db)
 
 		//=========== (CONTROLLER) ===========//
 		authController           controller.AuthController           = controller.NewAuth(authService)
+		packageController        controller.PackageController        = controller.NewPackage(packageService)
 		userController           controller.UserController           = controller.NewUser(userService)
 		userDisciplineController controller.UserDisciplineController = controller.NewUserDiscipline(userDisciplineService)
 	)
 
+
 	// Register all routes
 	routes.Auth(server, authController, middleware)
 	routes.User(server, userController, middleware)
+	routes.Package(server, packageController, middleware)
 	routes.UserDiscipline(server, userDisciplineController, middleware)
 
 	return RestConfig{
