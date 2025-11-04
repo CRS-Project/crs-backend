@@ -2,458 +2,97 @@
   {
     "id": "33194288-bb67-4840-a31c-5dd0989613c3",
     "name": "Process",
-    "initial": "PROC",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "PROC"
   },
   {
     "id": "262f0f31-5ed9-48b5-8e0e-0aa1bd5bf295",
     "name": "Process Safety",
-    "initial": "PROS",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "PROS"
   },
   {
     "id": "8710ba80-06c6-42a4-b1ed-6ff8ec2edce9",
     "name": "HSSE",
-    "initial": "HSSE",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "HSSE"
   },
   {
     "id": "f46a082d-15d4-4127-b5b6-5b7d4c3ffc7a",
     "name": "Mechanical Static",
-    "initial": "MECS",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "MECS"
   },
   {
     "id": "1372a057-579c-4043-b6e8-fa562ecd29a1",
     "name": "Piping",
-    "initial": "PIPI",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "PIPI"
   },
   {
     "id": "0bdeb42c-d020-4aeb-a241-b484100b3c8f",
     "name": "Mechanical Rotating",
-    "initial": "MECR",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "MECR"
   },
   {
     "id": "c642199c-ee28-4355-bfc9-20ae4643cb00",
     "name": "Material Selection",
-    "initial": "MATE",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "MATE"
   },
   {
     "id": "482108e8-dbf7-44a6-aed1-644aa9432b2f",
     "name": "Civil",
-    "initial": "CIVI",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "CIVI"
   },
   {
     "id": "673640ad-fbd0-4e8e-b1e4-cdc4207f3bae",
     "name": "Structure",
-    "initial": "STRU",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "STRU"
   },
   {
     "id": "038a8006-d453-41da-95dd-606dd5db000d",
     "name": "Offshore",
-    "initial": "OFFS",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "OFFS"
   },
   {
     "id": "5a5f1e20-a7ca-4166-8f4a-6955a529cbef",
     "name": "Environmental",
-    "initial": "ENVI",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "ENVI"
   },
   {
     "id": "99e9f99d-3b58-463c-a867-6eac410d24ff",
     "name": "Sustainability",
-    "initial": "SUST",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "SUST"
   },
   {
     "id": "2a2f9750-f989-462e-b17d-e17ab61f9866",
     "name": "Project Management",
-    "initial": "PROJ",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "PROJ"
   },
   {
     "id": "d2055778-f402-4ce7-a66f-aa2343f3db21",
     "name": "Electrical",
-    "initial": "ELEC",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "ELEC"
   },
   {
     "id": "6cb8d9b9-9e0d-4c52-af5d-81b255c7c705",
     "name": "Instrumentation",
-    "initial": "INST",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "INST"
   },
   {
     "id": "8ee4bd05-97d6-4e1d-bc99-6242fe7011b5",
     "name": "Social Impact",
-    "initial": "SOCI",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "SOCI"
   },
   {
     "id": "24b74b9f-05e8-49c4-8dcf-d41dfa51a1de",
     "name": "Logistic & Marine Traffic",
-    "initial": "LOGI",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "LOGI"
   },
   {
     "id": "ab6a24ac-d24b-4619-967d-3f1f00197b6c",
     "name": "Geotechnical",
-    "initial": "GEOT",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+    "initial": "GEOT"
   },
   {
     "id": "76876941-482b-433a-9d2a-a0922645b83a",
     "name": "Telecom",
-    "initial": "TELE",
-    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
-  },
-  {
-    "id": "47bd4ff2-8760-46fd-9331-5e1731b9262c",
-    "name": "Process",
-    "initial": "PROC",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "abf59152-91dc-4ed7-bec4-f2df77d8a936",
-    "name": "Process Safety",
-    "initial": "PROS",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "77922def-316e-4df5-897e-fa13549d8777",
-    "name": "HSSE",
-    "initial": "HSSE",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "77602089-4ea9-45ed-ba82-f69153aee48a",
-    "name": "Mechanical Static",
-    "initial": "MECS",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "c1e2fe56-f6f2-4d73-ae16-828c300425d4",
-    "name": "Piping",
-    "initial": "PIPI",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "238972fd-4945-40b5-b9ca-f794b123ccc1",
-    "name": "Mechanical Rotating",
-    "initial": "MECR",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "294d05b9-97d0-4d08-910e-38365aa9e872",
-    "name": "Material Selection",
-    "initial": "MATE",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "bb95ff4a-b902-439d-a2de-b3291a49a5c4",
-    "name": "Civil",
-    "initial": "CIVI",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "f68c6836-3fb2-4418-9cbe-b41292c18ab1",
-    "name": "Structure",
-    "initial": "STRU",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "4f5481ba-0ea8-400d-9c70-45dd78d1d80d",
-    "name": "Offshore",
-    "initial": "OFFS",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "88355d67-448b-43a6-8323-13ca182869e0",
-    "name": "Environmental",
-    "initial": "ENVI",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "6be811a7-0410-4ddb-887c-48bcaecd19f8",
-    "name": "Sustainability",
-    "initial": "SUST",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "a5e3df36-da81-4c77-b324-cd050c25ffd7",
-    "name": "Project Management",
-    "initial": "PROJ",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "2e4e9f78-8d5e-4eb3-a160-7aea838a3088",
-    "name": "Electrical",
-    "initial": "ELEC",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "2ab6bef6-c1da-4f60-917f-ba922f329467",
-    "name": "Instrumentation",
-    "initial": "INST",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "532f8e9e-6fa7-419f-90dc-e8a35823eecf",
-    "name": "Social Impact",
-    "initial": "SOCI",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "980b416b-466a-4f67-8ce5-3a843a362313",
-    "name": "Logistic & Marine Traffic",
-    "initial": "LOGI",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "a13cfd60-a5ba-4363-8da8-50c01b8b8de6",
-    "name": "Geotechnical",
-    "initial": "GEOT",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "1501ca7e-54df-4e05-912a-7029cfbb3450",
-    "name": "Telecom",
-    "initial": "TELE",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
-  },
-  {
-    "id": "7a48046f-477a-4af5-905a-76aa928e97c6",
-    "name": "Process",
-    "initial": "PROC",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "ffc5cb41-c3f0-4a32-8210-bf91a0b50753",
-    "name": "Process Safety",
-    "initial": "PROS",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "a32a17c8-6238-4997-aeec-808f87b751d5",
-    "name": "HSSE",
-    "initial": "HSSE",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "1ca0cb8a-5441-4754-a7b0-068bf000c4b7",
-    "name": "Mechanical Static",
-    "initial": "MECS",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "efeeea11-63ae-4d04-ab68-e4f2151556db",
-    "name": "Piping",
-    "initial": "PIPI",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "b2f82ecf-975d-4871-b3b0-4f190ffac3f4",
-    "name": "Mechanical Rotating",
-    "initial": "MECR",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "28910952-5083-40ca-914b-08e6d1db60d1",
-    "name": "Material Selection",
-    "initial": "MATE",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "8237f5af-849b-4044-8a59-5ff8457091ee",
-    "name": "Civil",
-    "initial": "CIVI",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "95f5fb23-edb2-458b-84bf-f427313fd5e4",
-    "name": "Structure",
-    "initial": "STRU",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "e933f7d6-b3f9-4d73-ba6c-d54cb238e2a5",
-    "name": "Offshore",
-    "initial": "OFFS",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "9e09ec4b-992c-4e8d-b37f-5ad08e192bfa",
-    "name": "Environmental",
-    "initial": "ENVI",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "8d0f7b2f-35d7-4fce-8893-d48800722597",
-    "name": "Sustainability",
-    "initial": "SUST",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "66e3ae77-19ae-4667-92fb-0e6fc00dc3de",
-    "name": "Project Management",
-    "initial": "PROJ",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "33ade4cc-95bb-47ef-8eb7-de75e746ee8c",
-    "name": "Electrical",
-    "initial": "ELEC",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "0c6036c8-bc16-4da2-bdd7-0e3a8b7af02c",
-    "name": "Instrumentation",
-    "initial": "INST",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "7499a05b-8df4-43aa-945f-edb759da2012",
-    "name": "Social Impact",
-    "initial": "SOCI",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "64d20a94-62d9-46ac-a726-cceede04dc8f",
-    "name": "Logistic & Marine Traffic",
-    "initial": "LOGI",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "c7068522-eed4-40ad-9f90-2ad4ec8f9949",
-    "name": "Geotechnical",
-    "initial": "GEOT",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "f94dd14f-4918-4c28-baa0-47a7703e21a7",
-    "name": "Telecom",
-    "initial": "TELE",
-    "package_id": "f831510d-fc86-45f4-ab06-094a939ae29a"
-  },
-  {
-    "id": "a627e6c4-76ab-46aa-a5b1-eda074ea3cb3",
-    "name": "Process",
-    "initial": "PROC",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "a3800918-dd2b-4026-8fec-b62e0b96a4b0",
-    "name": "Process Safety",
-    "initial": "PROS",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "3e83aac0-fc94-4bd4-98ba-5bcd70cb1429",
-    "name": "HSSE",
-    "initial": "HSSE",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "38686ef4-7d70-4e07-8792-e72111200bb2",
-    "name": "Mechanical Static",
-    "initial": "MECS",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "f733d464-8608-4e00-b5c2-8f8572174cca",
-    "name": "Piping",
-    "initial": "PIPI",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "2d842ea9-fb76-4147-afbf-57bd8f8ce10e",
-    "name": "Mechanical Rotating",
-    "initial": "MECR",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "acf13413-cd55-43eb-b187-ea31cb3c8fdc",
-    "name": "Material Selection",
-    "initial": "MATE",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "42d601d7-2e46-484c-861c-269f91ffa21f",
-    "name": "Civil",
-    "initial": "CIVI",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "554f07d7-77b8-4a5a-8a60-855914a2f7e2",
-    "name": "Structure",
-    "initial": "STRU",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "abeab99b-0ec5-44ef-afa9-c63b6c12b7d3",
-    "name": "Offshore",
-    "initial": "OFFS",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "0886a353-1cd4-4f84-b970-f9acda23547a",
-    "name": "Environmental",
-    "initial": "ENVI",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "10da88d2-5fce-4881-b629-bce74a9b8930",
-    "name": "Sustainability",
-    "initial": "SUST",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "9fe19177-4c69-46a9-8eaa-ff98e1f5a923",
-    "name": "Project Management",
-    "initial": "PROJ",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "25bd3912-5093-4720-a890-f1e798952bd2",
-    "name": "Electrical",
-    "initial": "ELEC",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "68f7811e-a963-401a-b13c-d383cd260cc7",
-    "name": "Instrumentation",
-    "initial": "INST",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "d877c08d-8c2b-4032-adee-303896f6a296",
-    "name": "Social Impact",
-    "initial": "SOCI",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "2e414df6-4925-4973-b4bc-fed30190c4e3",
-    "name": "Logistic & Marine Traffic",
-    "initial": "LOGI",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "8c62e61c-6a54-4c92-abe1-2485f1832b0f",
-    "name": "Geotechnical",
-    "initial": "GEOT",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
-  },
-  {
-    "id": "aeef6872-e0f2-489a-ae3b-3fed559b7980",
-    "name": "Telecom",
-    "initial": "TELE",
-    "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
+    "initial": "TELE"
   },
   {
     "id": "bfef6872-e0f1-479a-a33b-2fed559b7980",

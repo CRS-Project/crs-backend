@@ -7,13 +7,11 @@ import (
 
 	"github.com/CRS-Project/crs-backend/internal/api/repository"
 	"github.com/CRS-Project/crs-backend/internal/dto"
-	"github.com/CRS-Project/crs-backend/internal/entity"
 	mailer "github.com/CRS-Project/crs-backend/internal/pkg/email"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/google/oauth"
 	myjwt "github.com/CRS-Project/crs-backend/internal/pkg/jwt"
 	"github.com/CRS-Project/crs-backend/internal/utils"
-	"github.com/google/uuid"
 
 	"net/http"
 	"os"
@@ -24,7 +22,6 @@ import (
 
 type (
 	AuthService interface {
-		Register(ctx context.Context, req dto.RegisterRequest, token string) (dto.RegisterResponse, error)
 		Login(ctx context.Context, req dto.LoginRequest) (dto.LoginResponse, error)
 		ForgetPassword(ctx context.Context, req dto.ForgetPasswordRequest) error
 		ChangePassword(ctx context.Context, req dto.ChangePasswordRequest) error
@@ -49,63 +46,6 @@ func NewAuth(userRepository repository.UserRepository,
 		oauthService:   oauthService,
 		db:             db,
 	}
-}
-
-func (s *authService) Register(ctx context.Context, req dto.RegisterRequest, authtoken string) (dto.RegisterResponse, error) {
-	_, err := s.userRepository.GetByEmail(ctx, nil, req.Email)
-	if err == nil {
-		return dto.RegisterResponse{}, myerror.New("user with this email already exist", http.StatusConflict)
-	}
-
-	userCreation := entity.User{
-		Name:     req.Username,
-		Email:    req.Email,
-		Password: req.Password,
-		// PhoneNumber: req.PhoneNumber,
-	}
-
-	if authtoken != "" {
-		payload, err := myjwt.GetPayloadInsideToken(authtoken)
-		if err != nil {
-			return dto.RegisterResponse{}, myerror.New("failed get payload token", http.StatusBadRequest)
-		} else if payload["email"] == "" || payload["email"] != req.Email {
-			return dto.RegisterResponse{}, myerror.New("email not match with token payload", http.StatusBadRequest)
-		}
-
-		userCreation.ID = uuid.MustParse(payload["user_id"])
-		userCreation.IsVerified = true
-	}
-
-	createResult, err := s.userRepository.Create(ctx, nil, userCreation)
-	if err != nil {
-		return dto.RegisterResponse{}, err
-	}
-
-	if authtoken == "" {
-		token, err := myjwt.GenerateToken(map[string]string{
-			"user_id": createResult.ID.String(),
-			"email":   createResult.Email,
-		}, 24*time.Hour)
-		if err != nil {
-			return dto.RegisterResponse{}, err
-		}
-
-		token = fmt.Sprintf("%s/auth/verify?token=%s", os.Getenv("APP_URL"), token)
-		if err := s.mailService.MakeMail("./internal/pkg/email/template/verification_email.html", map[string]any{
-			// "Username": createResult.Username,
-			"Verify": token,
-		}).Send(createResult.Email, "Verify Your Account").Error; err != nil {
-			return dto.RegisterResponse{}, err
-		}
-	}
-
-	return dto.RegisterResponse{
-		ID: createResult.ID.String(),
-		// Username:    createResult.Username,
-		Email: createResult.Email,
-		// PhoneNumber: createResult.PhoneNumber,
-		Role: string(createResult.Role),
-	}, nil
 }
 
 func (s *authService) Login(ctx context.Context, req dto.LoginRequest) (dto.LoginResponse, error) {

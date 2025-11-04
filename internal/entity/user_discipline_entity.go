@@ -7,8 +7,6 @@ type UserDiscipline struct {
 	Name    string    `json:"name" gorm:"not null"`
 	Initial string    `json:"initial" gorm:"not null"`
 
-	PackageID *uuid.UUID `json:"package_id" gorm:""`
-
 	Timestamp
 
 	Package *Package `json:"package,omitempty" gorm:"foreignKey:PackageID"`
