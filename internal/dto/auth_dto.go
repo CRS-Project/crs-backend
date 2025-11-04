@@ -18,12 +18,13 @@ type (
 		Role             string `json:"role"`
 	}
 
-	ForgotPasswordRequest struct {
+	ForgetPasswordRequest struct {
 		Email string `json:"email" binding:"required,email"`
 	}
 
 	ChangePasswordRequest struct {
-		NewPassword string `json:"new_password"`
+		Email       string
+		NewPassword string `json:"new_password" binding:"required"`
 	}
 
 	GetMe struct {

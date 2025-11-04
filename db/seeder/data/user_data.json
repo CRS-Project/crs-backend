@@ -9,5 +9,27 @@
     "initial": "SADMIN",
     "institution": "ADMIN",
     "user_discipline_number_id": "0b2560cc-d28c-4a87-abb9-d34f1b02caeb"
+  },
+  {
+    "id": "7373f727-1a73-48ea-9342-dd9a47fa4b26",
+    "name": "contractor 1",
+    "email": "testc1@email.com",
+    "password": "Contractor.1",
+    "is_verified": true,
+    "role": "CONTRACTOR",
+    "initial": "CON A",
+    "institution": "CONTRACTOR",
+    "user_discipline_number_id": "0b2560cc-d28c-4a87-abb9-d34f1b02caea"
+  },
+  {
+    "id": "0d78ddf1-2cfa-436c-ad87-88360def402f",
+    "name": "contractor 1",
+    "email": "azkarizqullah@gmail.com",
+    "password": "abdndjnjnas",
+    "is_verified": true,
+    "role": "CONTRACTOR",
+    "initial": "CON B",
+    "institution": "CONTRACTOR",
+    "user_discipline_number_id": "0b2560cc-d28c-4a87-abb9-d34f1b02caea"
   }
 ]

@@ -459,5 +459,10 @@
     "id": "bfef6872-e0f1-479a-a33b-2fed559b7980",
     "name": "Super Admin",
     "initial": "ADMIN"
+  },
+  {
+    "id": "f952528e-5c14-4b77-a722-c8efa2736051",
+    "name": "Contractor",
+    "initial": "CONTRACTOR"
   }
 ]

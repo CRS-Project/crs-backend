@@ -11,8 +11,8 @@ import (
 func Seeding(db *gorm.DB) error {
 	seeders := []func(*gorm.DB) error{
 		seeds.SeederPackage,
-		seeds.SeederUserDisciplineNumber,
 		seeds.SeederUserDiscipline,
+		seeds.SeederUserDisciplineNumber,
 		seeds.SeederUser,
 	}
 

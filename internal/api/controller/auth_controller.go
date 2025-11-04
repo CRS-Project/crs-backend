@@ -1,12 +1,9 @@
 package controller
 
 import (
-	"net/http"
-
 	"github.com/CRS-Project/crs-backend/internal/api/service"
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
-	"github.com/CRS-Project/crs-backend/internal/pkg/google/oauth"
 	myjwt "github.com/CRS-Project/crs-backend/internal/pkg/jwt"
 	"github.com/CRS-Project/crs-backend/internal/pkg/response"
 	"github.com/CRS-Project/crs-backend/internal/utils"
@@ -15,14 +12,10 @@ import (
 
 type (
 	AuthController interface {
-		Register(ctx *gin.Context)
 		Login(ctx *gin.Context)
-		Verify(ctx *gin.Context)
-		ForgotPassword(ctx *gin.Context)
+		ForgetPassword(ctx *gin.Context)
 		ChangePassword(ctx *gin.Context)
 		Me(ctx *gin.Context)
-		LoginWithGoogle(ctx *gin.Context)
-		CallbackGoogle(ctx *gin.Context)
 	}
 
 	authController struct {
@@ -34,32 +27,6 @@ func NewAuth(authService service.AuthService) AuthController {
 	return &authController{
 		authService: authService,
 	}
-}
-
-func (c *authController) Register(ctx *gin.Context) {
-	token := ctx.Query("token")
-	if token != "" {
-		verified, err := myjwt.IsValid(token)
-		if err != nil || !verified {
-			response.NewFailed("failed get data from body", myerror.New("token invalid", http.StatusBadRequest)).Send(ctx)
-			return
-		}
-	}
-
-	var req dto.RegisterRequest
-
-	if err := ctx.ShouldBind(&req); err != nil {
-		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
-		return
-	}
-
-	user, err := c.authService.Register(ctx, req, token)
-	if err != nil {
-		response.NewFailed("failed register account", err).Send(ctx)
-		return
-	}
-
-	response.NewSuccess("success register account", user).Send(ctx)
 }
 
 func (c *authController) Login(ctx *gin.Context) {
@@ -78,22 +45,48 @@ func (c *authController) Login(ctx *gin.Context) {
 	response.NewSuccess("success login", result).Send(ctx)
 }
 
-func (c *authController) Verify(ctx *gin.Context) {
-	token := ctx.Query("token")
-	if err := c.authService.Verify(ctx, token); err != nil {
-		response.NewFailed("failed verify account", err).Send(ctx)
+func (c *authController) ForgetPassword(ctx *gin.Context) {
+	var req dto.ForgetPasswordRequest
+
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.NewFailed("failed get data from body", err).Send(ctx)
 		return
 	}
 
-	response.NewSuccess("success verify account", nil).Send(ctx)
-}
+	if err := c.authService.ForgetPassword(ctx, req); err != nil {
+		response.NewFailed("failed forget password", err).Send(ctx)
+		return
+	}
 
-func (c *authController) ForgotPassword(ctx *gin.Context) {
-
+	response.NewSuccess("success forget password", nil).Send(ctx)
 }
 
 func (c *authController) ChangePassword(ctx *gin.Context) {
+	var req dto.ChangePasswordRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.NewFailed("failed get data from body", err).Send(ctx)
+		return
+	}
 
+	token := ctx.Query("token")
+	if token == "" {
+		response.NewFailed("failed change password", myerror.ErrBodyRequest).Send(ctx)
+		return
+	}
+
+	claims, err := myjwt.GetPayloadInsideToken(token)
+	if err != nil {
+		response.NewFailed("failed change password", err).Send(ctx)
+		return
+	}
+
+	req.Email = claims["email"]
+	if err := c.authService.ChangePassword(ctx, req); err != nil {
+		response.NewFailed("failed change password", err).Send(ctx)
+		return
+	}
+
+	response.NewSuccess("success change password", nil).Send(ctx)
 }
 
 func (c *authController) Me(ctx *gin.Context) {
@@ -110,32 +103,4 @@ func (c *authController) Me(ctx *gin.Context) {
 	}
 
 	response.NewSuccess("success get me", res).Send(ctx)
-}
-
-func (c *authController) LoginWithGoogle(ctx *gin.Context) {
-	googleOauthConfig := oauth.GetConfig()
-	oauthState := oauth.RandomState()
-
-	domain, secure := utils.GetDomain()
-	ctx.SetCookie("oauthstate", oauthState, 300, "/", domain, secure, true)
-	url := googleOauthConfig.AuthCodeURL(oauthState)
-	ctx.Redirect(http.StatusTemporaryRedirect, url)
-}
-
-func (c *authController) CallbackGoogle(ctx *gin.Context) {
-	state := ctx.Query("state")
-	stateFromCookie, _ := ctx.Cookie("oauthstate")
-	if state != stateFromCookie {
-		response.NewFailed("failed get login callback", myerror.New("invalid oauth state", http.StatusBadRequest)).Send(ctx)
-		return
-	}
-
-	code := ctx.Query("code")
-	result, err := c.authService.LoginWithGoogle(ctx, code, state)
-	if err != nil {
-		response.NewFailed("failed login with google", err).Send(ctx)
-		return
-	}
-
-	response.NewSuccess("success login with google", result).Send(ctx)
 }
