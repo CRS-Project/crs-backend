@@ -100,7 +100,7 @@ func (s *authService) ForgetPassword(ctx context.Context, req dto.ForgetPassword
 	}
 
 	// generate token
-	token = fmt.Sprintf("%s/auth/change?token=%s", os.Getenv("APP_URL"), token)
+	token = fmt.Sprintf("%s/reset-password/%s", os.Getenv("APP_URL"), token)
 	if err := s.mailService.MakeMail("./internal/pkg/email/template/forget_password_email.html", map[string]any{
 		"Fullname": user.Name,
 		"Link":     token,
