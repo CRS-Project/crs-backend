@@ -1,0 +1,22 @@
+meta {
+  name: Delete
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{host}}/api/v1/package/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "ID": "4661a21a-c28a-4560-aed3-c3f553288d99  "
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
