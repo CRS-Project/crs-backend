@@ -2,10 +2,12 @@ package service
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/CRS-Project/crs-backend/internal/api/repository"
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/CRS-Project/crs-backend/internal/entity"
+	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/CRS-Project/crs-backend/internal/utils"
 	"github.com/google/uuid"
@@ -64,6 +66,10 @@ func (s *userService) Create(ctx context.Context, req dto.CreateUserRequest) (dt
 	countUserDiscipline, err := s.userDisciplineNumberRepository.CountByUserDisciplineID(ctx, nil, disciplineId)
 	if err != nil {
 		return dto.CreateUserResponse{}, err
+	}
+
+	if req.Role == "CONTRACTOR" && countUserDiscipline > 0 {
+		return dto.CreateUserResponse{}, myerror.New("this package already has contractor", http.StatusBadRequest)
 	}
 
 	discipline, err := s.userDisciplineRepository.GetByID(ctx, nil, disciplineId)

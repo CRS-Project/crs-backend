@@ -20,15 +20,15 @@ type Document struct {
 	DocumentType             string    `json:"document_type" gorm:"not null"`
 	DocumentCategory         string    `json:"document_category" gorm:"not null"`
 
-	Status string `json:"status" gorm:"not null"`
-
 	Deadline time.Time `json:"deadline" gorm:"not null"`
 
-	UserID    uuid.UUID `json:"user_id" gorm:"not null"`
-	PackageID uuid.UUID `json:"package_id" gorm:"not null"`
+	ContractorID uuid.UUID `json:"contractor_id" gorm:"not null"`
+	UserID       uuid.UUID `json:"user_id" gorm:"not null"`
+	PackageID    uuid.UUID `json:"package_id" gorm:"not null"`
 
 	Timestamp
 
-	User    *User    `json:"user,omitempty" gorm:"foreignKey:UserID"`
-	Package *Package `json:"package,omitempty" gorm:"foreignKey:PackageID"`
+	Contractor *User    `json:"contractor,omitempty" gorm:"foreignKey:ContractorID"`
+	User       *User    `json:"user,omitempty" gorm:"foreignKey:UserID"`
+	Package    *Package `json:"package,omitempty" gorm:"foreignKey:PackageID"`
 }
