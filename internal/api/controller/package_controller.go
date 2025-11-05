@@ -14,6 +14,7 @@ type (
 		GetAll(ctx *gin.Context)
 		UpdatePackage(ctx *gin.Context)
 		DeletePackage(ctx *gin.Context)
+		GetByID(ctx *gin.Context)
 	}
 
 	packageController struct {
@@ -77,4 +78,16 @@ func (c *packageController) DeletePackage(ctx *gin.Context) {
 	}
 
 	response.NewSuccess("success delete package", nil).Send(ctx)
+}
+
+func (c *packageController) GetByID(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	res, err := c.packageService.GetByID(ctx.Request.Context(), id)
+	if err != nil {
+		response.NewFailed("failed to get package", err).Send(ctx)
+		return
+	}
+
+	response.NewSuccess("success get package", res).Send(ctx)
 }

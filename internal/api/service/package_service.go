@@ -18,6 +18,7 @@ type (
 		GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.PackageInfo, meta.Meta, error)
 		UpdatePackage(ctx context.Context, req dto.UpdatePackageRequest) error
 		DeletePackage(ctx context.Context, id string) error
+		GetByID(ctx context.Context, id string) (dto.PackageInfo, error)
 	}
 
 	packageService struct {
@@ -96,4 +97,16 @@ func (s *packageService) DeletePackage(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+func (s *packageService) GetByID(ctx context.Context, id string) (dto.PackageInfo, error) {
+	pkg, err := s.packageRepository.GetByID(ctx, nil, id)
+	if err != nil {
+		return dto.PackageInfo{}, err
+	}
+
+	return dto.PackageInfo{
+		ID:   pkg.ID.String(),
+		Name: pkg.Name,
+	}, nil
 }

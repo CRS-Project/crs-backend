@@ -1,0 +1,19 @@
+meta {
+  name: Get By ID
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{host}}/api/v1/package/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}
+
+settings {
+  encodeUrl: true
+}
