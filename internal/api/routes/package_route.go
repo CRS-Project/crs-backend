@@ -8,7 +8,7 @@ import (
 )
 
 func Package(app *gin.Engine, packagecontroller controller.PackageController, middleware middleware.Middleware) {
-	routes := app.Group("api/v1/package")
+	routes := app.Group("/api/v1/package")
 	{
 		routes.GET("", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), packagecontroller.GetAll)
 		routes.POST("", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), packagecontroller.CreatePackage)

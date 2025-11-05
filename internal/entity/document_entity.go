@@ -12,7 +12,7 @@ type Document struct {
 	DocumentSerialNumber     string    `json:"document_serial_number" gorm:"not null"`
 	CTRNumber                string    `json:"ctr_number" gorm:"not null"`
 	WBS                      string    `json:"wbs" gorm:"not null"`
-	CompanyDocumentNumber    string    `json:"company_document_number"`
+	CompanyDocumentNumber    *string   `json:"company_document_number" gorm:""`
 	ContractorDocumentNumber string    `json:"contractor_document_number" gorm:"not null"`
 	DocumentTitle            string    `json:"document_title" gorm:"not null"`
 	Discipline               string    `json:"discipline" gorm:"not null"`
@@ -24,11 +24,11 @@ type Document struct {
 
 	Deadline time.Time `json:"deadline" gorm:"not null"`
 
-	UserID    uuid.UUID `json:"user_id" gorm:"not null"`
-	PackageID uuid.UUID `json:"package_id" gorm:"not null"`
+	ContractorID uuid.UUID `json:"contractor_id" gorm:"not null"`
+	PackageID    uuid.UUID `json:"package_id" gorm:"not null"`
 
 	Timestamp
 
-	User    *User    `json:"user,omitempty" gorm:"foreignKey:UserID"`
-	Package *Package `json:"package,omitempty" gorm:"foreignKey:PackageID"`
+	Contractor *User    `json:"contractor,omitempty" gorm:"foreignKey:ContractorID"`
+	Package    *Package `json:"package,omitempty" gorm:"foreignKey:PackageID"`
 }

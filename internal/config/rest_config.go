@@ -39,18 +39,21 @@ func NewRest() RestConfig {
 		userPackageRepository          repository.UserPackageRepository          = repository.NewUserPackage(db)
 		userDisciplineRepository       repository.UserDisciplineRepository       = repository.NewUserDiscipline(db)
 		userDisciplineNumberRepository repository.UserDisciplineNumberRepository = repository.NewUserDisciplineNumber(db)
+		documentRepository             repository.DocumentRepository             = repository.NewDocument(db)
 
 		//=========== (SERVICE) ===========//
 		authService           service.AuthService           = service.NewAuth(userRepository, mailerService, oauthService, db)
 		userService           service.UserService           = service.NewUser(userRepository, userDisciplineRepository, userDisciplineNumberRepository, userPackageRepository, packageRepository, db)
 		packageService        service.PackageService        = service.NewPackage(packageRepository, db)
 		userDisciplineService service.UserDisciplineService = service.NewUserDiscipline(userDisciplineRepository, db)
+		documentService       service.DocumentService       = service.NewDocument(documentRepository, db)
 
 		//=========== (CONTROLLER) ===========//
 		authController           controller.AuthController           = controller.NewAuth(authService)
 		packageController        controller.PackageController        = controller.NewPackage(packageService)
 		userController           controller.UserController           = controller.NewUser(userService)
 		userDisciplineController controller.UserDisciplineController = controller.NewUserDiscipline(userDisciplineService)
+		documentController       controller.DocumentController       = controller.NewDocument(documentService)
 	)
 
 	// Register all routes
@@ -58,6 +61,7 @@ func NewRest() RestConfig {
 	routes.User(server, userController, middleware)
 	routes.Package(server, packageController, middleware)
 	routes.UserDiscipline(server, userDisciplineController, middleware)
+	routes.Document(server, documentController, middleware)
 
 	return RestConfig{
 		server: server,
