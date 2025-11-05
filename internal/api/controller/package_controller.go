@@ -69,13 +69,9 @@ func (c *packageController) UpdatePackage(ctx *gin.Context) {
 }
 
 func (c *packageController) DeletePackage(ctx *gin.Context) {
-	var req dto.DeletePackageRequest
-	if err := ctx.ShouldBind(&req); err != nil {
-		response.NewFailed("failed get data from body", err).Send(ctx)
-		return
-	}
+	id := ctx.Param("id")
 
-	if err := c.packageService.DeletePackage(ctx, req); err != nil {
+	if err := c.packageService.DeletePackage(ctx, id); err != nil {
 		response.NewFailed("failed to delete package", err).Send(ctx)
 		return
 	}

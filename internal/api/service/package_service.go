@@ -17,7 +17,7 @@ type (
 		CreatePackage(ctx *gin.Context, req dto.CreatePackageRequest) (dto.PackageInfo, error)
 		GetAll(ctx *gin.Context, metaReq meta.Meta) ([]dto.PackageInfo, meta.Meta, error)
 		UpdatePackage(ctx *gin.Context, req dto.UpdatePackageRequest) error
-		DeletePackage(ctx *gin.Context, req dto.DeletePackageRequest) error
+		DeletePackage(ctx *gin.Context, id string) error
 	}
 
 	packageService struct {
@@ -85,8 +85,8 @@ func (s *packageService) UpdatePackage(ctx *gin.Context, req dto.UpdatePackageRe
 	return nil
 }
 
-func (s *packageService) DeletePackage(ctx *gin.Context, req dto.DeletePackageRequest) error {
-	pkg, err := s.packageRepository.GetByID(ctx, nil, req.ID)
+func (s *packageService) DeletePackage(ctx *gin.Context, id string) error {
+	pkg, err := s.packageRepository.GetByID(ctx, nil, id)
 	if err != nil {
 		return err
 	}
