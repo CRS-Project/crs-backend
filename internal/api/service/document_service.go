@@ -1,22 +1,22 @@
 package service
 
 import (
+	"context"
 	"time"
 
 	"github.com/CRS-Project/crs-backend/internal/api/repository"
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
-	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type (
 	DocumentService interface {
-		Create(ctx *gin.Context, req dto.CreateDocumentRequest) (dto.GetDocument, error)
-		GetAll(ctx *gin.Context, metaReq meta.Meta) ([]dto.GetDocument, meta.Meta, error)
-		Delete(ctx *gin.Context, id string) error
+		Create(ctx context.Context, req dto.CreateDocumentRequest) (dto.GetDocument, error)
+		GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.GetDocument, meta.Meta, error)
+		Delete(ctx context.Context, id string) error
 	}
 
 	documentService struct {
@@ -32,7 +32,7 @@ func NewDocument(documentRepository repository.DocumentRepository, db *gorm.DB) 
 	}
 }
 
-func (s *documentService) Create(ctx *gin.Context, req dto.CreateDocumentRequest) (dto.GetDocument, error) {
+func (s *documentService) Create(ctx context.Context, req dto.CreateDocumentRequest) (dto.GetDocument, error) {
 	deadlineDate, err := time.Parse(time.RFC822, req.Deadline)
 	if err != nil {
 		return dto.GetDocument{}, err
@@ -100,7 +100,7 @@ func (s *documentService) Create(ctx *gin.Context, req dto.CreateDocumentRequest
 	}, nil
 }
 
-func (s *documentService) GetAll(ctx *gin.Context, metaReq meta.Meta) ([]dto.GetDocument, meta.Meta, error) {
+func (s *documentService) GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.GetDocument, meta.Meta, error) {
 	documents, metaRes, err := s.documentRepository.GetAll(ctx, nil, metaReq, "Contractor", "Package")
 	if err != nil {
 		return nil, meta.Meta{}, err
@@ -142,7 +142,7 @@ func (s *documentService) GetAll(ctx *gin.Context, metaReq meta.Meta) ([]dto.Get
 	return getDocuments, metaRes, nil
 }
 
-func (s *documentService) Delete(ctx *gin.Context, id string) error {
+func (s *documentService) Delete(ctx context.Context, id string) error {
 	document, err := s.documentRepository.GetByID(ctx, nil, id)
 	if err != nil {
 		return err

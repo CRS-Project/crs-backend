@@ -33,7 +33,7 @@ func (c *documentController) CreateDocument(ctx *gin.Context) {
 		return
 	}
 
-	res, err := c.documentService.Create(ctx, req)
+	res, err := c.documentService.Create(ctx.Request.Context(), req)
 	if err != nil {
 		response.NewFailed("failed to create document", err).Send(ctx)
 		return
@@ -43,7 +43,7 @@ func (c *documentController) CreateDocument(ctx *gin.Context) {
 }
 
 func (c *documentController) GetAll(ctx *gin.Context) {
-	res, metaRes, err := c.documentService.GetAll(ctx, meta.New(ctx))
+	res, metaRes, err := c.documentService.GetAll(ctx.Request.Context(), meta.New(ctx))
 	if err != nil {
 		response.NewFailed("failed to get documents", err).Send(ctx)
 		return
@@ -55,7 +55,7 @@ func (c *documentController) GetAll(ctx *gin.Context) {
 func (c *documentController) DeleteDocument(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	err := c.documentService.Delete(ctx, id)
+	err := c.documentService.Delete(ctx.Request.Context(), id)
 	if err != nil {
 		response.NewFailed("failed to delete document", err).Send(ctx)
 		return
