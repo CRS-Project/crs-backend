@@ -63,6 +63,15 @@ rebuild-dev:
 	docker-compose -f docker-compose.dev.yml down
 	docker-compose -f docker-compose.dev.yml up -d
 
+migrate-docker:
+	docker exec -it crs-backend-app-dev go run main.go --migrate
+
+seeder-docker:
+	docker exec -it crs-backend-app-dev go run main.go --seeder
+
+both-docker:
+	docker exec -it crs-backend-app-dev go run main.go --migrate --seeder
+
 help:
 	@echo "Usage: make [target]"
 	@echo "Targets:"
