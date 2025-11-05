@@ -49,49 +49,52 @@ func (s *documentService) Create(ctx *gin.Context, req dto.CreateDocumentRequest
 	}
 
 	documentCreation := entity.Document{
-		ContractorID:          contractorUUID,
-		PackageID:             packageUUID,
-		DocumentSerialNumber:  req.DocumentSerialNumber,
-		CTRNumber:             req.CTRNumber,
-		WBS:                   req.WBS,
-		CompanyDocumentNumber: req.CompanyDocumentNumber,
-		DocumentTitle:         req.DocumentTitle,
-		Discipline:            req.Discipline,
-		SubDiscipline:         req.SubDiscipline,
-		DocumentType:          req.DocumentType,
-		DocumentCategory:      req.DocumentCategory,
-		Deadline:              deadlineDate,
+		ContractorID:                    contractorUUID,
+		PackageID:                       packageUUID,
+		DocumentSerialDisciplineNumber:  req.DocumentSerialDisciplineNumber,
+		CTRDisciplineNumber:             req.CTRDisciplineNumber,
+		WBS:                             req.WBS,
+		CompanyDocumentDisciplineNumber: req.CompanyDocumentDisciplineNumber,
+		ContractorDocumentNumber:        req.ContractorDocumentNumber,
+		DocumentTitle:                   req.DocumentTitle,
+		Discipline:                      req.Discipline,
+		SubDiscipline:                   req.SubDiscipline,
+		DocumentType:                    req.DocumentType,
+		DocumentCategory:                req.DocumentCategory,
+		Deadline:                        deadlineDate,
 	}
 
-	documentRes, err := s.documentRepository.Create(ctx, nil, documentCreation, "Contractor.User", "Package.Package")
+	documentRes, err := s.documentRepository.Create(ctx, nil, documentCreation, "Contractor", "Package")
 	if err != nil {
 		return dto.GetDocument{}, err
 	}
 
 	return dto.GetDocument{
 		DocumentInfo: dto.DocumentInfo{
-			DocumentSerialNumber:  documentRes.DocumentSerialNumber,
-			CTRNumber:             documentRes.CTRNumber,
-			WBS:                   documentRes.WBS,
-			CompanyDocumentNumber: documentRes.CompanyDocumentNumber,
-			DocumentTitle:         documentRes.DocumentTitle,
-			Discipline:            documentRes.Discipline,
-			SubDiscipline:         documentRes.SubDiscipline,
-			DocumentType:          documentRes.DocumentType,
-			DocumentCategory:      documentRes.DocumentCategory,
-			Deadline:              documentRes.Deadline.Format(time.RFC822),
+			DocumentSerialDisciplineNumber:  documentRes.DocumentSerialDisciplineNumber,
+			CTRDisciplineNumber:             documentRes.CTRDisciplineNumber,
+			WBS:                             documentRes.WBS,
+			CompanyDocumentDisciplineNumber: documentRes.CompanyDocumentDisciplineNumber,
+			ContractorDocumentNumber:        documentRes.ContractorDocumentNumber,
+			DocumentTitle:                   documentRes.DocumentTitle,
+			Discipline:                      documentRes.Discipline,
+			SubDiscipline:                   documentRes.SubDiscipline,
+			DocumentType:                    documentRes.DocumentType,
+			DocumentCategory:                documentRes.DocumentCategory,
+			Deadline:                        documentRes.Deadline.Format(time.RFC822),
 		},
 		PackageInfo: dto.PackageInfo{
 			ID:   documentRes.Package.ID.String(),
 			Name: documentRes.Package.Name,
 		},
 		ContractorInfo: dto.PersonalInfo{
-			ID:          documentRes.Contractor.ID.String(),
-			Name:        documentRes.Contractor.Name,
-			Email:       documentRes.Contractor.Email,
-			Initial:     documentRes.Contractor.Initial,
-			Institution: *documentRes.Contractor.PhotoProfile,
-			Role:        string(documentRes.Contractor.Role),
+			ID:           documentRes.Contractor.ID.String(),
+			Name:         documentRes.Contractor.Name,
+			Email:        documentRes.Contractor.Email,
+			Initial:      documentRes.Contractor.Initial,
+			Institution:  documentRes.Contractor.Institution,
+			PhotoProfile: documentRes.Contractor.PhotoProfile,
+			Role:         string(documentRes.Contractor.Role),
 		},
 	}, nil
 }
@@ -106,16 +109,17 @@ func (s *documentService) GetAll(ctx *gin.Context, metaReq meta.Meta) ([]dto.Get
 	for _, document := range documents {
 		getDocuments = append(getDocuments, dto.GetDocument{
 			DocumentInfo: dto.DocumentInfo{
-				DocumentSerialNumber:  document.DocumentSerialNumber,
-				CTRNumber:             document.CTRNumber,
-				WBS:                   document.WBS,
-				CompanyDocumentNumber: document.CompanyDocumentNumber,
-				DocumentTitle:         document.DocumentTitle,
-				Discipline:            document.Discipline,
-				SubDiscipline:         document.SubDiscipline,
-				DocumentType:          document.DocumentType,
-				DocumentCategory:      document.DocumentCategory,
-				Deadline:              document.Deadline.Format(time.RFC822),
+				DocumentUrl:                     document.DocumentUrl,
+				DocumentSerialDisciplineNumber:  document.DocumentSerialDisciplineNumber,
+				CTRDisciplineNumber:             document.CTRDisciplineNumber,
+				WBS:                             document.WBS,
+				CompanyDocumentDisciplineNumber: document.CompanyDocumentDisciplineNumber,
+				DocumentTitle:                   document.DocumentTitle,
+				Discipline:                      document.Discipline,
+				SubDiscipline:                   document.SubDiscipline,
+				DocumentType:                    document.DocumentType,
+				DocumentCategory:                document.DocumentCategory,
+				Deadline:                        document.Deadline.Format(time.RFC822),
 			},
 		})
 	}

@@ -57,6 +57,12 @@ func (r *documentRepository) Create(ctx context.Context, tx *gorm.DB, document e
 		return entity.Document{}, err
 	}
 
+	if len(preloads) > 0 {
+		if err := tx.First(&document, "id = ?", document.ID).Error; err != nil {
+			return entity.Document{}, err
+		}
+	}
+
 	return document, nil
 }
 
