@@ -22,16 +22,16 @@ prod
 go run main.go
 ```
 
-### Run seeder
-
-```bash
-go run main.go --seeder
-```
-
 ### Run migrate
 
 ```bash
 go run main.go --migrate
+```
+
+### Run seeder
+
+```bash
+go run main.go --seeder
 ```
 
 ### Run Air (auto loading for development)

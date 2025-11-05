@@ -9,7 +9,7 @@ services:
     volumes:
       - .:/app
     ports:
-      - "8888:8887"
+      - "8811:8811"
     env_file:
       - .env
     depends_on:
