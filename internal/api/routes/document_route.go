@@ -10,6 +10,7 @@ func Document(app *gin.Engine, documentcontroller controller.DocumentController,
 	routes := app.Group("/api/v1/document")
 	{
 		routes.GET("", middleware.Authenticate(), documentcontroller.GetAll)
+		routes.GET("/:id", middleware.Authenticate(), documentcontroller.GetByID)
 		routes.POST("", middleware.Authenticate(), documentcontroller.CreateDocument)
 		routes.DELETE("/:id", middleware.Authenticate(), documentcontroller.DeleteDocument)
 	}

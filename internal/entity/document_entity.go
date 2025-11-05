@@ -3,6 +3,7 @@ package entity
 import (
 	"time"
 
+	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/google/uuid"
 )
 
@@ -29,4 +30,29 @@ type Document struct {
 
 	Contractor *User    `json:"contractor,omitempty" gorm:"foreignKey:ContractorID"`
 	Package    *Package `json:"package,omitempty" gorm:"foreignKey:PackageID"`
+}
+
+func (d *Document) ToInfo() dto.DocumentInfo {
+	return dto.DocumentInfo{
+		ID:                              d.ID.String(),
+		DocumentUrl:                     d.DocumentUrl,
+		DocumentSerialDisciplineNumber:  d.DocumentSerialDisciplineNumber,
+		CTRDisciplineNumber:             d.CTRDisciplineNumber,
+		WBS:                             d.WBS,
+		CompanyDocumentDisciplineNumber: d.CompanyDocumentDisciplineNumber,
+		DocumentTitle:                   d.DocumentTitle,
+		Discipline:                      d.Discipline,
+		SubDiscipline:                   d.SubDiscipline,
+		DocumentType:                    d.DocumentType,
+		DocumentCategory:                d.DocumentCategory,
+		Deadline:                        d.Deadline.Format(time.RFC822),
+	}
+}
+
+func (d *Document) GetDetail() dto.GetDocument {
+	return dto.GetDocument{
+		DocumentInfo:   d.ToInfo(),
+		PackageInfo:    d.Package.ToInfo(),
+		ContractorInfo: d.Contractor.ToInfo(),
+	}
 }

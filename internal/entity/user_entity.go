@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/google/uuid"
 )
 
@@ -34,4 +35,16 @@ type User struct {
 
 func (u *User) TableName() string {
 	return "users"
+}
+
+func (u *User) ToInfo() dto.PersonalInfo {
+	return dto.PersonalInfo{
+		ID:           u.ID.String(),
+		Name:         u.Name,
+		Email:        u.Email,
+		Initial:      u.Initial,
+		Institution:  u.Institution,
+		PhotoProfile: u.PhotoProfile,
+		Role:         string(u.Role),
+	}
 }

@@ -13,6 +13,7 @@ type (
 		CreateDocument(ctx *gin.Context)
 		GetAll(ctx *gin.Context)
 		DeleteDocument(ctx *gin.Context)
+		GetByID(ctx *gin.Context)
 	}
 
 	documentController struct {
@@ -62,4 +63,16 @@ func (c *documentController) DeleteDocument(ctx *gin.Context) {
 	}
 
 	response.NewSuccess("success delete document", nil).Send(ctx)
+}
+
+func (c *documentController) GetByID(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	res, err := c.documentService.GetByID(ctx.Request.Context(), id)
+	if err != nil {
+		response.NewFailed("failed to get document", err).Send(ctx)
+		return
+	}
+
+	response.NewSuccess("success get document", res).Send(ctx)
 }
