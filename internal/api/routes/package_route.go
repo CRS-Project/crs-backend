@@ -13,6 +13,6 @@ func Package(app *gin.Engine, packagecontroller controller.PackageController, mi
 		routes.GET("", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), packagecontroller.GetAll)
 		routes.POST("", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), packagecontroller.CreatePackage)
 		routes.PUT("", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), packagecontroller.UpdatePackage)
-		routes.DELETE("", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), packagecontroller.DeletePackage)
+		routes.DELETE("/:id", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), packagecontroller.DeletePackage)
 	}
 }

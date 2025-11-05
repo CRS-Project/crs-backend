@@ -71,6 +71,7 @@ func (s *documentService) Create(ctx *gin.Context, req dto.CreateDocumentRequest
 
 	return dto.GetDocument{
 		DocumentInfo: dto.DocumentInfo{
+			ID:                              documentRes.ID.String(),
 			DocumentSerialDisciplineNumber:  documentRes.DocumentSerialDisciplineNumber,
 			CTRDisciplineNumber:             documentRes.CTRDisciplineNumber,
 			WBS:                             documentRes.WBS,
@@ -100,7 +101,7 @@ func (s *documentService) Create(ctx *gin.Context, req dto.CreateDocumentRequest
 }
 
 func (s *documentService) GetAll(ctx *gin.Context, metaReq meta.Meta) ([]dto.GetDocument, meta.Meta, error) {
-	documents, metaRes, err := s.documentRepository.GetAll(ctx, nil, metaReq)
+	documents, metaRes, err := s.documentRepository.GetAll(ctx, nil, metaReq, "Contractor", "Package")
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
@@ -109,6 +110,7 @@ func (s *documentService) GetAll(ctx *gin.Context, metaReq meta.Meta) ([]dto.Get
 	for _, document := range documents {
 		getDocuments = append(getDocuments, dto.GetDocument{
 			DocumentInfo: dto.DocumentInfo{
+				ID:                              document.ID.String(),
 				DocumentUrl:                     document.DocumentUrl,
 				DocumentSerialDisciplineNumber:  document.DocumentSerialDisciplineNumber,
 				CTRDisciplineNumber:             document.CTRDisciplineNumber,
@@ -120,6 +122,19 @@ func (s *documentService) GetAll(ctx *gin.Context, metaReq meta.Meta) ([]dto.Get
 				DocumentType:                    document.DocumentType,
 				DocumentCategory:                document.DocumentCategory,
 				Deadline:                        document.Deadline.Format(time.RFC822),
+			},
+			PackageInfo: dto.PackageInfo{
+				ID:   document.Package.ID.String(),
+				Name: document.Package.Name,
+			},
+			ContractorInfo: dto.PersonalInfo{
+				ID:           document.Contractor.ID.String(),
+				Name:         document.Contractor.Name,
+				Email:        document.Contractor.Email,
+				Initial:      document.Contractor.Initial,
+				Institution:  document.Contractor.Institution,
+				PhotoProfile: document.Contractor.PhotoProfile,
+				Role:         string(document.Contractor.Role),
 			},
 		})
 	}

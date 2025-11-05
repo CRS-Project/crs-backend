@@ -24,6 +24,7 @@ type (
 	}
 
 	DocumentInfo struct {
+		ID                              string  `json:"id"`
 		DocumentUrl                     *string `json:"document_url"`
 		DocumentSerialDisciplineNumber  string  `json:"document_serial_number"`
 		CTRDisciplineNumber             string  `json:"ctr_number"`
