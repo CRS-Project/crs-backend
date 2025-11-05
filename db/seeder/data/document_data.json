@@ -14,7 +14,6 @@
     "document_category": "Design Document",
     "deadline": "2024-12-31T23:59:59Z",
     "contractor_id": "0d78ddf1-2cfa-436c-ad87-88360def402f",
-    "user_id": "0d78ddf1-2cfa-436c-ad87-88360def402f",
     "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
   },
   {
@@ -32,7 +31,6 @@
     "document_category": "Engineering Document",
     "deadline": "2024-11-30T17:00:00Z",
     "contractor_id": "0d78ddf1-2cfa-436c-ad87-88360def402f",
-    "user_id": "a1a2b473-f398-4489-b7ef-6984b60e4f10",
     "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
   },
   {
@@ -50,7 +48,6 @@
     "document_category": "Procedure Document",
     "deadline": "2024-10-15T12:00:00Z",
     "contractor_id": "0d78ddf1-2cfa-436c-ad87-88360def402f",
-    "user_id": "0d78ddf1-2cfa-436c-ad87-88360def402f",
     "package_id": "4661a21a-c28a-4560-aed3-c3f553288d99"
   }
 ]

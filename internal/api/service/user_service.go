@@ -10,7 +10,6 @@ import (
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/CRS-Project/crs-backend/internal/utils"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -24,28 +23,22 @@ type (
 	}
 
 	userService struct {
-		userRepository                 repository.UserRepository
-		userDisciplineRepository       repository.UserDisciplineRepository
-		userDisciplineNumberRepository repository.UserDisciplineNumberRepository
-		userPackageRepository          repository.UserPackageRepository
-		packageRepository              repository.PackageRepository
-		db                             *gorm.DB
+		userRepository           repository.UserRepository
+		userDisciplineRepository repository.UserDisciplineRepository
+		packageRepository        repository.PackageRepository
+		db                       *gorm.DB
 	}
 )
 
 func NewUser(userRepository repository.UserRepository,
 	userDisciplineRepository repository.UserDisciplineRepository,
-	userDisciplineNumberRepository repository.UserDisciplineNumberRepository,
-	userPackageRepository repository.UserPackageRepository,
 	packageRepository repository.PackageRepository,
 	db *gorm.DB) UserService {
 	return &userService{
-		userRepository:                 userRepository,
-		userDisciplineRepository:       userDisciplineRepository,
-		userDisciplineNumberRepository: userDisciplineNumberRepository,
-		userPackageRepository:          userPackageRepository,
-		packageRepository:              packageRepository,
-		db:                             db,
+		userRepository:           userRepository,
+		userDisciplineRepository: userDisciplineRepository,
+		packageRepository:        packageRepository,
+		db:                       db,
 	}
 }
 
@@ -58,18 +51,20 @@ func (s *userService) Create(ctx context.Context, req dto.CreateUserRequest) (dt
 			return dto.CreateUserResponse{}, err
 		}
 
+		userDiscipline, err := s.userDisciplineRepository.GetByID(ctx, nil, disciplineId, "Users")
+		if err != nil {
+			return dto.CreateUserResponse{}, err
+		}
+
+		for _, u := range userDiscipline.Users {
+			if u.PackageID.String() == req.PackageID {
+				return dto.CreateUserResponse{}, myerror.New("this package has already contractor", http.StatusBadRequest)
+			}
+		}
+
 		disciplineId = contractorDisc.ID.String()
 	} else {
 		disciplineId = *req.DisciplineID
-	}
-
-	countUserDiscipline, err := s.userDisciplineNumberRepository.CountByUserDisciplineID(ctx, nil, disciplineId)
-	if err != nil {
-		return dto.CreateUserResponse{}, err
-	}
-
-	if req.Role == "CONTRACTOR" && countUserDiscipline > 0 {
-		return dto.CreateUserResponse{}, myerror.New("this package already has contractor", http.StatusBadRequest)
 	}
 
 	discipline, err := s.userDisciplineRepository.GetByID(ctx, nil, disciplineId)
@@ -88,43 +83,39 @@ func (s *userService) Create(ctx context.Context, req dto.CreateUserRequest) (dt
 	}
 
 	userCreated, err := s.userRepository.Create(ctx, nil, entity.User{
-		Name:        req.Name,
-		Email:       req.Email,
-		Password:    hashPassword,
-		IsVerified:  true,
-		Role:        entity.Role(req.Role),
-		Initial:     req.Initial,
-		Institution: req.Institution,
-		UserDisciplineNumber: &entity.UserDisciplineNumber{
-			Number:           countUserDiscipline + 1,
-			UserDisciplineID: uuid.MustParse(disciplineId),
-			PackageID:        &pkg.ID,
-		},
-		UserPackage: []entity.UserPackage{
-			{
-				PackageID: pkg.ID,
-			},
-		},
+		Name:             req.Name,
+		Email:            req.Email,
+		Password:         hashPassword,
+		IsVerified:       true,
+		Role:             entity.Role(req.Role),
+		Initial:          req.Initial,
+		Institution:      req.Institution,
+		PhotoProfile:     req.PhotoProfile,
+		DisciplineNumber: req.DisciplineNumber,
+		UserDisciplineID: discipline.ID,
+		PackageID:        &pkg.ID,
 	})
 	if err != nil {
 		return dto.CreateUserResponse{}, err
 	}
 
 	return dto.CreateUserResponse{
-		ID:          userCreated.ID.String(),
-		Name:        userCreated.Name,
-		Email:       userCreated.Email,
-		Initial:     userCreated.Initial,
-		Institution: userCreated.Institution,
-		IsVerified:  true,
-		Role:        string(userCreated.Role),
-		Package:     pkg.Name,
-		Discipline:  discipline.Name,
+		ID:               userCreated.ID.String(),
+		Name:             userCreated.Name,
+		Email:            userCreated.Email,
+		Initial:          userCreated.Initial,
+		Institution:      userCreated.Institution,
+		DisciplineNumber: userCreated.DisciplineNumber,
+		PhotoProfile:     userCreated.PhotoProfile,
+		IsVerified:       true,
+		Role:             string(userCreated.Role),
+		Package:          pkg.Name,
+		Discipline:       discipline.Name,
 	}, nil
 }
 
 func (s *userService) GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.UserNonAdminDetailResponse, meta.Meta, error) {
-	users, metaRes, err := s.userRepository.GetAll(ctx, nil, metaReq, "UserDisciplineNumber.UserDiscipline", "UserPackage.Package")
+	users, metaRes, err := s.userRepository.GetAll(ctx, nil, metaReq, "UserDiscipline", "Package")
 	if err != nil {
 		return nil, metaReq, err
 	}
@@ -132,29 +123,21 @@ func (s *userService) GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.User
 	var res []dto.UserNonAdminDetailResponse
 
 	for _, user := range users {
-		var pkgAccess []*dto.PackageInfo
-		for _, pkg := range user.UserPackage {
-			pkgAccess = append(pkgAccess, &dto.PackageInfo{
-				ID:   pkg.ID.String(),
-				Name: pkg.Package.Name,
-			})
+		pkg := "all"
+		if user.Package != nil {
+			pkg = user.Package.Name
 		}
-
-		pkg := "no package"
-		if len(pkgAccess) > 0 && pkgAccess[0] != nil {
-			pkg = pkgAccess[0].Name
-		}
-
 		res = append(res, dto.UserNonAdminDetailResponse{
-			ID:           user.ID.String(),
-			Name:         user.Name,
-			Email:        user.Email,
-			Initial:      user.Initial,
-			Institution:  user.Institution,
-			PhotoProfile: user.PhotoProfile,
-			Role:         string(user.Role),
-			Discipline:   user.UserDisciplineNumber.UserDiscipline.Name,
-			Package:      pkg,
+			ID:               user.ID.String(),
+			Name:             user.Name,
+			Email:            user.Email,
+			Initial:          user.Initial,
+			Institution:      user.Institution,
+			PhotoProfile:     user.PhotoProfile,
+			Role:             string(user.Role),
+			DisciplineNumber: user.DisciplineNumber,
+			Discipline:       user.UserDiscipline.Name,
+			Package:          pkg,
 		})
 	}
 
@@ -162,73 +145,53 @@ func (s *userService) GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.User
 }
 
 func (s *userService) GetById(ctx context.Context, userId string) (dto.UserNonAdminDetailResponse, error) {
-	user, err := s.userRepository.GetById(ctx, nil, userId, "UserDisciplineNumber.UserDiscipline", "UserPackage.Package")
+	user, err := s.userRepository.GetById(ctx, nil, userId, "UserDiscipline", "Package")
 	if err != nil {
 		return dto.UserNonAdminDetailResponse{}, err
 	}
-
-	var pkgAccess []*dto.PackageInfo
-	for _, pkg := range user.UserPackage {
-		pkgAccess = append(pkgAccess, &dto.PackageInfo{
-			ID:   pkg.ID.String(),
-			Name: pkg.Package.Name,
-		})
+	pkg := "all"
+	if user.Package != nil {
+		pkg = user.Package.Name
 	}
-
-	pkg := "no package"
-	if pkgAccess[0] != nil {
-		pkg = pkgAccess[0].Name
-	}
-
 	return dto.UserNonAdminDetailResponse{
-		ID:           userId,
-		Name:         user.Name,
-		Email:        user.Email,
-		Initial:      user.Initial,
-		Institution:  user.Institution,
-		PhotoProfile: user.PhotoProfile,
-		Role:         string(user.Role),
-		Discipline:   user.UserDisciplineNumber.UserDiscipline.Name,
-		Package:      pkg,
+		ID:               userId,
+		Name:             user.Name,
+		Email:            user.Email,
+		Initial:          user.Initial,
+		Institution:      user.Institution,
+		PhotoProfile:     user.PhotoProfile,
+		Role:             string(user.Role),
+		DisciplineNumber: user.DisciplineNumber,
+		Discipline:       user.UserDiscipline.Name,
+		Package:          pkg,
 	}, nil
 }
 
 func (s *userService) Update(ctx context.Context, userId string, req dto.UpdateUserRequest) (dto.UserNonAdminDetailResponse, error) {
-	tx := s.db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	user, err := s.userRepository.GetById(ctx, tx, userId, "UserDisciplineNumber", "UserPackage")
+	user, err := s.userRepository.GetById(ctx, nil, userId, "UserDiscipline")
 	if err != nil {
-		tx.Rollback()
 		return dto.UserNonAdminDetailResponse{}, err
 	}
 
 	hashPassword, err := utils.HashPassword(req.Password)
 	if err != nil {
-		tx.Rollback()
 		return dto.UserNonAdminDetailResponse{}, err
 	}
 
-	pkg, err := s.packageRepository.GetByID(ctx, tx, req.PackageID)
+	pkg, err := s.packageRepository.GetByID(ctx, nil, req.PackageID)
 	if err != nil {
-		tx.Rollback()
 		return dto.UserNonAdminDetailResponse{}, err
 	}
 
 	var disciplineID string
 	if req.DisciplineID == nil {
-		disciplineID = user.UserDisciplineNumber.UserDisciplineID.String()
+		disciplineID = user.UserDisciplineID.String()
 	} else {
 		disciplineID = *req.DisciplineID
 	}
 
-	discipline, err := s.userDisciplineRepository.GetByID(ctx, tx, disciplineID)
+	discipline, err := s.userDisciplineRepository.GetByID(ctx, nil, disciplineID)
 	if err != nil {
-		tx.Rollback()
 		return dto.UserNonAdminDetailResponse{}, err
 	}
 
@@ -237,54 +200,28 @@ func (s *userService) Update(ctx context.Context, userId string, req dto.UpdateU
 	user.Password = hashPassword
 	user.Initial = req.Initial
 	user.Institution = req.Institution
+	user.PackageID = &pkg.ID
+	user.DisciplineNumber = req.DisciplineNumber
+	if req.DisciplineID != nil {
+		user.UserDisciplineID = discipline.ID
+	}
 
-	_, err = s.userRepository.Update(ctx, tx, user)
+	_, err = s.userRepository.Update(ctx, nil, user)
 	if err != nil {
-		tx.Rollback()
-		return dto.UserNonAdminDetailResponse{}, err
-	}
-
-	if user.UserDisciplineNumber != nil {
-		user.UserDisciplineNumber.UserDisciplineID = uuid.MustParse(disciplineID)
-		_, err := s.userDisciplineNumberRepository.Update(ctx, tx, *user.UserDisciplineNumber)
-		if err != nil {
-			tx.Rollback()
-			return dto.UserNonAdminDetailResponse{}, err
-		}
-	}
-
-	if len(user.UserPackage) > 0 {
-		user.UserPackage[0].PackageID = pkg.ID
-		_, err := s.userPackageRepository.Save(ctx, tx, user.UserPackage[0])
-		if err != nil {
-			tx.Rollback()
-			return dto.UserNonAdminDetailResponse{}, err
-		}
-	} else {
-		_, err := s.userPackageRepository.Create(ctx, tx, entity.UserPackage{
-			UserID:    user.ID,
-			PackageID: pkg.ID,
-		})
-		if err != nil {
-			tx.Rollback()
-			return dto.UserNonAdminDetailResponse{}, err
-		}
-	}
-
-	if err := tx.Commit().Error; err != nil {
 		return dto.UserNonAdminDetailResponse{}, err
 	}
 
 	return dto.UserNonAdminDetailResponse{
-		ID:           user.ID.String(),
-		Name:         user.Name,
-		Email:        user.Email,
-		Initial:      user.Initial,
-		Institution:  user.Institution,
-		PhotoProfile: user.PhotoProfile,
-		Role:         string(user.Role),
-		Discipline:   discipline.Name,
-		Package:      pkg.Name,
+		ID:               user.ID.String(),
+		Name:             user.Name,
+		Email:            user.Email,
+		Initial:          user.Initial,
+		Institution:      user.Institution,
+		PhotoProfile:     user.PhotoProfile,
+		Role:             string(user.Role),
+		DisciplineNumber: user.DisciplineNumber,
+		Package:          pkg.Name,
+		Discipline:       discipline.Name,
 	}, nil
 }
 

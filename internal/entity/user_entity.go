@@ -20,16 +20,18 @@ type User struct {
 	IsVerified bool      `json:"is_verified" gorm:"default:false;not null"`
 	Role       Role      `json:"role" gorm:"default:REVIEWER;not null"`
 
-	Initial      string  `json:"initial" gorm:"not null"`
-	Institution  string  `json:"institution" gorm:"not null"`
-	PhotoProfile *string `json:"photo_profile" gorm:""`
+	Initial          string  `json:"initial" gorm:"not null"`
+	Institution      string  `json:"institution" gorm:"not null"`
+	PhotoProfile     *string `json:"photo_profile" gorm:""`
+	DisciplineNumber int     `json:"discipline_number" gorm:"not null"`
 
-	UserDisciplineNumberID uuid.UUID `json:"user_discipline_number_id" gorm:"not null"`
+	UserDisciplineID uuid.UUID  `json:"user_discipline_id" gorm:"not null"`
+	PackageID        *uuid.UUID `json:"package_id" gorm:""` // super admin akan null (berarti punya semua akses)
 
 	Timestamp
 
-	UserDisciplineNumber *UserDisciplineNumber `json:"user_discipline_number" gorm:"foreignKey:UserDisciplineNumberID"`
-	UserPackage          []UserPackage         `json:"user_package" gorm:"foreignKey:UserID"`
+	UserDiscipline *UserDiscipline `json:"user_discipline,omitempty" gorm:"foreignKey:UserDisciplineID"`
+	Package        *Package        `json:"package,omitempty" gorm:"foreignKey:PackageID"`
 }
 
 func (u *User) TableName() string {

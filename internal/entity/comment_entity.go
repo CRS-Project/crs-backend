@@ -9,11 +9,12 @@ type Comment struct {
 	Comment  string `json:"comment" gorm:"not null"`
 	Baseline string `json:"baseline" gorm:"not null"`
 
-	DocumentID     uuid.UUID `json:"document_id" gorm:"not null"`
-	UserID         uuid.UUID `json:"user_id" gorm:"not null"`
-	CommentReplyID uuid.UUID `json:"comment_reply_id" gorm:"not null"`
+	DocumentID     uuid.UUID  `json:"document_id" gorm:"not null"`
+	UserID         uuid.UUID  `json:"user_id" gorm:"not null"`
+	CommentReplyID *uuid.UUID `json:"comment_reply_id" gorm:""`
 
 	Timestamp
 
-	Document *Document `json:"document,omitempty" gorm:"foreignKey:DocumentID"`
+	Document     *Document `json:"document,omitempty" gorm:"foreignKey:DocumentID"`
+	CommentReply *Comment  `json:"comment_reply,omitempty" gorm:"foreignKey:CommentReplyID"`
 }

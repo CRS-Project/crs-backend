@@ -133,17 +133,17 @@ func (s *authService) ChangePassword(ctx context.Context, req dto.ChangePassword
 }
 
 func (s *authService) GetMe(ctx context.Context, userId string) (dto.GetMe, error) {
-	user, err := s.userRepository.GetById(ctx, nil, userId, "UserDisciplineNumber.UserDiscipline", "UserPackage.Package")
+	user, err := s.userRepository.GetById(ctx, nil, userId, "UserDiscipline", "Package")
 	if err != nil {
 		return dto.GetMe{}, err
 	}
 
-	var pkgAccess []dto.PackageInfo
-	for _, pkg := range user.UserPackage {
-		pkgAccess = append(pkgAccess, dto.PackageInfo{
-			ID:   pkg.ID.String(),
-			Name: pkg.Package.Name,
-		})
+	var packageAccess *dto.PackageInfo
+	if user.PackageID != nil {
+		packageAccess = &dto.PackageInfo{
+			ID:   user.PackageID.String(),
+			Name: user.Package.Name,
+		}
 	}
 
 	return dto.GetMe{
@@ -157,10 +157,10 @@ func (s *authService) GetMe(ctx context.Context, userId string) (dto.GetMe, erro
 			Role:         string(user.Role),
 		},
 		UserDisciplineInfo: dto.UserDisciplineInfo{
-			Discipline: user.UserDisciplineNumber.UserDiscipline.Name,
-			Initial:    user.UserDisciplineNumber.UserDiscipline.Initial,
-			Number:     user.UserDisciplineNumber.Number,
+			Discipline:       user.UserDiscipline.Name,
+			Initial:          user.UserDiscipline.Initial,
+			DisciplineNumber: user.DisciplineNumber,
 		},
-		PackageAccess: pkgAccess,
+		PackageAccess: packageAccess,
 	}, nil
 }

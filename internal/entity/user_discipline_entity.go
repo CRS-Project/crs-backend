@@ -8,4 +8,6 @@ type UserDiscipline struct {
 	Initial string    `json:"initial" gorm:"not null"`
 
 	Timestamp
+
+	Users []User `json:"user,omitempty" gorm:"foreignKey:UserDisciplineID"`
 }

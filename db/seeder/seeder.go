@@ -12,10 +12,7 @@ func Seeding(db *gorm.DB) error {
 	seeders := []func(*gorm.DB) error{
 		seeds.SeederPackage,
 		seeds.SeederUserDiscipline,
-		seeds.SeederUserDisciplineNumber,
 		seeds.SeederUser,
-		seeds.SeederPackage,
-		seeds.SeederUserPackage,
 		seeds.SeederDocument,
 	}
 

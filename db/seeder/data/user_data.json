@@ -8,7 +8,9 @@
     "role": "SUPER ADMIN",
     "initial": "SADMIN",
     "institution": "ADMIN",
-    "user_discipline_number_id": "0b2560cc-d28c-4a87-abb9-d34f1b02caeb"
+    "discipline_number": 1,
+    "user_discipline_id": "bfef6872-e0f1-479a-a33b-2fed559b7980",
+    "package_id": null
   },
   {
     "id": "7373f727-1a73-48ea-9342-dd9a47fa4b26",
@@ -19,7 +21,9 @@
     "role": "CONTRACTOR",
     "initial": "CON A",
     "institution": "CONTRACTOR",
-    "user_discipline_number_id": "0b2560cc-d28c-4a87-abb9-d34f1b02caea"
+    "discipline_number": 1,
+    "user_discipline_id": "f952528e-5c14-4b77-a722-c8efa2736051",
+    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
   },
   {
     "id": "0d78ddf1-2cfa-436c-ad87-88360def402f",
@@ -29,7 +33,9 @@
     "is_verified": true,
     "role": "CONTRACTOR",
     "initial": "CON B",
+    "discipline_number": 1,
     "institution": "CONTRACTOR",
-    "user_discipline_number_id": "0b2560cc-d28c-4a87-abb9-d34f1b02caea"
+    "user_discipline_id": "f952528e-5c14-4b77-a722-c8efa2736051",
+    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
   }
 ]
