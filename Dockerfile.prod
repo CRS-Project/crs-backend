@@ -22,5 +22,9 @@ COPY --from=builder /app/main .
 
 COPY --from=builder /app/internal/pkg/email/template ./internal/pkg/email/template
 
+RUN mkdir -p /app/assets
+
+EXPOSE 8888
+
 # Jalankan binary
 CMD ["./main"]
