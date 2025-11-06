@@ -45,7 +45,7 @@ func (d *Document) ToInfo() dto.DocumentInfo {
 		SubDiscipline:                   d.SubDiscipline,
 		DocumentType:                    d.DocumentType,
 		DocumentCategory:                d.DocumentCategory,
-		Deadline:                        d.Deadline.Format(time.RFC822),
+		Deadline:                        d.Deadline.Format("15.04 • 02 Jan 2006"),
 	}
 }
 

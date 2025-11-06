@@ -34,7 +34,7 @@ func NewDocument(documentRepository repository.DocumentRepository, db *gorm.DB) 
 }
 
 func (s *documentService) Create(ctx context.Context, req dto.CreateDocumentRequest) (dto.GetDocument, error) {
-	deadlineDate, err := time.Parse(time.RFC822, req.Deadline)
+	deadlineDate, err := time.Parse("15.04 • 02 Jan 2006", req.Deadline)
 	if err != nil {
 		return dto.GetDocument{}, err
 	}
