@@ -52,4 +52,9 @@ type (
 		PackageID        string  `json:"package_id" binding:"required"`
 		DisciplineID     *string `json:"discipline_id" binding:""`
 	}
+
+	UserComment struct {
+		Name string `json:"name"`
+		Role string `json:"role"`
+	}
 )

@@ -37,18 +37,22 @@ func NewRest() RestConfig {
 		userRepository           repository.UserRepository           = repository.NewUser(db)
 		packageRepository        repository.PackageRepository        = repository.NewPackage(db)
 		userDisciplineRepository repository.UserDisciplineRepository = repository.NewUserDiscipline(db)
+		commentRepository        repository.CommentRepository        = repository.NewComment(db)
+		documentRepository       repository.DocumentRepository       = repository.NewDocument(db)
 
 		//=========== (SERVICE) ===========//
 		authService           service.AuthService           = service.NewAuth(userRepository, mailerService, oauthService, db)
 		userService           service.UserService           = service.NewUser(userRepository, userDisciplineRepository, packageRepository, db)
 		packageService        service.PackageService        = service.NewPackage(packageRepository, db)
 		userDisciplineService service.UserDisciplineService = service.NewUserDiscipline(userDisciplineRepository, db)
+		commentService        service.CommentService        = service.NewComment(commentRepository, documentRepository, userRepository, db)
 
 		//=========== (CONTROLLER) ===========//
 		authController           controller.AuthController           = controller.NewAuth(authService)
 		packageController        controller.PackageController        = controller.NewPackage(packageService)
 		userController           controller.UserController           = controller.NewUser(userService)
 		userDisciplineController controller.UserDisciplineController = controller.NewUserDiscipline(userDisciplineService)
+		commentController        controller.CommentController        = controller.NewComment(commentService)
 	)
 
 	// Register all routes
@@ -56,6 +60,7 @@ func NewRest() RestConfig {
 	routes.User(server, userController, middleware)
 	routes.Package(server, packageController, middleware)
 	routes.UserDiscipline(server, userDisciplineController, middleware)
+	routes.Comment(server, commentController, middleware)
 
 	return RestConfig{
 		server: server,
@@ -66,7 +71,7 @@ func (ap *RestConfig) Start() {
 	port := os.Getenv("APP_PORT")
 	host := os.Getenv("APP_HOST")
 	if port == "" {
-		port = "8998"
+		port = "8080"
 	}
 
 	serve := fmt.Sprintf("%s:%s", host, port)
