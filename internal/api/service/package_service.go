@@ -49,10 +49,7 @@ func (s *packageService) CreatePackage(ctx context.Context, req dto.CreatePackag
 		return dto.PackageInfo{}, err
 	}
 
-	return dto.PackageInfo{
-		ID:   pkgResult.ID.String(),
-		Name: pkgResult.Name,
-	}, nil
+	return pkgResult.ToInfo(), nil
 }
 
 func (s *packageService) GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.PackageInfo, meta.Meta, error) {
@@ -63,10 +60,7 @@ func (s *packageService) GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.P
 
 	var pkgInfos []dto.PackageInfo
 	for _, pkg := range pkgs {
-		pkgInfos = append(pkgInfos, dto.PackageInfo{
-			ID:   pkg.ID.String(),
-			Name: pkg.Name,
-		})
+		pkgInfos = append(pkgInfos, pkg.ToInfo())
 	}
 
 	return pkgInfos, metaRes, nil
@@ -105,8 +99,5 @@ func (s *packageService) GetByID(ctx context.Context, id string) (dto.PackageInf
 		return dto.PackageInfo{}, err
 	}
 
-	return dto.PackageInfo{
-		ID:   pkg.ID.String(),
-		Name: pkg.Name,
-	}, nil
+	return pkg.ToInfo(), nil
 }
