@@ -1,0 +1,34 @@
+meta {
+  name: Get By ID
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{host}}/api/v1/document/:document_id/comment/:comment_id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  document_id: 550e8400-e29b-41d4-a716-446655440001
+  comment_id: 915e5e25-9d18-4191-af3f-a6f76fb4abf1
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "section": "6",
+    "comment": "Ini aku coba update",
+    "baseline": "document abc halaman 112132",
+    "status": "OPEN"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -10,6 +10,7 @@ RUN go mod download
 # Copy seluruh source code
 COPY . .
 
+RUN mkdir -p /app/assets
 RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 
 # ========= Production =========
@@ -20,7 +21,11 @@ WORKDIR /app
 # Copy hasil build dari builder
 COPY --from=builder /app/main .
 
+COPY --from=builder /app/assets ./assets
+
 COPY --from=builder /app/internal/pkg/email/template ./internal/pkg/email/template
+
+EXPOSE 8888
 
 # Jalankan binary
 CMD ["./main"]

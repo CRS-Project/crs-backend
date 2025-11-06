@@ -32,7 +32,7 @@ func NewAuth(authService service.AuthService) AuthController {
 func (c *authController) Login(ctx *gin.Context) {
 	var req dto.LoginRequest
 	if err := ctx.ShouldBind(&req); err != nil {
-		response.NewFailed("failed get data from body", err).Send(ctx)
+		response.NewFailed("failed get data from body", myerror.ErrBodyRequest).Send(ctx)
 		return
 	}
 

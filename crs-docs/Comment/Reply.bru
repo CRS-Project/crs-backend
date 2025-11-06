@@ -1,0 +1,33 @@
+meta {
+  name: Reply
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/api/v1/document/:document_id/comment/:comment_id/reply
+  body: json
+  auth: bearer
+}
+
+params:path {
+  document_id: 550e8400-e29b-41d4-a716-446655440001
+  comment_id: 915e5e25-9d18-4191-af3f-a6f76fb4abf1
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "section": "1",
+    "comment": "udah benar bang coba cek lagi",
+    "baseline": "document abc halaman 2"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

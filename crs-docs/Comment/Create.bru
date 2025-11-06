@@ -1,0 +1,32 @@
+meta {
+  name: Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/api/v1/document/:document_id/comment
+  body: json
+  auth: bearer
+}
+
+params:path {
+  document_id: 550e8400-e29b-41d4-a716-446655440001
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "section": "1",
+    "comment": "kamu harus punya ini",
+    "baseline": "document abc halaman 2"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -34,19 +34,19 @@ func NewRest() RestConfig {
 		// awsS3Service  storage.AwsS3 = storage.NewAwsS3()
 
 		//=========== (REPOSITORY) ===========//
-		userRepository                 repository.UserRepository                 = repository.NewUser(db)
-		packageRepository              repository.PackageRepository              = repository.NewPackage(db)
-		userPackageRepository          repository.UserPackageRepository          = repository.NewUserPackage(db)
-		userDisciplineRepository       repository.UserDisciplineRepository       = repository.NewUserDiscipline(db)
-		userDisciplineNumberRepository repository.UserDisciplineNumberRepository = repository.NewUserDisciplineNumber(db)
-		documentRepository             repository.DocumentRepository             = repository.NewDocument(db)
+		userRepository           repository.UserRepository           = repository.NewUser(db)
+		packageRepository        repository.PackageRepository        = repository.NewPackage(db)
+		userDisciplineRepository repository.UserDisciplineRepository = repository.NewUserDiscipline(db)
+		commentRepository        repository.CommentRepository        = repository.NewComment(db)
+		documentRepository       repository.DocumentRepository       = repository.NewDocument(db)
 
 		//=========== (SERVICE) ===========//
 		authService           service.AuthService           = service.NewAuth(userRepository, mailerService, oauthService, db)
-		userService           service.UserService           = service.NewUser(userRepository, userDisciplineRepository, userDisciplineNumberRepository, userPackageRepository, packageRepository, db)
+		userService           service.UserService           = service.NewUser(userRepository, userDisciplineRepository, packageRepository, db)
 		packageService        service.PackageService        = service.NewPackage(packageRepository, db)
 		userDisciplineService service.UserDisciplineService = service.NewUserDiscipline(userDisciplineRepository, db)
 		documentService       service.DocumentService       = service.NewDocument(documentRepository, db)
+		commentService        service.CommentService        = service.NewComment(commentRepository, documentRepository, userRepository, db)
 
 		//=========== (CONTROLLER) ===========//
 		authController           controller.AuthController           = controller.NewAuth(authService)
@@ -54,6 +54,7 @@ func NewRest() RestConfig {
 		userController           controller.UserController           = controller.NewUser(userService)
 		userDisciplineController controller.UserDisciplineController = controller.NewUserDiscipline(userDisciplineService)
 		documentController       controller.DocumentController       = controller.NewDocument(documentService)
+		commentController        controller.CommentController        = controller.NewComment(commentService)
 	)
 
 	// Register all routes
@@ -62,6 +63,7 @@ func NewRest() RestConfig {
 	routes.Package(server, packageController, middleware)
 	routes.UserDiscipline(server, userDisciplineController, middleware)
 	routes.Document(server, documentController, middleware)
+	routes.Comment(server, commentController, middleware)
 
 	return RestConfig{
 		server: server,
@@ -72,7 +74,7 @@ func (ap *RestConfig) Start() {
 	port := os.Getenv("APP_PORT")
 	host := os.Getenv("APP_HOST")
 	if port == "" {
-		port = "8998"
+		port = "8080"
 	}
 
 	serve := fmt.Sprintf("%s:%s", host, port)

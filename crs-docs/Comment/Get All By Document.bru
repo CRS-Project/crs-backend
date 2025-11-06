@@ -1,17 +1,17 @@
 meta {
-  name: Delete
+  name: Get All By Document
   type: http
-  seq: 4
+  seq: 3
 }
 
-delete {
-  url: {{host}}/api/v1/user/:id
+get {
+  url: {{host}}/api/v1/document/:document_id/comment
   body: none
   auth: bearer
 }
 
 params:path {
-  id: 7373f727-1a73-48ea-9342-dd9a47fa4b26
+  document_id: 550e8400-e29b-41d4-a716-446655440001
 }
 
 auth:bearer {
