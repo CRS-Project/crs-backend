@@ -16,7 +16,7 @@ type (
 	PackageService interface {
 		CreatePackage(ctx context.Context, req dto.CreatePackageRequest) (dto.PackageInfo, error)
 		GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.PackageInfo, meta.Meta, error)
-		UpdatePackage(ctx context.Context, req dto.UpdatePackageRequest) error
+		UpdatePackage(ctx context.Context, req dto.UpdatePackageRequest) (dto.PackageInfo, error)
 		DeletePackage(ctx context.Context, id string) error
 		GetByID(ctx context.Context, id string) (dto.PackageInfo, error)
 	}
@@ -66,18 +66,19 @@ func (s *packageService) GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.P
 	return pkgInfos, metaRes, nil
 }
 
-func (s *packageService) UpdatePackage(ctx context.Context, req dto.UpdatePackageRequest) error {
+func (s *packageService) UpdatePackage(ctx context.Context, req dto.UpdatePackageRequest) (dto.PackageInfo, error) {
 	pkg, err := s.packageRepository.GetByID(ctx, nil, req.ID)
 	if err != nil {
-		return err
+		return dto.PackageInfo{}, err
 	}
 	pkg.Name = req.Name
 
-	if err = s.packageRepository.Update(ctx, nil, pkg); err != nil {
-		return err
+	pkg, err = s.packageRepository.Update(ctx, nil, pkg)
+	if err != nil {
+		return dto.PackageInfo{}, err
 	}
 
-	return nil
+	return pkg.ToInfo(), nil
 }
 
 func (s *packageService) DeletePackage(ctx context.Context, id string) error {

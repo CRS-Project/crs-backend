@@ -14,6 +14,7 @@ type (
 		GetAll(ctx *gin.Context)
 		DeleteDocument(ctx *gin.Context)
 		GetByID(ctx *gin.Context)
+		Update (ctx *gin.Context)
 	}
 
 	documentController struct {
@@ -75,4 +76,20 @@ func (c *documentController) GetByID(ctx *gin.Context) {
 	}
 
 	response.NewSuccess("success get document", res).Send(ctx)
+}
+
+func (c *documentController) Update(ctx *gin.Context) {
+	var req dto.UpdateDocumentRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.NewFailed("failed get data from body", err).Send(ctx)
+		return
+	}
+
+	res, err := c.documentService.Update(ctx.Request.Context(), req)
+	if err != nil {
+		response.NewFailed("failed to update document", err).Send(ctx)
+		return
+	}
+
+	response.NewSuccess("success update document", res).Send(ctx)
 }

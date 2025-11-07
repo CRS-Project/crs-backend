@@ -12,6 +12,7 @@ func Document(app *gin.Engine, documentcontroller controller.DocumentController,
 		routes.GET("", middleware.Authenticate(), documentcontroller.GetAll)
 		routes.GET("/:id", middleware.Authenticate(), documentcontroller.GetByID)
 		routes.POST("", middleware.Authenticate(), documentcontroller.CreateDocument)
+		routes.PUT("", middleware.Authenticate(), documentcontroller.Update)
 		routes.DELETE("/:id", middleware.Authenticate(), documentcontroller.DeleteDocument)
 	}
 }

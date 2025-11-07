@@ -18,6 +18,7 @@ type (
 		GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.GetDocument, meta.Meta, error)
 		Delete(ctx context.Context, id string) error
 		GetByID(ctx context.Context, id string) (dto.GetDocument, error)
+		Update(ctx context.Context, req dto.UpdateDocumentRequest) (dto.GetDocument, error)
 	}
 
 	documentService struct {
@@ -102,6 +103,62 @@ func (s *documentService) Delete(ctx context.Context, id string) error {
 
 func (s *documentService) GetByID(ctx context.Context, id string) (dto.GetDocument, error) {
 	document, err := s.documentRepository.GetByID(ctx, nil, id, "Contractor", "Package")
+	if err != nil {
+		return dto.GetDocument{}, err
+	}
+
+	return document.GetDetail(), nil
+}
+
+func (s *documentService) Update(ctx context.Context, req dto.UpdateDocumentRequest) (dto.GetDocument, error) {
+	document, err := s.documentRepository.GetByID(ctx, nil, req.ID, "Contractor", "Package")
+	if err != nil {
+		return dto.GetDocument{}, err
+	}
+
+	if req.DocumentUrl != nil {
+		document.DocumentUrl = req.DocumentUrl
+	}
+	if req.DocumentSerialDisciplineNumber != nil {
+		document.DocumentSerialDisciplineNumber = *req.DocumentSerialDisciplineNumber
+	}
+	if req.CTRDisciplineNumber != nil {
+		document.CTRDisciplineNumber = *req.CTRDisciplineNumber
+	}
+	if req.WBS != nil {
+		document.WBS = *req.WBS
+	}
+	if req.CompanyDocumentDisciplineNumber != nil {
+		document.CompanyDocumentDisciplineNumber = *req.CompanyDocumentDisciplineNumber
+	}
+	if req.ContractorDocumentNumber != nil {
+		document.ContractorDocumentNumber = *req.ContractorDocumentNumber
+	}
+	if req.DocumentTitle != nil {
+		document.DocumentTitle = *req.DocumentTitle
+	}
+	if req.Discipline != nil {
+		document.Discipline = *req.Discipline
+	}
+	if req.SubDiscipline != nil {
+		document.SubDiscipline = req.SubDiscipline
+	}
+	if req.DocumentType != nil {
+		document.DocumentType = *req.DocumentType
+	}
+	if req.DocumentCategory != nil {
+		document.DocumentCategory = *req.DocumentCategory
+	}
+	if req.Deadline != nil {
+		deadline, err := time.Parse("15.04 • 02 Jan 2006", *req.Deadline)
+		if err != nil {
+			return dto.GetDocument{}, err
+		}
+
+		document.Deadline = deadline
+	}
+
+	document, err = s.documentRepository.Update(ctx, nil, document)
 	if err != nil {
 		return dto.GetDocument{}, err
 	}

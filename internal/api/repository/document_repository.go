@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
@@ -14,6 +16,7 @@ type (
 		Create(ctx context.Context, tx *gorm.DB, document entity.Document, preloads ...string) (entity.Document, error)
 		GetAll(ctx context.Context, tx *gorm.DB, metaReq meta.Meta, preloads ...string) ([]entity.Document, meta.Meta, error)
 		Delete(ctx context.Context, tx *gorm.DB, document entity.Document, preloads ...string) error
+		Update(ctx context.Context, tx *gorm.DB, document entity.Document, preloads ...string) (entity.Document, error)
 	}
 
 	documentRepository struct {
@@ -79,7 +82,10 @@ func (r *documentRepository) GetAll(ctx context.Context, tx *gorm.DB, metaReq me
 
 	tx = tx.WithContext(ctx).Model(&entity.Document{})
 
-	if err := WithFilters(tx, &metaReq, AddModels(entity.Document{})).Find(&documents).Error; err != nil {
+	fmt.Println(time.Now())
+	if err := WithFilters(tx, &metaReq, AddModels(entity.Document{})).
+		Where("deadline > ?", time.Now()).
+		Find(&documents).Error; err != nil {
 		return nil, meta.Meta{}, err
 	}
 
@@ -96,4 +102,20 @@ func (r *documentRepository) Delete(ctx context.Context, tx *gorm.DB, document e
 	}
 
 	return tx.WithContext(ctx).Delete(&document).Error
+}
+
+func (r *documentRepository) Update(ctx context.Context, tx *gorm.DB, document entity.Document, preloads ...string) (entity.Document, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
+	}
+
+	if err := tx.WithContext(ctx).Save(&document).Error; err != nil {
+		return entity.Document{}, err
+	}
+
+	return document, nil
 }

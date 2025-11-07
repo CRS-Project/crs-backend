@@ -1,0 +1,23 @@
+meta {
+  name: Update
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{host}}/api/v1/document
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "ID": "049595e8-b5f4-4078-9bef-166a3bf26aa5",
+    "document_serial_number": "2"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

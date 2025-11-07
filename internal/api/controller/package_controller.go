@@ -61,12 +61,13 @@ func (c *packageController) UpdatePackage(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.packageService.UpdatePackage(ctx.Request.Context(), req); err != nil {
+	res, err := c.packageService.UpdatePackage(ctx.Request.Context(), req)
+	if err != nil {
 		response.NewFailed("failed to update package", err).Send(ctx)
 		return
 	}
 
-	response.NewSuccess("success update package", nil).Send(ctx)
+	response.NewSuccess("success update package", res).Send(ctx)
 }
 
 func (c *packageController) DeletePackage(ctx *gin.Context) {
