@@ -14,7 +14,7 @@ type (
 		GetByName(ctx context.Context, tx *gorm.DB, pkgName string, preloads ...string) (entity.Package, error)
 		Create(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) (entity.Package, error)
 		GetAll(ctx context.Context, tx *gorm.DB, metaReq meta.Meta, preloads ...string) ([]entity.Package, meta.Meta, error)
-		Update(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) error
+		Update(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) (entity.Package, error)
 		Delete(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) error
 	}
 
@@ -99,7 +99,7 @@ func (r *packageRepository) GetAll(ctx context.Context, tx *gorm.DB, metaReq met
 	return pkgs, metaReq, nil
 }
 
-func (r *packageRepository) Update(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) error {
+func (r *packageRepository) Update(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) (entity.Package, error) {
 	if tx == nil {
 		tx = r.db
 	}
@@ -108,11 +108,11 @@ func (r *packageRepository) Update(ctx context.Context, tx *gorm.DB, pkg entity.
 		tx = tx.Preload(preload)
 	}
 
-	if err := tx.WithContext(ctx).Model(&pkg).Update("name", pkg.Name).Error; err != nil {
-		return err
+	if err := tx.WithContext(ctx).Save(&pkg).Error; err != nil {
+		return entity.Package{}, err
 	}
 
-	return nil
+	return pkg, nil
 }
 
 func (r *packageRepository) Delete(ctx context.Context, tx *gorm.DB, pkg entity.Package, preloads ...string) error {

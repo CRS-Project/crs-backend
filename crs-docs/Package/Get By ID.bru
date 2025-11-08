@@ -1,20 +1,19 @@
 meta {
-  name: Delete
+  name: Get By ID
   type: http
-  seq: 4
+  seq: 5
 }
 
-delete {
+get {
   url: {{host}}/api/v1/package/:id
-  body: json
+  body: none
   auth: inherit
 }
 
 params:path {
-  id: 4661a21a-c28a-4560-aed3-c3f553288d99
+  id: 
 }
 
 settings {
   encodeUrl: true
-  timeout: 0
 }

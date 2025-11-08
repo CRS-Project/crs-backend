@@ -45,6 +45,7 @@ func NewRest() RestConfig {
 		userService           service.UserService           = service.NewUser(userRepository, userDisciplineRepository, packageRepository, db)
 		packageService        service.PackageService        = service.NewPackage(packageRepository, db)
 		userDisciplineService service.UserDisciplineService = service.NewUserDiscipline(userDisciplineRepository, db)
+		documentService       service.DocumentService       = service.NewDocument(documentRepository, db)
 		commentService        service.CommentService        = service.NewComment(commentRepository, documentRepository, userRepository, db)
 
 		//=========== (CONTROLLER) ===========//
@@ -52,6 +53,7 @@ func NewRest() RestConfig {
 		packageController        controller.PackageController        = controller.NewPackage(packageService)
 		userController           controller.UserController           = controller.NewUser(userService)
 		userDisciplineController controller.UserDisciplineController = controller.NewUserDiscipline(userDisciplineService)
+		documentController       controller.DocumentController       = controller.NewDocument(documentService)
 		commentController        controller.CommentController        = controller.NewComment(commentService)
 	)
 
@@ -60,6 +62,7 @@ func NewRest() RestConfig {
 	routes.User(server, userController, middleware)
 	routes.Package(server, packageController, middleware)
 	routes.UserDiscipline(server, userDisciplineController, middleware)
+	routes.Document(server, documentController, middleware)
 	routes.Comment(server, commentController, middleware)
 
 	return RestConfig{

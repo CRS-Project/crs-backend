@@ -1,22 +1,20 @@
 meta {
   name: Get All
   type: http
-  seq: 2
+  seq: 6
 }
 
 get {
-  url: {{host}}/api/v1/package?page=1&take=3&sort=asc&sort_by=name
+  url: {{host}}/api/v1/document?take=3&page=1&sort=asc&sort_by=deadline
   body: none
   auth: inherit
 }
 
 params:query {
-  page: 1
   take: 3
+  page: 1
   sort: asc
-  sort_by: name
-  ~filter: Ba
-  ~filter_by: name
+  sort_by: deadline
 }
 
 settings {

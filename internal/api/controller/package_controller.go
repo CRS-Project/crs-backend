@@ -14,6 +14,7 @@ type (
 		GetAll(ctx *gin.Context)
 		UpdatePackage(ctx *gin.Context)
 		DeletePackage(ctx *gin.Context)
+		GetByID(ctx *gin.Context)
 	}
 
 	packageController struct {
@@ -34,7 +35,7 @@ func (c *packageController) CreatePackage(ctx *gin.Context) {
 		return
 	}
 
-	res, err := c.packageService.CreatePackage(ctx, req)
+	res, err := c.packageService.CreatePackage(ctx.Request.Context(), req)
 	if err != nil {
 		response.NewFailed("failed to create package", err).Send(ctx)
 		return
@@ -44,7 +45,7 @@ func (c *packageController) CreatePackage(ctx *gin.Context) {
 }
 
 func (c *packageController) GetAll(ctx *gin.Context) {
-	res, metaRes, err := c.packageService.GetAll(ctx, meta.New(ctx))
+	res, metaRes, err := c.packageService.GetAll(ctx.Request.Context(), meta.New(ctx))
 	if err != nil {
 		response.NewFailed("failed to get packages", err).Send(ctx)
 		return
@@ -60,25 +61,34 @@ func (c *packageController) UpdatePackage(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.packageService.UpdatePackage(ctx, req); err != nil {
+	res, err := c.packageService.UpdatePackage(ctx.Request.Context(), req)
+	if err != nil {
 		response.NewFailed("failed to update package", err).Send(ctx)
 		return
 	}
 
-	response.NewSuccess("success update package", nil).Send(ctx)
+	response.NewSuccess("success update package", res).Send(ctx)
 }
 
 func (c *packageController) DeletePackage(ctx *gin.Context) {
-	var req dto.DeletePackageRequest
-	if err := ctx.ShouldBind(&req); err != nil {
-		response.NewFailed("failed get data from body", err).Send(ctx)
-		return
-	}
+	id := ctx.Param("id")
 
-	if err := c.packageService.DeletePackage(ctx, req); err != nil {
+	if err := c.packageService.DeletePackage(ctx.Request.Context(), id); err != nil {
 		response.NewFailed("failed to delete package", err).Send(ctx)
 		return
 	}
 
 	response.NewSuccess("success delete package", nil).Send(ctx)
+}
+
+func (c *packageController) GetByID(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	res, err := c.packageService.GetByID(ctx.Request.Context(), id)
+	if err != nil {
+		response.NewFailed("failed to get package", err).Send(ctx)
+		return
+	}
+
+	response.NewSuccess("success get package", res).Send(ctx)
 }

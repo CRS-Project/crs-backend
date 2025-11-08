@@ -1,0 +1,20 @@
+meta {
+  name: Get By ID
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host}}/api/v1/document/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 049595e8-b5f4-4078-9bef-166a3bf26aa5
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
