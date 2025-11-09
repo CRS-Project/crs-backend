@@ -30,8 +30,8 @@ jobs:
           file: ./Dockerfile.prod
           push: true
           tags: |
-            ghcr.io/${{ secrets.GHCR_USERNAME }}/csr:latest
-            ghcr.io/${{ secrets.GHCR_USERNAME }}/csr:${{ github.sha }}
+            ghcr.io/${{ secrets.GHCR_USERNAME }}/crs-be:latest
+            ghcr.io/${{ secrets.GHCR_USERNAME }}/crs-be:${{ github.sha }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -46,7 +46,7 @@ jobs:
           script: |
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
             cd /home/deploy/be
-            docker pull ghcr.io/${{ secrets.GHCR_USERNAME }}/csr:latest
+            docker pull ghcr.io/${{ secrets.GHCR_USERNAME }}/crs-be:latest
             docker compose -f docker-compose.prod.yml down
             docker compose -f docker-compose.prod.yml up -d --remove-orphans
             docker image prune -f
