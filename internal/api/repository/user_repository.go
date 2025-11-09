@@ -123,7 +123,7 @@ func (r *userRepository) GetContractorByPackage(ctx context.Context, tx *gorm.DB
 	}
 
 	var contractor entity.User
-	if err := tx.WithContext(ctx).Take(&contractor, "package_id = ? AND role = 'CONTRACTOR'", contractor).Error; err != nil {
+	if err := tx.WithContext(ctx).Take(&contractor, "package_id = ? AND role = 'CONTRACTOR'", packageId).Error; err != nil {
 		return entity.User{}, err
 	}
 

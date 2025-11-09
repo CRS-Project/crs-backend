@@ -53,13 +53,18 @@ func (s *commentService) Create(ctx context.Context, req dto.CommentRequest) (dt
 		return dto.CommentResponse{}, err
 	}
 
+	if req.IsCloseOutComment {
+		return dto.CommentResponse{}, myerror.New("you can't set this comment as close out comment", http.StatusBadRequest)
+	}
+
 	commentResult, err := s.commentRepository.Create(ctx, nil, entity.Comment{
-		Section:         req.Section,
-		Comment:         req.Comment,
-		Baseline:        req.Baseline,
-		AreaOfConcernID: areaOfConcern.ID,
-		DocumentID:      uuid.MustParse(req.DocumentId),
-		UserID:          uuid.MustParse(req.UserId),
+		Section:           req.Section,
+		Comment:           req.Comment,
+		Baseline:          req.Baseline,
+		AreaOfConcernID:   areaOfConcern.ID,
+		IsCloseOutComment: req.IsCloseOutComment,
+		DocumentID:        uuid.MustParse(req.DocumentId),
+		UserID:            uuid.MustParse(req.UserId),
 	})
 	if err != nil {
 		return dto.CommentResponse{}, err
@@ -87,7 +92,15 @@ func (s *commentService) Reply(ctx context.Context, req dto.CommentRequest) (dto
 	}
 
 	if commentReplied.Status != nil {
-		return dto.CommentResponse{}, myerror.New("this comment has already has status", http.StatusUnauthorized)
+		return dto.CommentResponse{}, myerror.New("this comment already has a status", http.StatusUnauthorized)
+	}
+
+	if req.IsCloseOutComment {
+		cs := entity.CommentStatusReject
+		commentReplied.Status = &cs
+		if err = s.commentRepository.Update(ctx, nil, commentReplied); err != nil {
+			return dto.CommentResponse{}, err
+		}
 	}
 
 	if commentReplied.CommentReplyID != nil {
@@ -144,13 +157,31 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 		return nil, meta.Meta{}, err
 	}
 
-	comments, metaRes, err := s.commentRepository.GetAllByAreaOfConcernID(ctx, nil, areaOfConcernId, metaReq, "User")
+	comments, metaRes, err := s.commentRepository.GetAllByAreaOfConcernID(ctx, nil, areaOfConcernId, metaReq, "User", "CommentReplies.User")
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
 
 	var commentResponse []dto.CommentResponse
 	for _, comment := range comments {
+		var replies []dto.CommentResponse
+		if len(comment.CommentReplies) > 0 {
+			for _, reply := range comment.CommentReplies {
+				replies = append(replies, dto.CommentResponse{
+					ID:        reply.ID.String(),
+					Section:   reply.Section,
+					Comment:   reply.Comment,
+					Baseline:  reply.Baseline,
+					Status:    (*string)(reply.Status),
+					CommentAt: reply.CreatedAt.Format("15.04 • 02 Jan 2006"),
+					UserComment: &dto.UserComment{
+						Name: reply.User.Name,
+						Role: string(reply.User.Role),
+					},
+				})
+			}
+		}
+
 		commentResponse = append(commentResponse, dto.CommentResponse{
 			ID:        comment.ID.String(),
 			Section:   comment.Section,
@@ -162,6 +193,7 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 				Name: comment.User.Name,
 				Role: string(comment.User.Role),
 			},
+			CommentReplies: replies,
 		})
 	}
 
@@ -215,6 +247,10 @@ func (s *commentService) Update(ctx context.Context, req dto.UpdateCommentReques
 
 	if req.Status != nil && comment.CommentReplyID != nil {
 		return myerror.New("this is not parent comment", http.StatusUnauthorized)
+	}
+
+	if comment.Status != nil {
+		return myerror.New("this comment already has a status", http.StatusUnauthorized)
 	}
 
 	comment.Comment = req.Comment

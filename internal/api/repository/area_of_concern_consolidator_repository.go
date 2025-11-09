@@ -135,7 +135,9 @@ func (r *areaOfConcernConsolidatorRepository) DeleteBulk(ctx context.Context, tx
 		tx = r.db
 	}
 
-	if err := tx.WithContext(ctx).Delete(entity.AreaOfConcernConsolidator{}).Where("id IN (?)", areaOfConcernConcolidatorIDs).Error; err != nil {
+	if err := tx.WithContext(ctx).
+		Where("id IN ?", areaOfConcernConcolidatorIDs).
+		Delete(&entity.AreaOfConcernConsolidator{}).Error; err != nil {
 		return err
 	}
 

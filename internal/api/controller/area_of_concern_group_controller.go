@@ -110,7 +110,7 @@ func (c *areaOfConcernGroupController) Update(ctx *gin.Context) {
 }
 
 func (c *areaOfConcernGroupController) Delete(ctx *gin.Context) {
-	areaOfConcernGroupId := ctx.Param("area_of_concern_id")
+	areaOfConcernGroupId := ctx.Param("area_of_concern_group_id")
 	userId, err := utils.GetUserIdFromCtx(ctx)
 	if err != nil {
 		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)

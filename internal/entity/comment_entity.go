@@ -15,7 +15,7 @@ type Comment struct {
 	Section           string         `json:"section" gorm:"not null"`
 	Comment           string         `json:"comment" gorm:"not null"`
 	Baseline          string         `json:"baseline" gorm:"not null"`
-	IsCloseOutComment bool           `json:"is_close_out_comment" gorm:""`
+	IsCloseOutComment bool           `json:"is_close_out_comment" gorm:"default:false"`
 	Status            *CommentStatus `json:"comment_status" gorm:""`
 
 	AreaOfConcernID uuid.UUID  `json:"area_of_concern_id" gorm:"not null"`
@@ -25,8 +25,9 @@ type Comment struct {
 
 	Timestamp
 
-	AreaOfConcern *AreaOfConcern `json:"area_of_concern,omitempty" gorm:"foreignKey:AreaOfConcernID"`
-	User          *User          `json:"user" gorm:"foreignKey:UserID"`
-	Document      *Document      `json:"document,omitempty" gorm:"foreignKey:DocumentID"`
-	CommentReply  *Comment       `json:"comment_reply,omitempty" gorm:"foreignKey:CommentReplyID"`
+	AreaOfConcern  *AreaOfConcern `json:"area_of_concern,omitempty" gorm:"foreignKey:AreaOfConcernID"`
+	User           *User          `json:"user" gorm:"foreignKey:UserID"`
+	Document       *Document      `json:"document,omitempty" gorm:"foreignKey:DocumentID"`
+	CommentReply   *Comment       `json:"comment_reply,omitempty" gorm:"foreignKey:CommentReplyID"`
+	CommentReplies []Comment      `json:"comment_replies,omitempty" gorm:"foreignKey:CommentReplyID"`
 }

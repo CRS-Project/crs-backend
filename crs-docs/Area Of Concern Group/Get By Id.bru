@@ -1,17 +1,17 @@
 meta {
-  name: Get All By Document
+  name: Get By Id
   type: http
   seq: 3
 }
 
 get {
-  url: {{host}}/api/v1/document/:document_id/comment
+  url: {{host}}/api/v1/area-of-concern-group/:area_of_concern_group_id
   body: none
   auth: bearer
 }
 
 params:path {
-  document_id: 550e8400-e29b-41d4-a716-446655440001
+  area_of_concern_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
 }
 
 auth:bearer {

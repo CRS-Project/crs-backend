@@ -55,13 +55,22 @@ func (r *areaOfConcernGroupRepository) GetAll(ctx context.Context, tx *gorm.DB, 
 
 	var areaOfConcernGroups []entity.AreaOfConcernGroup
 
-	tx = tx.WithContext(ctx).Model(&entity.AreaOfConcernGroup{})
+	tx = tx.WithContext(ctx).Model(&entity.AreaOfConcernGroup{}).
+		Joins("LEFT JOIN user_disciplines ON user_disciplines.id = area_of_concern_groups.user_discipline_id")
 
 	if packageId != "" {
 		tx = tx.Where("package_id = ?", packageId)
 	}
 
-	if err := WithFilters(tx, &metaReq, AddModels(entity.AreaOfConcernGroup{})).Find(&areaOfConcernGroups).Error; err != nil {
+	filterMap := metaReq.SeparateFilter()
+	if find, ok := filterMap["search"]; ok {
+		tx = tx.Where("area_of_concern_groups.review_focus ILIKE ? OR user_disciplines.name ILIKE ?",
+			"%"+find+"%",
+			"%"+find+"%")
+	}
+
+	if err := WithFilters(tx, &metaReq, AddModels(entity.AreaOfConcernGroup{}),
+		AddCustomField("search", "")).Find(&areaOfConcernGroups).Error; err != nil {
 		return nil, meta.Meta{}, err
 	}
 

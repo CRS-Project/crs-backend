@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/user-discipline?take&page&sort=asc&sort_by=name
+  url: {{host}}/api/v1/user-discipline?take&page&sort=asc&sort_by=name&filter&filter_by=name
   body: none
   auth: inherit
 }
@@ -15,8 +15,8 @@ params:query {
   page: 
   sort: asc
   sort_by: name
-  ~filter: mec
-  ~filter_by: name
+  filter: 
+  filter_by: name
 }
 
 settings {

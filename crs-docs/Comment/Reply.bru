@@ -5,14 +5,15 @@ meta {
 }
 
 post {
-  url: {{host}}/api/v1/document/:document_id/comment/:comment_id/reply
+  url: {{host}}/api/v1/area-of-concern-group/:area_of_concern_group_id/area-of-concern/:area_of_concern_id/comment/:comment_id/reply
   body: json
   auth: bearer
 }
 
 params:path {
-  document_id: 550e8400-e29b-41d4-a716-446655440001
-  comment_id: 915e5e25-9d18-4191-af3f-a6f76fb4abf1
+  area_of_concern_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
+  area_of_concern_id: 0240ddc0-48d3-420c-919d-8f0f4f758cac
+  comment_id: c35839c5-6bcf-4b48-b4c0-99fef6dad280
 }
 
 auth:bearer {
@@ -21,9 +22,11 @@ auth:bearer {
 
 body:json {
   {
-    "section": "1",
-    "comment": "udah benar bang coba cek lagi",
-    "baseline": "document abc halaman 2"
+    "section": "",
+    "comment": "yaudah deh sana",
+    "baseline": "",
+    "is_close_out_comment": true,
+    "document_id": "be5eb9c9-fbc5-4cf7-b88a-ae72afbb91be"
   }
 }
 

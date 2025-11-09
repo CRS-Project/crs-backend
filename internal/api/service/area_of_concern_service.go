@@ -39,11 +39,12 @@ func NewAreaOfConcern(areaOfConcernRepository repository.AreaOfConcernRepository
 	userDisciplineRepository repository.UserDisciplineRepository,
 	db *gorm.DB) AreaOfConcernService {
 	return &areaOfConcernService{
-		areaOfConcernRepository:  areaOfConcernRepository,
-		packageRepository:        packageRepository,
-		userRepository:           userRepository,
-		userDisciplineRepository: userDisciplineRepository,
-		db:                       db,
+		areaOfConcernRepository:             areaOfConcernRepository,
+		areaOfConcernConsolidatorRepository: areaOfConcernConsolidatorRepository,
+		packageRepository:                   packageRepository,
+		userRepository:                      userRepository,
+		userDisciplineRepository:            userDisciplineRepository,
+		db:                                  db,
 	}
 }
 
@@ -100,7 +101,7 @@ func (s *areaOfConcernService) GetById(ctx context.Context, id string) (dto.Area
 	var consolidatorResponse []dto.AreaOfConcernConsolidatorResponse
 	for _, c := range areaOfConcern.Consolidators {
 		consolidatorResponse = append(consolidatorResponse, dto.AreaOfConcernConsolidatorResponse{
-			ID:   c.ID.String(),
+			ID:   c.User.ID.String(),
 			Name: c.User.Name,
 		})
 	}
@@ -149,7 +150,7 @@ func (s *areaOfConcernService) Update(ctx context.Context, req dto.UpdateAreaOfC
 		return err
 	}
 
-	if pkg.ID != areaOfConcern.PackageID {
+	if pkg != nil && pkg.ID != areaOfConcern.PackageID {
 		return myerror.New("you not allowed to this package", http.StatusUnauthorized)
 	}
 
@@ -163,7 +164,7 @@ func (s *areaOfConcernService) Update(ctx context.Context, req dto.UpdateAreaOfC
 
 	reqConsolidatorMap := map[string]bool{}
 	for _, c := range req.Consolidators {
-		consolidatorMap[c.UserID] = true
+		reqConsolidatorMap[c.UserID] = true
 	}
 
 	var deletedConsolidators []string
@@ -209,7 +210,7 @@ func (s *areaOfConcernService) Delete(ctx context.Context, userId, areaOfConcern
 		return err
 	}
 
-	if pkg.ID != areaOfConcern.PackageID {
+	if pkg != nil && pkg.ID != areaOfConcern.PackageID {
 		return myerror.New("you not allowed to this package", http.StatusUnauthorized)
 	}
 

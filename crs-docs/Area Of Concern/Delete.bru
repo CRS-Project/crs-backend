@@ -1,0 +1,25 @@
+meta {
+  name: Delete
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api/v1/area-of-concern-group/:area_of_concern_group_id/area-of-concern/:area_of_concern_id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  area_of_concern_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
+  area_of_concern_id: ddb182e8-8dc0-4f81-a9c6-414fb0e3209e
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

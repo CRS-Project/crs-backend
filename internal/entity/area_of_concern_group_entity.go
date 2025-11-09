@@ -4,7 +4,7 @@ import "github.com/google/uuid"
 
 type AreaOfConcernGroup struct {
 	ID          uuid.UUID `json:"id" gorm:"type:uuid;primaryKey;default:uuid_generate_v4()"`
-	ReviewFocus string    `json:"description" gorm:"not null"`
+	ReviewFocus string    `json:"review_focus" gorm:"not null"`
 
 	UserDisciplineID uuid.UUID `json:"user_discipline_id" gorm:"not null"`
 	PackageID        uuid.UUID `json:"package_id" gorm:"not null"`

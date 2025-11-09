@@ -1,0 +1,32 @@
+meta {
+  name: Update
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{host}}/api/v1/area-of-concern-group/:area_of_concern_group_id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  area_of_concern_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "review_focus": "Lorem Ipsum",
+    "user_discipline_id": "33194288-bb67-4840-a31c-5dd0989613c3",
+    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

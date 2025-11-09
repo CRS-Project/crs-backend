@@ -1,12 +1,12 @@
 meta {
-  name: Create
+  name: Get All By Area Of Concern
   type: http
-  seq: 1
+  seq: 3
 }
 
-post {
+get {
   url: {{host}}/api/v1/area-of-concern-group/:area_of_concern_group_id/area-of-concern/:area_of_concern_id/comment
-  body: json
+  body: none
   auth: bearer
 }
 
@@ -17,15 +17,6 @@ params:path {
 
 auth:bearer {
   token: {{token}}
-}
-
-body:json {
-  {
-    "section": "1",
-    "comment": "kamu harus punya ini aku contractor",
-    "baseline": "document abc halaman 2",
-    "document_id": "be5eb9c9-fbc5-4cf7-b88a-ae72afbb91be"
-  }
 }
 
 settings {

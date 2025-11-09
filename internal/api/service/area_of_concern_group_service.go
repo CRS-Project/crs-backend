@@ -9,6 +9,7 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -45,12 +46,28 @@ func NewAreaOfConcernGroup(areaOfConcernGroupRepository repository.AreaOfConcern
 }
 
 func (s *areaOfConcernGroupService) Create(ctx context.Context, req dto.AreaOfConcernGroupRequest) (dto.AreaOfConcernGroupResponse, error) {
-	pkg, _, err := s.getPackagePermission(ctx, req.UserId)
+	pkg, user, err := s.getPackagePermission(ctx, req.UserId)
 	if err != nil {
 		return dto.AreaOfConcernGroupResponse{}, err
 	}
 
-	areaOfConcernGroupResult, err := s.areaOfConcernGroupRepository.Create(ctx, nil, entity.AreaOfConcernGroup{})
+	var contractor entity.User
+	if pkg == nil {
+		contractor, err = s.userRepository.GetContractorByPackage(ctx, nil, req.PackageID, "Package")
+		if err != nil {
+			return dto.AreaOfConcernGroupResponse{}, err
+		}
+
+		pkg = contractor.Package
+	} else {
+		contractor = user
+	}
+
+	areaOfConcernGroupResult, err := s.areaOfConcernGroupRepository.Create(ctx, nil, entity.AreaOfConcernGroup{
+		ReviewFocus:      req.ReviewFocus,
+		UserDisciplineID: uuid.MustParse(req.UserDisciplineID),
+		PackageID:        uuid.MustParse(req.PackageID),
+	})
 	if err != nil {
 		return dto.AreaOfConcernGroupResponse{}, err
 	}
@@ -62,6 +79,7 @@ func (s *areaOfConcernGroupService) Create(ctx context.Context, req dto.AreaOfCo
 
 	return dto.AreaOfConcernGroupResponse{
 		ID:             areaOfConcernGroupResult.ID.String(),
+		ReviewFocus:    areaOfConcernGroupResult.ReviewFocus,
 		Package:        pkg.Name,
 		UserDiscipline: userDiscipline.Name,
 	}, nil

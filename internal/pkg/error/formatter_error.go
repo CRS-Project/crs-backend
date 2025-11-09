@@ -19,7 +19,7 @@ func GetErrBodyRequest(actErr error, v any) error {
 func Wrap(actErr error, prodErr error) error {
 	mode := os.Getenv("APP_MODE")
 	switch mode {
-	case "development":
+	case "dev":
 		return actErr
 	default:
 		return prodErr

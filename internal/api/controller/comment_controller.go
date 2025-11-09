@@ -49,7 +49,7 @@ func (c *commentController) Create(ctx *gin.Context) {
 		return
 	}
 
-	req.DocumentId = areaOfConcernId
+	req.AreaOfConcernId = areaOfConcernId
 	req.UserId = userId
 	comment, err := c.commentService.Create(ctx, req)
 	if err != nil {
@@ -77,7 +77,7 @@ func (c *commentController) ReplyId(ctx *gin.Context) {
 		return
 	}
 
-	req.DocumentId = areaOfConcernId
+	req.AreaOfConcernId = areaOfConcernId
 	req.UserId = userId
 	req.ReplyId = commentId
 
@@ -153,7 +153,7 @@ func (c *commentController) Update(ctx *gin.Context) {
 
 	req.ID = commentId
 	req.UserId = userId
-	req.DocumentId = areaOfConcernId
+	req.AreaOfConcernId = areaOfConcernId
 	err = c.commentService.Update(ctx.Request.Context(), req)
 	if err != nil {
 		response.NewFailed("failed update comment", err).Send(ctx)

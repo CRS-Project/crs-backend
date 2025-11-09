@@ -77,7 +77,15 @@ func (r *areaOfConcernRepository) GetAllByAreaOfConcernGroupID(ctx context.Conte
 	var areaOfConcerns []entity.AreaOfConcern
 
 	tx = tx.WithContext(ctx).Model(&entity.AreaOfConcern{}).Where("area_of_concern_group_id = ?", areaOfConcernGroupId)
-	if err := WithFilters(tx, &metaReq, AddModels(entity.AreaOfConcern{})).Find(&areaOfConcerns).Error; err != nil {
+
+	filterMap := metaReq.SeparateFilter()
+	if find, ok := filterMap["search"]; ok {
+		tx = tx.Where("area_of_concerns.description ILIKE ? OR area_of_concerns.area_of_concern_id ILIKE ?",
+			"%"+find+"%",
+			"%"+find+"%")
+	}
+	if err := WithFilters(tx, &metaReq, AddModels(entity.AreaOfConcern{}),
+		AddCustomField("search", "")).Find(&areaOfConcerns).Error; err != nil {
 		return nil, meta.Meta{}, err
 	}
 

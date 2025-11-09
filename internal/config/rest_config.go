@@ -70,9 +70,9 @@ func NewRest() RestConfig {
 	routes.Package(server, packageController, middleware)
 	routes.UserDiscipline(server, userDisciplineController, middleware)
 	routes.Document(server, documentController, middleware)
-	routes.Comment(server, commentController, middleware)
-	routes.AreaOfConcern(server, areaOfConcernController, middleware)
 	routes.AreaOfConcernGroup(server, areaOfConcernGroupController, middleware)
+	routes.AreaOfConcern(server, areaOfConcernController, middleware)
+	routes.Comment(server, commentController, middleware)
 
 	return RestConfig{
 		server: server,
