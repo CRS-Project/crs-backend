@@ -34,27 +34,34 @@ func NewRest() RestConfig {
 		// awsS3Service  storage.AwsS3 = storage.NewAwsS3()
 
 		//=========== (REPOSITORY) ===========//
-		userRepository           repository.UserRepository           = repository.NewUser(db)
-		packageRepository        repository.PackageRepository        = repository.NewPackage(db)
-		userDisciplineRepository repository.UserDisciplineRepository = repository.NewUserDiscipline(db)
-		commentRepository        repository.CommentRepository        = repository.NewComment(db)
-		documentRepository       repository.DocumentRepository       = repository.NewDocument(db)
+		userRepository                      repository.UserRepository                      = repository.NewUser(db)
+		packageRepository                   repository.PackageRepository                   = repository.NewPackage(db)
+		userDisciplineRepository            repository.UserDisciplineRepository            = repository.NewUserDiscipline(db)
+		commentRepository                   repository.CommentRepository                   = repository.NewComment(db)
+		documentRepository                  repository.DocumentRepository                  = repository.NewDocument(db)
+		areaOfConcernGroupRepository        repository.AreaOfConcernGroupRepository        = repository.NewAreaOfConcernGroup(db)
+		areaOfConcernRepository             repository.AreaOfConcernRepository             = repository.NewAreaOfConcern(db)
+		areaOfConcernConsolidatorRepository repository.AreaOfConcernConsolidatorRepository = repository.NewAreaOfConcernConsolidator(db)
 
 		//=========== (SERVICE) ===========//
-		authService           service.AuthService           = service.NewAuth(userRepository, mailerService, oauthService, db)
-		userService           service.UserService           = service.NewUser(userRepository, userDisciplineRepository, packageRepository, db)
-		packageService        service.PackageService        = service.NewPackage(packageRepository, db)
-		userDisciplineService service.UserDisciplineService = service.NewUserDiscipline(userDisciplineRepository, db)
-		documentService       service.DocumentService       = service.NewDocument(documentRepository, db)
-		commentService        service.CommentService        = service.NewComment(commentRepository, documentRepository, userRepository, db)
+		authService               service.AuthService               = service.NewAuth(userRepository, mailerService, oauthService, db)
+		userService               service.UserService               = service.NewUser(userRepository, userDisciplineRepository, packageRepository, db)
+		packageService            service.PackageService            = service.NewPackage(packageRepository, db)
+		userDisciplineService     service.UserDisciplineService     = service.NewUserDiscipline(userDisciplineRepository, db)
+		documentService           service.DocumentService           = service.NewDocument(documentRepository, packageRepository, userRepository, db)
+		commentService            service.CommentService            = service.NewComment(commentRepository, documentRepository, areaOfConcernRepository, userRepository, db)
+		areaOfConcernGroupService service.AreaOfConcernGroupService = service.NewAreaOfConcernGroup(areaOfConcernGroupRepository, packageRepository, userRepository, userDisciplineRepository, db)
+		areaOfConcernService      service.AreaOfConcernService      = service.NewAreaOfConcern(areaOfConcernRepository, areaOfConcernConsolidatorRepository, packageRepository, userRepository, userDisciplineRepository, db)
 
 		//=========== (CONTROLLER) ===========//
-		authController           controller.AuthController           = controller.NewAuth(authService)
-		packageController        controller.PackageController        = controller.NewPackage(packageService)
-		userController           controller.UserController           = controller.NewUser(userService)
-		userDisciplineController controller.UserDisciplineController = controller.NewUserDiscipline(userDisciplineService)
-		documentController       controller.DocumentController       = controller.NewDocument(documentService)
-		commentController        controller.CommentController        = controller.NewComment(commentService)
+		authController               controller.AuthController               = controller.NewAuth(authService)
+		packageController            controller.PackageController            = controller.NewPackage(packageService)
+		userController               controller.UserController               = controller.NewUser(userService)
+		userDisciplineController     controller.UserDisciplineController     = controller.NewUserDiscipline(userDisciplineService)
+		documentController           controller.DocumentController           = controller.NewDocument(documentService)
+		commentController            controller.CommentController            = controller.NewComment(commentService)
+		areaOfConcernGroupController controller.AreaOfConcernGroupController = controller.NewAreaOfConcernGroup(areaOfConcernGroupService)
+		areaOfConcernController      controller.AreaOfConcernController      = controller.NewAreaOfConcern(areaOfConcernService)
 	)
 
 	// Register all routes
@@ -64,6 +71,8 @@ func NewRest() RestConfig {
 	routes.UserDiscipline(server, userDisciplineController, middleware)
 	routes.Document(server, documentController, middleware)
 	routes.Comment(server, commentController, middleware)
+	routes.AreaOfConcern(server, areaOfConcernController, middleware)
+	routes.AreaOfConcernGroup(server, areaOfConcernGroupController, middleware)
 
 	return RestConfig{
 		server: server,

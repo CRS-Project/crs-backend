@@ -1,17 +1,17 @@
 meta {
   name: Delete
   type: http
-  seq: 6
+  seq: 5
 }
 
 delete {
-  url: {{host}}/api/v1/document/:id
+  url: {{host}}/api/v1/document/:document_id
   body: none
   auth: inherit
 }
 
 params:path {
-  id: 9452431b-3523-4f5c-8e0c-c235746b0201
+  document_id: bce37447-928d-4f43-bc44-4fbcc8e866b1
 }
 
 settings {

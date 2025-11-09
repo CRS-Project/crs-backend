@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/CRS-Project/crs-backend/internal/api/service"
 	"github.com/CRS-Project/crs-backend/internal/dto"
+	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/CRS-Project/crs-backend/internal/pkg/response"
 	"github.com/gin-gonic/gin"
@@ -31,6 +32,7 @@ func NewPackage(packageService service.PackageService) PackageController {
 func (c *packageController) CreatePackage(ctx *gin.Context) {
 	var req dto.CreatePackageRequest
 	if err := ctx.ShouldBind(&req); err != nil {
+		err = myerror.GetErrBodyRequest(err, dto.CreatePackageRequest{})
 		response.NewFailed("failed get data from body", err).Send(ctx)
 		return
 	}
@@ -57,6 +59,7 @@ func (c *packageController) GetAll(ctx *gin.Context) {
 func (c *packageController) UpdatePackage(ctx *gin.Context) {
 	var req dto.UpdatePackageRequest
 	if err := ctx.ShouldBind(&req); err != nil {
+		err = myerror.GetErrBodyRequest(err, dto.UpdatePackageRequest{})
 		response.NewFailed("failed get data from body", err).Send(ctx)
 		return
 	}

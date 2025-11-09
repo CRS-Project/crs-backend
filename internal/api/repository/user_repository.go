@@ -14,6 +14,7 @@ type (
 		GetAll(ctx context.Context, tx *gorm.DB, metaReq meta.Meta, preloads ...string) ([]entity.User, meta.Meta, error)
 		GetById(ctx context.Context, tx *gorm.DB, userId string, preloads ...string) (entity.User, error)
 		GetByEmail(ctx context.Context, tx *gorm.DB, email string, preloads ...string) (entity.User, error)
+		GetContractorByPackage(ctx context.Context, tx *gorm.DB, packageId string, preloads ...string) (entity.User, error)
 		Update(ctx context.Context, tx *gorm.DB, user entity.User, preloads ...string) (entity.User, error)
 		Delete(ctx context.Context, tx *gorm.DB, user entity.User) error
 	}
@@ -54,8 +55,24 @@ func (r *userRepository) GetAll(ctx context.Context, tx *gorm.DB, metaReq meta.M
 
 	var users []entity.User
 
-	tx = tx.WithContext(ctx).Model(entity.User{})
-	if err := WithFilters(tx, &metaReq, AddModels(entity.User{})).Find(&users).Error; err != nil {
+	tx = tx.WithContext(ctx).Model(entity.User{}).
+		Joins("LEFT JOIN packages ON packages.id = users.package_id").
+		Joins("LEFT JOIN user_disciplines ON user_disciplines.id = users.user_discipline_id")
+
+	filterMap := metaReq.SeparateFilter()
+	if find, ok := filterMap["search"]; ok {
+		tx = tx.Where("users.name ILIKE ? OR users.email ILIKE ? OR users.initial ILIKE ? OR users.role ILIKE ? OR packages.name ILIKE ? OR user_disciplines.name ILIKE ?",
+			"%"+find+"%",
+			"%"+find+"%",
+			"%"+find+"%",
+			"%"+find+"%",
+			"%"+find+"%",
+			"%"+find+"%")
+	}
+
+	if err := WithFilters(tx, &metaReq,
+		AddModels(entity.User{}),
+		AddCustomField("search", "")).Find(&users).Error; err != nil {
 		return nil, metaReq, err
 	}
 
@@ -94,6 +111,23 @@ func (r *userRepository) GetByEmail(ctx context.Context, tx *gorm.DB, email stri
 	}
 
 	return user, nil
+}
+
+func (r *userRepository) GetContractorByPackage(ctx context.Context, tx *gorm.DB, packageId string, preloads ...string) (entity.User, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
+	}
+
+	var contractor entity.User
+	if err := tx.WithContext(ctx).Take(&contractor, "package_id = ? AND role = 'CONTRACTOR'", contractor).Error; err != nil {
+		return entity.User{}, err
+	}
+
+	return contractor, nil
 }
 
 func (r *userRepository) Update(ctx context.Context, tx *gorm.DB, user entity.User, preloads ...string) (entity.User, error) {

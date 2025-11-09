@@ -1,11 +1,11 @@
 meta {
   name: Get All
   type: http
-  seq: 6
+  seq: 2
 }
 
 get {
-  url: {{host}}/api/v1/document?take=3&page=1&sort=asc&sort_by=deadline
+  url: {{host}}/api/v1/document?take=3&page=1&sort=asc&sort_by=created_at&filter=awdwdcw&filter_by=search
   body: none
   auth: inherit
 }
@@ -14,7 +14,9 @@ params:query {
   take: 3
   page: 1
   sort: asc
-  sort_by: deadline
+  sort_by: created_at
+  filter: awdwdcw
+  filter_by: search
 }
 
 settings {

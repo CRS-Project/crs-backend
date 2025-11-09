@@ -32,7 +32,8 @@ func NewAuth(authService service.AuthService) AuthController {
 func (c *authController) Login(ctx *gin.Context) {
 	var req dto.LoginRequest
 	if err := ctx.ShouldBind(&req); err != nil {
-		response.NewFailed("failed get data from body", myerror.ErrBodyRequest).Send(ctx)
+		err = myerror.GetErrBodyRequest(err, dto.LoginRequest{})
+		response.NewFailed("failed get data from body", err).Send(ctx)
 		return
 	}
 
@@ -49,6 +50,7 @@ func (c *authController) ForgetPassword(ctx *gin.Context) {
 	var req dto.ForgetPasswordRequest
 
 	if err := ctx.ShouldBind(&req); err != nil {
+		err = myerror.GetErrBodyRequest(err, dto.ForgetPasswordRequest{})
 		response.NewFailed("failed get data from body", err).Send(ctx)
 		return
 	}
@@ -64,6 +66,7 @@ func (c *authController) ForgetPassword(ctx *gin.Context) {
 func (c *authController) ChangePassword(ctx *gin.Context) {
 	var req dto.ChangePasswordRequest
 	if err := ctx.ShouldBind(&req); err != nil {
+		err = myerror.GetErrBodyRequest(err, dto.ChangePasswordRequest{})
 		response.NewFailed("failed get data from body", err).Send(ctx)
 		return
 	}

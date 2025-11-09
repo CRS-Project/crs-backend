@@ -1,19 +1,34 @@
 meta {
   name: Update
   type: http
-  seq: 5
+  seq: 4
 }
 
 put {
-  url: {{host}}/api/v1/document
+  url: {{host}}/api/v1/document/:document_id
   body: json
   auth: inherit
 }
 
+params:path {
+  document_id: ed395601-7a22-4d3d-ae32-0939e6173231
+}
+
 body:json {
   {
-    "ID": "049595e8-b5f4-4078-9bef-166a3bf26aa5",
-    "document_serial_number": "2"
+    "package_id" : "f49c3147-a8af-4c22-9aab-d7b8d663e6e2",
+    "document_url": "https://example.com/docs/PKG-001-DOC-001.pdf",
+    "document_serial_number": "DOC-001",
+    "ctr_number": "CTR-2025-002",
+    "wbs": "WBS-2025-001",
+    "company_document_number": "CDN-001-AZ",
+    "contractor_document_number": "CON-001-BR",
+    "document_title": "Mechanical Update Design Specification",
+    "discipline": "Mechanical ggg",
+    "sub_discipline": "Piping ads",
+    "document_type": "Specification awdwdcw",
+    "document_category": "Design adadw",
+    "status": "IFR Comment"
   }
 }
 

@@ -93,5 +93,5 @@ func getSecretKey() string {
 }
 
 func getIssuer() string {
-	return "PRS Backend 2025"
+	return "CRS Backend 2025"
 }

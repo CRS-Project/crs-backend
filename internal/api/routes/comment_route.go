@@ -7,12 +7,12 @@ import (
 )
 
 func Comment(app *gin.Engine, commentcontroller controller.CommentController, middleware middleware.Middleware) {
-	routes := app.Group("/api/v1/document/:document_id/comment")
+	routes := app.Group("/api/v1/area-of-concern-group/:area_of_concern_group_id/area-of-concern/:area_of_concern_id/comment")
 	{
 		routes.POST("", middleware.Authenticate(), commentcontroller.Create)
 		routes.POST("/:comment_id/reply", middleware.Authenticate(), commentcontroller.ReplyId)
 
-		routes.GET("", middleware.Authenticate(), commentcontroller.GetAllByDocumentId)
+		routes.GET("", middleware.Authenticate(), commentcontroller.GetAllByAreaOfConcernId)
 		routes.GET("/:comment_id", middleware.Authenticate(), commentcontroller.GetById)
 		routes.GET("/:comment_id/reply", middleware.Authenticate(), commentcontroller.GetAllReplyByCommentId)
 

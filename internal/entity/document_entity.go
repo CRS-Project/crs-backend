@@ -1,27 +1,30 @@
 package entity
 
 import (
-	"time"
-
-	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/google/uuid"
 )
 
-type Document struct {
-	ID                              uuid.UUID `json:"id" gorm:"type:uuid;primaryKey;default:uuid_generate_v4()"`
-	DocumentUrl                     *string   `json:"document_url" gorm:""`
-	DocumentSerialDisciplineNumber  string    `json:"document_serial_number" gorm:"not null"`
-	CTRDisciplineNumber             string    `json:"ctr_number" gorm:"not null"`
-	WBS                             string    `json:"wbs" gorm:"not null"`
-	CompanyDocumentDisciplineNumber string    `json:"company_document_number" gorm:"not null"`
-	ContractorDocumentNumber        string    `json:"contractor_document_number" gorm:"not null"`
-	DocumentTitle                   string    `json:"document_title" gorm:"not null"`
-	Discipline                      string    `json:"discipline" gorm:"not null"`
-	SubDiscipline                   *string   `json:"sub_discipline" gorm:""`
-	DocumentType                    string    `json:"document_type" gorm:"not null"`
-	DocumentCategory                string    `json:"document_category" gorm:"not null"`
+type StatusDocument string
 
-	Deadline time.Time `json:"deadline" gorm:"not null"`
+const (
+	StatusDocumentIFR StatusDocument = "IFR Comment"
+	StatusDocumentIFU StatusDocument = "IFR Comment"
+)
+
+type Document struct {
+	ID                       uuid.UUID      `json:"id" gorm:"type:uuid;primaryKey;default:uuid_generate_v4()"`
+	DocumentUrl              *string        `json:"document_url" gorm:""`
+	DocumentSerialNumber     string         `json:"document_serial_number" gorm:"not null"`
+	CTRNumber                string         `json:"ctr_number" gorm:"not null"`
+	WBS                      string         `json:"wbs" gorm:"not null"`
+	CompanyDocumentNumber    string         `json:"company_document_number" gorm:"not null"`
+	ContractorDocumentNumber string         `json:"contractor_document_number" gorm:"not null"`
+	DocumentTitle            string         `json:"document_title" gorm:"not null"`
+	Discipline               string         `json:"discipline" gorm:"not null"`
+	SubDiscipline            *string        `json:"sub_discipline" gorm:""`
+	DocumentType             string         `json:"document_type" gorm:"not null"`
+	DocumentCategory         string         `json:"document_category" gorm:"not null"`
+	Status                   StatusDocument `json:"status" gorm:"not null"`
 
 	ContractorID uuid.UUID `json:"contractor_id" gorm:"not null"`
 	PackageID    uuid.UUID `json:"package_id" gorm:"not null"`
@@ -30,29 +33,4 @@ type Document struct {
 
 	Contractor *User    `json:"contractor,omitempty" gorm:"foreignKey:ContractorID"`
 	Package    *Package `json:"package,omitempty" gorm:"foreignKey:PackageID"`
-}
-
-func (d *Document) ToInfo() dto.DocumentInfo {
-	return dto.DocumentInfo{
-		ID:                              d.ID.String(),
-		DocumentUrl:                     d.DocumentUrl,
-		DocumentSerialDisciplineNumber:  d.DocumentSerialDisciplineNumber,
-		CTRDisciplineNumber:             d.CTRDisciplineNumber,
-		WBS:                             d.WBS,
-		CompanyDocumentDisciplineNumber: d.CompanyDocumentDisciplineNumber,
-		DocumentTitle:                   d.DocumentTitle,
-		Discipline:                      d.Discipline,
-		SubDiscipline:                   d.SubDiscipline,
-		DocumentType:                    d.DocumentType,
-		DocumentCategory:                d.DocumentCategory,
-		Deadline:                        d.Deadline.Format("15.04 • 02 Jan 2006"),
-	}
-}
-
-func (d *Document) GetDetail() dto.GetDocument {
-	return dto.GetDocument{
-		DocumentInfo:   d.ToInfo(),
-		PackageInfo:    d.Package.ToInfo(),
-		ContractorInfo: d.Contractor.ToInfo(),
-	}
 }

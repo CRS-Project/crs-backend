@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"net/http"
-
 	"github.com/CRS-Project/crs-backend/internal/api/service"
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
@@ -35,7 +33,8 @@ func (c *userController) Create(ctx *gin.Context) {
 	var req dto.CreateUserRequest
 
 	if err := ctx.ShouldBind(&req); err != nil {
-		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
+		err = myerror.GetErrBodyRequest(err, dto.CreateUserRequest{})
+		response.NewFailed("failed get data from body", err).Send(ctx)
 		return
 	}
 
@@ -74,7 +73,8 @@ func (c *userController) Update(ctx *gin.Context) {
 	var req dto.UpdateUserRequest
 
 	if err := ctx.ShouldBind(&req); err != nil {
-		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
+		err = myerror.GetErrBodyRequest(err, dto.UpdateUserRequest{})
+		response.NewFailed("failed get data from body", err).Send(ctx)
 		return
 	}
 
