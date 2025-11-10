@@ -6,10 +6,15 @@ meta {
 
 post {
   url: {{host}}/api/v1/uploads
-  body: none
+  body: multipartForm
   auth: inherit
+}
+
+body:multipart-form {
+  file: @file(C:\Users\DATA\Downloads\TTD_Azka Rizqullah Ramadhani.jpg)
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
