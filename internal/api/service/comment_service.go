@@ -86,7 +86,7 @@ func (s *commentService) Reply(ctx context.Context, req dto.CommentRequest) (dto
 		return dto.CommentResponse{}, err
 	}
 
-	commentReplied, err := s.commentRepository.GetByID(ctx, nil, req.ReplyId)
+	commentReplied, err := s.commentRepository.GetByID(ctx, nil, req.ReplyId, "Document")
 	if err != nil {
 		return dto.CommentResponse{}, err
 	}
