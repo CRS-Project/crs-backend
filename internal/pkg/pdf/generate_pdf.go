@@ -1,8 +1,8 @@
 package mypdf
 
 import (
+	"bytes"
 	"fmt"
-	"log"
 
 	"github.com/jung-kurt/gofpdf"
 )
@@ -22,7 +22,7 @@ const (
 	tableStartYPage = 10.0
 )
 
-func Generate(req []GenerateRequestData) {
+func Generate(req []GenerateRequestData) (*bytes.Buffer, string, error) {
 	pdf := gofpdf.New("L", "mm", "A4", "")
 	pdf.SetAutoPageBreak(false, 0)
 
@@ -36,12 +36,14 @@ func Generate(req []GenerateRequestData) {
 		drawMainTableWithPageBreak(pdf, r.CommentRow)
 	}
 
-	// Save PDF
-	if err := pdf.OutputFileAndClose("comment_resolution_sheet.pdf"); err != nil {
-		log.Fatal(err)
+	filename := "comment_resolution_sheet.pdf"
+
+	var buf bytes.Buffer
+	if err := pdf.Output(&buf); err != nil {
+		return nil, "", err
 	}
 
-	fmt.Println("PDF generated successfully: comment_resolution_sheet.pdf")
+	return &buf, filename, nil
 }
 
 func setupPDFDefaults(pdf *gofpdf.Fpdf) {

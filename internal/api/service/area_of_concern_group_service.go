@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"net/http"
@@ -22,6 +23,7 @@ type (
 		GetAll(ctx context.Context, userId string, metaReq meta.Meta) ([]dto.AreaOfConcernGroupResponse, meta.Meta, error)
 		Update(ctx context.Context, req dto.AreaOfConcernGroupRequest) error
 		Delete(ctx context.Context, userId, areaOfConcernGroupId string) error
+		GeneratePDF(ctx context.Context, userId, areaOfConcernGroupId string) (*bytes.Buffer, string, error)
 	}
 
 	areaOfConcernGroupService struct {
@@ -182,18 +184,18 @@ func (s *areaOfConcernGroupService) Delete(ctx context.Context, userId, areaOfCo
 	return nil
 }
 
-func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, areaOfConcernGroupId string) error {
-	data, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, areaOfConcernGroupId, "AreaOfConcerns.Consolidators.User", "AreaOfConcerns.Comments.CommentReplies", "UserDiscipline", "Package")
+func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, areaOfConcernGroupId string) (*bytes.Buffer, string, error) {
+	data, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, areaOfConcernGroupId, "AreaOfConcerns.Consolidators.User", "AreaOfConcerns.Comments.CommentReplies", "AreaOfConcerns.Comments.User", "AreaOfConcerns.Comments.Document", "UserDiscipline", "Package")
 	if err != nil {
-		return err
+		return nil, "", err
 	}
 
 	contractor, err := s.userRepository.GetContractorByPackage(ctx, nil, data.PackageID.String(), "Package")
 	if err != nil {
-		return err
+		return nil, "", err
 	}
 
-	var response []mypdf.GenerateRequestData
+	var requestData []mypdf.GenerateRequestData
 	for _, aoc := range data.AreaOfConcerns {
 		consolidator := ""
 		for i, c := range aoc.Consolidators {
@@ -202,9 +204,35 @@ func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, are
 			}
 		}
 
-		// var
+		var comments []mypdf.CommentRow
+		for i, c := range aoc.Comments {
+			status := "N/A"
+			if c.Status != nil {
+				status = string(*c.Status)
+			}
 
-		response = append(response, mypdf.GenerateRequestData{
+			closeOutComments := "N/A"
+			for _, cr := range c.CommentReplies {
+				if cr.IsCloseOutComment {
+					closeOutComments = cr.Comment
+					break
+				}
+			}
+
+			comments = append(comments, mypdf.CommentRow{
+				No:              fmt.Sprintf("%d", i+1),
+				Page:            c.Section,
+				SMEInitial:      c.User.Name,
+				SMEComment:      c.Comment,
+				RefDocNo:        c.Document.CompanyDocumentNumber,
+				RefDocTitle:     c.Document.DocumentTitle,
+				DocStatus:       string(c.Document.Status),
+				Status:          status,
+				SMECloseComment: closeOutComments,
+			})
+		}
+
+		requestData = append(requestData, mypdf.GenerateRequestData{
 			PackageInfoData: mypdf.PackageInfoData{
 				Package:           contractor.Package.Name,
 				ContractorInitial: contractor.Initial,
@@ -215,10 +243,16 @@ func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, are
 				AreaOfConcernDescription: aoc.Description,
 				Consolidator:             consolidator,
 			},
+			CommentRow: comments,
 		})
 	}
 
-	return nil
+	pdfBuffer, filename, err := mypdf.Generate(requestData)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return pdfBuffer, filename, nil
 }
 
 func (s *areaOfConcernGroupService) getPackagePermission(ctx context.Context, userId string) (*entity.Package, entity.User, error) {

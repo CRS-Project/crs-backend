@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/CRS-Project/crs-backend/internal/api/service"
@@ -19,6 +20,7 @@ type (
 		GetById(ctx *gin.Context)
 		Update(ctx *gin.Context)
 		Delete(ctx *gin.Context)
+		GeneratePDF(ctx *gin.Context)
 	}
 
 	areaOfConcernGroupController struct {
@@ -134,11 +136,14 @@ func (c *areaOfConcernGroupController) GeneratePDF(ctx *gin.Context) {
 		return
 	}
 
-	err = c.areaOfConcernGroupService.Delete(ctx.Request.Context(), userId, areaOfConcernGroupId)
+	pdfBuffer, filename, err := c.areaOfConcernGroupService.GeneratePDF(ctx.Request.Context(), userId, areaOfConcernGroupId)
 	if err != nil {
-		response.NewFailed("failed delete area of concern", err).Send(ctx)
+		response.NewFailed("failed generate pdf", err).Send(ctx)
 		return
 	}
 
-	response.NewSuccess("success delete area of concern", nil).Send(ctx)
+	ctx.Header("Content-Type", "application/pdf")
+	ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+	ctx.Data(http.StatusOK, "application/pdf", pdfBuffer.Bytes())
+	response.NewSuccess("success generate pdf", nil).Send(ctx)
 }

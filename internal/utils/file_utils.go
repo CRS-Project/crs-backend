@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-const PATH = "assets/uploads"
+const PATH = "assets"
 
 func UploadFile(file *multipart.FileHeader, path string) error {
 	parts := strings.Split(path, "/")
