@@ -32,6 +32,7 @@ type (
 		Comment               string            `json:"comment"`
 		Baseline              string            `json:"baseline"`
 		Status                *string           `json:"status"`
+		DocumentID            string            `json:"document_id"`
 		CommentAt             string            `json:"comment_at"`
 		CompanyDocumentNumber string            `json:"company_document_number"`
 		UserComment           *UserComment      `json:"user_comment,omitempty"`

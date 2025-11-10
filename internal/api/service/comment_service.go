@@ -177,6 +177,7 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 					Baseline:              reply.Baseline,
 					Status:                (*string)(reply.Status),
 					CommentAt:             reply.CreatedAt.Format("15.04 • 02 Jan 2006"),
+					DocumentID:            reply.DocumentID.String(),
 					CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
 					UserComment: &dto.UserComment{
 						Name:         comment.User.Name,
@@ -194,6 +195,7 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 			Baseline:              comment.Baseline,
 			Status:                (*string)(comment.Status),
 			CommentAt:             comment.CreatedAt.Format("15.04 • 02 Jan 2006"),
+			DocumentID:            comment.DocumentID.String(),
 			CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
 			UserComment: &dto.UserComment{
 				Name:         comment.User.Name,
