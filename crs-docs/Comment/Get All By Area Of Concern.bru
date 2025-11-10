@@ -5,9 +5,14 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/area-of-concern-group/:area_of_concern_group_id/area-of-concern/:area_of_concern_id/comment
+  url: {{host}}/api/v1/area-of-concern-group/:area_of_concern_group_id/area-of-concern/:area_of_concern_id/comment?sort=desc&sort_by=created_at
   body: none
   auth: bearer
+}
+
+params:query {
+  sort: desc
+  sort_by: created_at
 }
 
 params:path {
