@@ -99,6 +99,11 @@ func (s *userService) Create(ctx context.Context, req dto.CreateUserRequest) (dt
 		return dto.CreateUserResponse{}, err
 	}
 
+	var pkgId *string
+	if userCreated.Package != nil {
+		pkgs := userCreated.PackageID.String()
+		pkgId = &pkgs
+	}
 	return dto.CreateUserResponse{
 		ID:               userCreated.ID.String(),
 		Name:             userCreated.Name,
@@ -111,6 +116,8 @@ func (s *userService) Create(ctx context.Context, req dto.CreateUserRequest) (dt
 		Role:             string(userCreated.Role),
 		Package:          pkg.Name,
 		Discipline:       discipline.Name,
+		PackageID:        pkgId,
+		DisciplineID:     disciplineId,
 	}, nil
 }
 
@@ -123,10 +130,14 @@ func (s *userService) GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.User
 	var res []dto.UserNonAdminDetailResponse
 
 	for _, user := range users {
+		var pkgId *string
 		pkg := "all"
 		if user.Package != nil {
 			pkg = user.Package.Name
+			pkgs := user.PackageID.String()
+			pkgId = &pkgs
 		}
+
 		res = append(res, dto.UserNonAdminDetailResponse{
 			ID:               user.ID.String(),
 			Name:             user.Name,
@@ -138,6 +149,8 @@ func (s *userService) GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.User
 			DisciplineNumber: user.DisciplineNumber,
 			Discipline:       user.UserDiscipline.Name,
 			Package:          pkg,
+			PackageID:        pkgId,
+			DisciplineID:     user.UserDisciplineID.String(),
 		})
 	}
 
@@ -149,9 +162,12 @@ func (s *userService) GetById(ctx context.Context, userId string) (dto.UserNonAd
 	if err != nil {
 		return dto.UserNonAdminDetailResponse{}, err
 	}
+	var pkgId *string
 	pkg := "all"
 	if user.Package != nil {
 		pkg = user.Package.Name
+		pkgs := user.PackageID.String()
+		pkgId = &pkgs
 	}
 	return dto.UserNonAdminDetailResponse{
 		ID:               userId,
@@ -164,6 +180,8 @@ func (s *userService) GetById(ctx context.Context, userId string) (dto.UserNonAd
 		DisciplineNumber: user.DisciplineNumber,
 		Discipline:       user.UserDiscipline.Name,
 		Package:          pkg,
+		PackageID:        pkgId,
+		DisciplineID:     user.UserDisciplineID.String(),
 	}, nil
 }
 
@@ -173,14 +191,12 @@ func (s *userService) Update(ctx context.Context, userId string, req dto.UpdateU
 		return dto.UserNonAdminDetailResponse{}, err
 	}
 
-	hashPassword, err := utils.HashPassword(req.Password)
-	if err != nil {
-		return dto.UserNonAdminDetailResponse{}, err
-	}
-
-	pkg, err := s.packageRepository.GetByID(ctx, nil, req.PackageID)
-	if err != nil {
-		return dto.UserNonAdminDetailResponse{}, err
+	if req.Password != nil {
+		hashPassword, err := utils.HashPassword(*req.Password)
+		if err != nil {
+			return dto.UserNonAdminDetailResponse{}, err
+		}
+		user.Password = hashPassword
 	}
 
 	var disciplineID string
@@ -197,10 +213,8 @@ func (s *userService) Update(ctx context.Context, userId string, req dto.UpdateU
 
 	user.Name = req.Name
 	user.Email = req.Email
-	user.Password = hashPassword
 	user.Initial = req.Initial
 	user.Institution = req.Institution
-	user.PackageID = &pkg.ID
 	user.DisciplineNumber = req.DisciplineNumber
 	if req.DisciplineID != nil {
 		user.UserDisciplineID = discipline.ID
@@ -211,6 +225,13 @@ func (s *userService) Update(ctx context.Context, userId string, req dto.UpdateU
 		return dto.UserNonAdminDetailResponse{}, err
 	}
 
+	var pkgId *string
+	pkgres := "all"
+	if user.Package != nil {
+		pkgres = user.Package.Name
+		pkgs := user.PackageID.String()
+		pkgId = &pkgs
+	}
 	return dto.UserNonAdminDetailResponse{
 		ID:               user.ID.String(),
 		Name:             user.Name,
@@ -220,8 +241,10 @@ func (s *userService) Update(ctx context.Context, userId string, req dto.UpdateU
 		PhotoProfile:     user.PhotoProfile,
 		Role:             string(user.Role),
 		DisciplineNumber: user.DisciplineNumber,
-		Package:          pkg.Name,
+		Package:          pkgres,
 		Discipline:       discipline.Name,
+		PackageID:        pkgId,
+		DisciplineID:     user.UserDisciplineID.String(),
 	}, nil
 }
 

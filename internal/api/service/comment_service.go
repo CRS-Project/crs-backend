@@ -180,6 +180,7 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 					DocumentID:            reply.DocumentID.String(),
 					CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
 					UserComment: &dto.UserComment{
+						ID:           comment.User.ID.String(),
 						Name:         comment.User.Name,
 						PhotoProfile: comment.User.PhotoProfile,
 						Role:         string(comment.User.Role),
@@ -198,6 +199,7 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 			DocumentID:            comment.DocumentID.String(),
 			CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
 			UserComment: &dto.UserComment{
+				ID:           comment.User.ID.String(),
 				Name:         comment.User.Name,
 				PhotoProfile: comment.User.PhotoProfile,
 				Role:         string(comment.User.Role),
