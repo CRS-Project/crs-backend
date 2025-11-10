@@ -54,7 +54,8 @@ type (
 	}
 
 	UserComment struct {
-		Name string `json:"name"`
-		Role string `json:"role"`
+		Name         string  `json:"name"`
+		PhotoProfile *string `json:"photo_profile"`
+		Role         string  `json:"role"`
 	}
 )

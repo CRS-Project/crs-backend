@@ -116,37 +116,40 @@ func (s *commentService) Reply(ctx context.Context, req dto.CommentRequest) (dto
 		UserID:          user.ID,
 		AreaOfConcernID: areaOfConcern.ID,
 		CommentReplyID:  &replyId,
-	})
+	}, "Document")
 	if err != nil {
 		return dto.CommentResponse{}, err
 	}
 
 	return dto.CommentResponse{
-		ID:        commentResult.ID.String(),
-		Section:   commentResult.Section,
-		Comment:   commentResult.Comment,
-		Baseline:  commentResult.Baseline,
-		Status:    (*string)(commentResult.Status),
-		CommentAt: commentResult.CreatedAt.Format("15.04 • 02 Jan 2006"),
+		ID:                    commentResult.ID.String(),
+		Section:               commentResult.Section,
+		Comment:               commentResult.Comment,
+		Baseline:              commentResult.Baseline,
+		Status:                (*string)(commentResult.Status),
+		CommentAt:             commentResult.CreatedAt.Format("15.04 • 02 Jan 2006"),
+		CompanyDocumentNumber: commentResult.Document.CompanyDocumentNumber,
 	}, nil
 }
 
 func (s *commentService) GetById(ctx context.Context, id string) (dto.CommentResponse, error) {
-	comment, err := s.commentRepository.GetByID(ctx, nil, id, "User")
+	comment, err := s.commentRepository.GetByID(ctx, nil, id, "User", "Document")
 	if err != nil {
 		return dto.CommentResponse{}, err
 	}
 
 	return dto.CommentResponse{
-		ID:        comment.ID.String(),
-		Section:   comment.Section,
-		Comment:   comment.Comment,
-		Baseline:  comment.Baseline,
-		Status:    (*string)(comment.Status),
-		CommentAt: comment.CreatedAt.Format("15.04 • 02 Jan 2006"),
+		ID:                    comment.ID.String(),
+		Section:               comment.Section,
+		Comment:               comment.Comment,
+		Baseline:              comment.Baseline,
+		Status:                (*string)(comment.Status),
+		CommentAt:             comment.CreatedAt.Format("15.04 • 02 Jan 2006"),
+		CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
 		UserComment: &dto.UserComment{
-			Name: comment.User.Name,
-			Role: string(comment.User.Role),
+			Name:         comment.User.Name,
+			PhotoProfile: comment.User.PhotoProfile,
+			Role:         string(comment.User.Role),
 		},
 	}, nil
 }
@@ -157,7 +160,7 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 		return nil, meta.Meta{}, err
 	}
 
-	comments, metaRes, err := s.commentRepository.GetAllByAreaOfConcernID(ctx, nil, areaOfConcernId, metaReq, "User", "CommentReplies.User")
+	comments, metaRes, err := s.commentRepository.GetAllByAreaOfConcernID(ctx, nil, areaOfConcernId, metaReq, "User", "CommentReplies.User", "Document")
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
@@ -168,30 +171,34 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 		if len(comment.CommentReplies) > 0 {
 			for _, reply := range comment.CommentReplies {
 				replies = append(replies, dto.CommentResponse{
-					ID:        reply.ID.String(),
-					Section:   reply.Section,
-					Comment:   reply.Comment,
-					Baseline:  reply.Baseline,
-					Status:    (*string)(reply.Status),
-					CommentAt: reply.CreatedAt.Format("15.04 • 02 Jan 2006"),
+					ID:                    reply.ID.String(),
+					Section:               reply.Section,
+					Comment:               reply.Comment,
+					Baseline:              reply.Baseline,
+					Status:                (*string)(reply.Status),
+					CommentAt:             reply.CreatedAt.Format("15.04 • 02 Jan 2006"),
+					CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
 					UserComment: &dto.UserComment{
-						Name: reply.User.Name,
-						Role: string(reply.User.Role),
+						Name:         comment.User.Name,
+						PhotoProfile: comment.User.PhotoProfile,
+						Role:         string(comment.User.Role),
 					},
 				})
 			}
 		}
 
 		commentResponse = append(commentResponse, dto.CommentResponse{
-			ID:        comment.ID.String(),
-			Section:   comment.Section,
-			Comment:   comment.Comment,
-			Baseline:  comment.Baseline,
-			Status:    (*string)(comment.Status),
-			CommentAt: comment.CreatedAt.Format("15.04 • 02 Jan 2006"),
+			ID:                    comment.ID.String(),
+			Section:               comment.Section,
+			Comment:               comment.Comment,
+			Baseline:              comment.Baseline,
+			Status:                (*string)(comment.Status),
+			CommentAt:             comment.CreatedAt.Format("15.04 • 02 Jan 2006"),
+			CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
 			UserComment: &dto.UserComment{
-				Name: comment.User.Name,
-				Role: string(comment.User.Role),
+				Name:         comment.User.Name,
+				PhotoProfile: comment.User.PhotoProfile,
+				Role:         string(comment.User.Role),
 			},
 			CommentReplies: replies,
 		})

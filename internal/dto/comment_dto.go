@@ -27,13 +27,14 @@ type (
 	}
 
 	CommentResponse struct {
-		ID             string            `json:"id"`
-		Section        string            `json:"section"`
-		Comment        string            `json:"comment"`
-		Baseline       string            `json:"baseline"`
-		Status         *string           `json:"status"`
-		CommentAt      string            `json:"comment_at"`
-		UserComment    *UserComment      `json:"user_comment,omitempty"`
-		CommentReplies []CommentResponse `json:"comment_replies"`
+		ID                    string            `json:"id"`
+		Section               string            `json:"section"`
+		Comment               string            `json:"comment"`
+		Baseline              string            `json:"baseline"`
+		Status                *string           `json:"status"`
+		CommentAt             string            `json:"comment_at"`
+		CompanyDocumentNumber string            `json:"company_document_number"`
+		UserComment           *UserComment      `json:"user_comment,omitempty"`
+		CommentReplies        []CommentResponse `json:"comment_replies"`
 	}
 )

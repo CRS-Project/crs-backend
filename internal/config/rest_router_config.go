@@ -10,7 +10,9 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/middleware"
 	mylog "github.com/CRS-Project/crs-backend/internal/pkg/logger"
 	"github.com/CRS-Project/crs-backend/internal/pkg/response"
+	"github.com/CRS-Project/crs-backend/internal/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/oklog/ulid/v2"
 )
 
 func NewRouter(server *gin.Engine) *gin.Engine {
@@ -30,7 +32,28 @@ func NewRouter(server *gin.Engine) *gin.Engine {
 			"message": "pong 123",
 		})
 	})
-	server.Static("/api/static", "./assets")
+	server.POST("/api/v1/uploads", func(ctx *gin.Context) {
+		file, err := ctx.FormFile("file")
+		if err != nil {
+			response.NewFailed("failed to get file", err).SendWithAbort(ctx)
+			return
+		}
+
+		filename := fmt.Sprintf("assets-%s.%s", ulid.Make(), utils.GetExtensions(file.Filename))
+		if err := utils.UploadFile(file, filename); err != nil {
+			response.NewFailed("failed uppload image", err).SendWithAbort(ctx)
+			return
+		}
+
+		fileURL := fmt.Sprintf("%s/api/static/%s", ctx.Request.Host, filename)
+
+		response.NewSuccess("success upload image", gin.H{
+			"url":  fileURL,
+			"path": filename,
+		}).Send(ctx)
+	})
+
+	server.Static("/api/static", "./assets/uploads")
 	return server
 }
 
