@@ -39,8 +39,8 @@ func NewRouter(server *gin.Engine) *gin.Engine {
 			return
 		}
 
-		filename := fmt.Sprintf("uploads/assets-%s.%s", ulid.Make(), utils.GetExtensions(file.Filename))
-		if err := utils.UploadFile(file, filename); err != nil {
+		filename := fmt.Sprintf("assets-%s.%s", ulid.Make(), utils.GetExtensions(file.Filename))
+		if err := utils.UploadFile(file, "uploads/"+filename); err != nil {
 			response.NewFailed("failed uppload image", err).SendWithAbort(ctx)
 			return
 		}
