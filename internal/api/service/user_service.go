@@ -51,7 +51,7 @@ func (s *userService) Create(ctx context.Context, req dto.CreateUserRequest) (dt
 			return dto.CreateUserResponse{}, err
 		}
 
-		userDiscipline, err := s.userDisciplineRepository.GetByID(ctx, nil, disciplineId, "Users")
+		userDiscipline, err := s.userDisciplineRepository.GetByID(ctx, nil, contractorDisc.ID.String(), "Users")
 		if err != nil {
 			return dto.CreateUserResponse{}, err
 		}

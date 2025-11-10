@@ -16,7 +16,7 @@ type Document struct {
 	DocumentUrl              *string        `json:"document_url" gorm:""`
 	DocumentSerialNumber     string         `json:"document_serial_number" gorm:"not null"`
 	CTRNumber                string         `json:"ctr_number" gorm:"not null"`
-	WBS                      string         `json:"wbs" gorm:"not null"`
+	WBS                      string         `json:"wbs" gorm:""`
 	CompanyDocumentNumber    string         `json:"company_document_number" gorm:"not null"`
 	ContractorDocumentNumber string         `json:"contractor_document_number" gorm:"not null"`
 	DocumentTitle            string         `json:"document_title" gorm:"not null"`

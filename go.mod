@@ -19,6 +19,8 @@ require (
 	gorm.io/gorm v1.26.1
 )
 
+require github.com/jung-kurt/gofpdf v1.16.2 // indirect
+
 require (
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.11 // indirect

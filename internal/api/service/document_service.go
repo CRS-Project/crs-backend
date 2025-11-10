@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/CRS-Project/crs-backend/internal/api/repository"
@@ -51,6 +52,9 @@ func (s *documentService) Create(ctx context.Context, req dto.CreateDocumentRequ
 	if pkg == nil {
 		contractor, err = s.userRepository.GetContractorByPackage(ctx, nil, req.PackageID, "Package")
 		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return dto.DocumentDetailResponse{}, myerror.New("this package not have contractor, please set it first", http.StatusNotFound)
+			}
 			return dto.DocumentDetailResponse{}, err
 		}
 

@@ -13,4 +13,5 @@ type AreaOfConcernGroup struct {
 
 	UserDiscipline *UserDiscipline `json:"user_discipline,omitempty" gorm:"foreignKey:UserDisciplineID"`
 	Package        *Package        `json:"package,omitempty" gorm:"foreignKey:PackageID"`
+	AreaOfConcerns []AreaOfConcern `json:"area_of_concerns,omitempty" gorm:"foreignKey:AreaOfConcernGroupID"`
 }

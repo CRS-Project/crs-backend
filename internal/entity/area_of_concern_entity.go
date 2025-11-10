@@ -15,4 +15,5 @@ type AreaOfConcern struct {
 	AreaOfConcernGroup *AreaOfConcernGroup         `json:"area_of_concern_group,omitempty" gorm:"foreignKey:AreaOfConcernGroupID"`
 	Package            *Package                    `json:"package,omitempty" gorm:"foreignKey:PackageID"`
 	Consolidators      []AreaOfConcernConsolidator `json:"consolidators,omitempty" gorm:"foreignKey:AreaOfConcernID"`
+	Comments           []Comment                   `json:"comments,omitempty" gorm:"foreignKey:AreaOfConcernID"`
 }

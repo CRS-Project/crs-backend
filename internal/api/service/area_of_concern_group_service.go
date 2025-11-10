@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/CRS-Project/crs-backend/internal/api/repository"
@@ -9,6 +10,7 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
+	mypdf "github.com/CRS-Project/crs-backend/internal/pkg/pdf"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -175,6 +177,45 @@ func (s *areaOfConcernGroupService) Delete(ctx context.Context, userId, areaOfCo
 
 	if err = s.areaOfConcernGroupRepository.Delete(ctx, nil, areaOfConcernGroup); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, areaOfConcernGroupId string) error {
+	data, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, areaOfConcernGroupId, "AreaOfConcerns.Consolidators.User", "AreaOfConcerns.Comments.CommentReplies", "UserDiscipline", "Package")
+	if err != nil {
+		return err
+	}
+
+	contractor, err := s.userRepository.GetContractorByPackage(ctx, nil, data.PackageID.String(), "Package")
+	if err != nil {
+		return err
+	}
+
+	var response []mypdf.GenerateRequestData
+	for _, aoc := range data.AreaOfConcerns {
+		consolidator := ""
+		for i, c := range aoc.Consolidators {
+			if i > 0 {
+				consolidator += fmt.Sprintf("\n%d. %s", i, c.User.Name)
+			}
+		}
+
+		// var
+
+		response = append(response, mypdf.GenerateRequestData{
+			PackageInfoData: mypdf.PackageInfoData{
+				Package:           contractor.Package.Name,
+				ContractorInitial: contractor.Initial,
+			},
+			DisciplineSectionData: mypdf.DisciplineSectionData{
+				Discipline:               data.UserDiscipline.Name,
+				AreaOfConcernID:          aoc.AreaOfConcernId,
+				AreaOfConcernDescription: aoc.Description,
+				Consolidator:             consolidator,
+			},
+		})
 	}
 
 	return nil

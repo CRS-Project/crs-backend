@@ -125,3 +125,20 @@ func (c *areaOfConcernGroupController) Delete(ctx *gin.Context) {
 
 	response.NewSuccess("success delete area of concern", nil).Send(ctx)
 }
+
+func (c *areaOfConcernGroupController) GeneratePDF(ctx *gin.Context) {
+	areaOfConcernGroupId := ctx.Param("area_of_concern_group_id")
+	userId, err := utils.GetUserIdFromCtx(ctx)
+	if err != nil {
+		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
+		return
+	}
+
+	err = c.areaOfConcernGroupService.Delete(ctx.Request.Context(), userId, areaOfConcernGroupId)
+	if err != nil {
+		response.NewFailed("failed delete area of concern", err).Send(ctx)
+		return
+	}
+
+	response.NewSuccess("success delete area of concern", nil).Send(ctx)
+}
