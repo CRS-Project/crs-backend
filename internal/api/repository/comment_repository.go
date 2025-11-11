@@ -44,6 +44,12 @@ func (r *commentRepository) Create(ctx context.Context, tx *gorm.DB, comment ent
 		return entity.Comment{}, err
 	}
 
+	if len(preloads) > 0 {
+		if err := tx.First(&comment, "id = ?", comment.ID).Error; err != nil {
+			return entity.Comment{}, err
+		}
+	}
+
 	return comment, nil
 }
 
