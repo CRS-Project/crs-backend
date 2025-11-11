@@ -69,6 +69,10 @@ func (r *userDisciplineRepository) GetByID(ctx context.Context, tx *gorm.DB, use
 		tx = r.db
 	}
 
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
+	}
+
 	var userDiscipline entity.UserDiscipline
 
 	if err := tx.WithContext(ctx).Where("id = ?", userDisciplineId).First(&userDiscipline).Error; err != nil {

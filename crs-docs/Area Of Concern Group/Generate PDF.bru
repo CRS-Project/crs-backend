@@ -5,9 +5,17 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/area-of-concern-group/generate-pdf
+  url: {{host}}/api/v1/area-of-concern-group/:area_of_concern_group_id/generate-pdf
   body: none
-  auth: inherit
+  auth: bearer
+}
+
+params:path {
+  area_of_concern_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
+}
+
+auth:bearer {
+  token: {{token}}
 }
 
 settings {

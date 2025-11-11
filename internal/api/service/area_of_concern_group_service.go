@@ -199,8 +199,14 @@ func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, are
 	for _, aoc := range data.AreaOfConcerns {
 		consolidator := ""
 		for i, c := range aoc.Consolidators {
+			userName := "deleted user"
+			if c.User != nil {
+				userName = c.User.Name
+			}
 			if i > 0 {
-				consolidator += fmt.Sprintf("\n%d. %s", i, c.User.Name)
+				consolidator += fmt.Sprintf("\n%d. %s", i+1, userName)
+			} else {
+				consolidator += fmt.Sprintf("%d. %s", i+1, userName)
 			}
 		}
 

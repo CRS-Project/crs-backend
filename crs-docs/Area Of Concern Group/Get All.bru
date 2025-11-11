@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/area-of-concern-group?page&take&sort&sort_by&filter=o,03397d6e-706f-467d-adad-38335f175099&filter_by=search,package_id
+  url: {{host}}/api/v1/area-of-concern-group?page&take&sort&sort_by
   body: none
   auth: bearer
 }
@@ -15,8 +15,8 @@ params:query {
   take: 
   sort: 
   sort_by: 
-  filter: o,03397d6e-706f-467d-adad-38335f175099
-  filter_by: search,package_id
+  ~filter: o,03397d6e-706f-467d-adad-38335f175099
+  ~filter_by: search,package_id
 }
 
 auth:bearer {
