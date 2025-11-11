@@ -66,7 +66,7 @@ func (s *userService) Create(ctx context.Context, req dto.CreateUserRequest) (dt
 		}
 
 		disciplineId = contractorDisc.ID.String()
-	} else {
+	} else if req.DisciplineID != nil {
 		disciplineId = *req.DisciplineID
 	}
 
