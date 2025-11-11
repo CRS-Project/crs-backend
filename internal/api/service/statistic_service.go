@@ -10,7 +10,9 @@ import (
 
 type (
 	StatisticService interface {
+		GetAOCAndCommentChart(ctx context.Context, packageId string) ([]dto.StatisticAOCAndCommentChart, error)
 		GetCommentCard(ctx context.Context, packageId string) (dto.StatisticAOCAndCommentCard, error)
+		GetCommentUserChart(ctx context.Context, packageId string) ([]dto.StatisticCommentUsersChart, error)
 	}
 
 	statisticService struct {
@@ -39,6 +41,14 @@ func NewStatistic(statisticRepository repository.StatisticRepository,
 	}
 }
 
+func (s *statisticService) GetAOCAndCommentChart(ctx context.Context, packageId string) ([]dto.StatisticAOCAndCommentChart, error) {
+	return s.statisticRepository.GetAOCAndCommentChart(ctx, nil, packageId)
+}
+
 func (s *statisticService) GetCommentCard(ctx context.Context, packageId string) (dto.StatisticAOCAndCommentCard, error) {
 	return s.statisticRepository.GetCommentCard(ctx, nil, packageId)
+}
+
+func (s *statisticService) GetCommentUserChart(ctx context.Context, packageId string) ([]dto.StatisticCommentUsersChart, error) {
+	return s.statisticRepository.GetCommentUserChart(ctx, nil, packageId)
 }

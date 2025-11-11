@@ -17,8 +17,8 @@ type (
 	}
 
 	StatisticCommentUsersChart struct {
-		SMEInitial    int `json:"sme_initial"`
-		CommentClosed int `json:"comment_closed"`
-		TotalComment  int `json:"total_comment"`
+		Name          string `json:"name"`
+		CommentClosed int    `json:"comment_closed"`
+		TotalComment  int    `json:"total_comment"`
 	}
 )

@@ -1,0 +1,20 @@
+meta {
+  name: Get Area Of Concern and Comment Card
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/v1/statistic/aoc-comment-card/:package_id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  package_id: f49c3147-a8af-4c22-9aab-d7b8d663e6e2
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

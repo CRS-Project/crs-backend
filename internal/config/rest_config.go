@@ -42,6 +42,7 @@ func NewRest() RestConfig {
 		areaOfConcernGroupRepository        repository.AreaOfConcernGroupRepository        = repository.NewAreaOfConcernGroup(db)
 		areaOfConcernRepository             repository.AreaOfConcernRepository             = repository.NewAreaOfConcern(db)
 		areaOfConcernConsolidatorRepository repository.AreaOfConcernConsolidatorRepository = repository.NewAreaOfConcernConsolidator(db)
+		statisticRepository                 repository.StatisticRepository                 = repository.NewStatistic(db)
 
 		//=========== (SERVICE) ===========//
 		authService               service.AuthService               = service.NewAuth(userRepository, mailerService, oauthService, db)
@@ -52,6 +53,7 @@ func NewRest() RestConfig {
 		commentService            service.CommentService            = service.NewComment(commentRepository, documentRepository, areaOfConcernRepository, userRepository, db)
 		areaOfConcernGroupService service.AreaOfConcernGroupService = service.NewAreaOfConcernGroup(areaOfConcernGroupRepository, packageRepository, userRepository, userDisciplineRepository, db)
 		areaOfConcernService      service.AreaOfConcernService      = service.NewAreaOfConcern(areaOfConcernRepository, areaOfConcernConsolidatorRepository, packageRepository, userRepository, userDisciplineRepository, db)
+		statisticService          service.StatisticService          = service.NewStatistic(statisticRepository, commentRepository, documentRepository, areaOfConcernRepository, userRepository, db)
 
 		//=========== (CONTROLLER) ===========//
 		authController               controller.AuthController               = controller.NewAuth(authService)
@@ -62,6 +64,7 @@ func NewRest() RestConfig {
 		commentController            controller.CommentController            = controller.NewComment(commentService)
 		areaOfConcernGroupController controller.AreaOfConcernGroupController = controller.NewAreaOfConcernGroup(areaOfConcernGroupService)
 		areaOfConcernController      controller.AreaOfConcernController      = controller.NewAreaOfConcern(areaOfConcernService)
+		statisticController          controller.StatisticController          = controller.NewStatistic(statisticService)
 	)
 
 	// Register all routes
@@ -73,6 +76,7 @@ func NewRest() RestConfig {
 	routes.AreaOfConcernGroup(server, areaOfConcernGroupController, middleware)
 	routes.AreaOfConcern(server, areaOfConcernController, middleware)
 	routes.Comment(server, commentController, middleware)
+	routes.Statistic(server, statisticController, middleware)
 
 	return RestConfig{
 		server: server,
