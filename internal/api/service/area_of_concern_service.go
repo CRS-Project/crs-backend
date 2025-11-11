@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/CRS-Project/crs-backend/internal/api/repository"
@@ -100,6 +101,7 @@ func (s *areaOfConcernService) GetById(ctx context.Context, id string) (dto.Area
 
 	var consolidatorResponse []dto.AreaOfConcernConsolidatorResponse
 	for _, c := range areaOfConcern.Consolidators {
+		fmt.Println(c.AreaOfConcern)
 		consolidatorResponse = append(consolidatorResponse, dto.AreaOfConcernConsolidatorResponse{
 			ID:   c.User.ID.String(),
 			Name: c.User.Name,

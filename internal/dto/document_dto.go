@@ -35,6 +35,12 @@ type (
 		Status                   string  `json:"status" binding:"required"`
 	}
 
+	CreateBulkDocumentRequest struct {
+		UserID    string `json:"_"`
+		PackageID string `json:"-"`
+		SheetUrl  string `json:"sheet_url" binding:"required"`
+	}
+
 	GetAllDocumentResponse struct {
 		ID                       string `json:"id"`
 		CompanyDocumentNumber    string `json:"company_document_number"`

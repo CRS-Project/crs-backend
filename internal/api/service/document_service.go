@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/CRS-Project/crs-backend/internal/api/repository"
@@ -10,12 +11,14 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
+	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 )
 
 type (
 	DocumentService interface {
 		Create(ctx context.Context, req dto.CreateDocumentRequest) (dto.DocumentDetailResponse, error)
+		CreateBulk(ctx context.Context, req dto.CreateBulkDocumentRequest) ([]dto.GetAllDocumentResponse, error)
 		GetAll(ctx context.Context, userId string, metaReq meta.Meta) ([]dto.GetAllDocumentResponse, meta.Meta, error)
 		GetByID(ctx context.Context, documentId string) (dto.DocumentDetailResponse, error)
 		Update(ctx context.Context, req dto.UpdateDocumentRequest) (dto.DocumentDetailResponse, error)
@@ -99,6 +102,113 @@ func (s *documentService) Create(ctx context.Context, req dto.CreateDocumentRequ
 		Package:                  pkg.Name,
 		Status:                   string(documentResult.Status),
 	}, nil
+}
+
+func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocumentRequest) ([]dto.GetAllDocumentResponse, error) {
+	pkg, _, err := s.getPackagePermission(ctx, req.UserID)
+
+	if pkg == nil {
+		pkgVal, err := s.packageRepository.GetByID(ctx, nil, req.PackageID)
+		if err != nil {
+			return nil, err
+		}
+		pkg = &pkgVal
+	}
+
+	file, err := excelize.OpenFile(req.SheetUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(file.GetSheetList()) == 0 {
+		return nil, myerror.New("received sheet does not have a worksheet", http.StatusNotFound)
+	}
+
+	sheetName := file.GetSheetList()[0]
+
+	rows, err := file.Rows(sheetName)
+	if err != nil {
+		return nil, err
+	}
+
+	columns := []string{"PIC", "FEED", "Contractor", "SN",
+		"CTR", "WBS", "CompanyDocumentNumber", "ContractorDocumentNumber",
+		"DocumentTitle", "Discipline", "Discipline Ori",
+		"SubDiscipline", "DocumentType", "DocumentCategory"}
+	nullableColIdx := []int{10, 11}
+
+	var documents []entity.Document
+	for rows.Next() {
+		documents = append(documents, entity.Document{})
+
+		documents[len(documents)-1].Package = pkg
+
+		row, err := rows.Columns()
+		if err != nil {
+			return nil, err
+		}
+
+		for i, val := range row {
+			nullable := false
+			for _, j := range nullableColIdx {
+				if i == j {
+					nullable = true
+				}
+			}
+			if val == "" && !nullable {
+				errorMessage := fmt.Sprintf("column %s is missing", columns[i])
+				return nil, myerror.New(errorMessage, http.StatusBadRequest)
+			}
+
+			switch i {
+			case 3: // SN, Serial Number
+				documents[len(documents)-1].DocumentSerialNumber = val
+			case 4: // CTR
+				documents[len(documents)-1].CTRNumber = val
+			case 5: // WBS
+				documents[len(documents)-1].WBS = val
+			case 6: // CompanyDocumentNumber
+				documents[len(documents)-1].CompanyDocumentNumber = val
+			case 7: // ContractorDocumentNumber
+				documents[len(documents)-1].ContractorDocumentNumber = val
+			case 8: // DocumentTitle
+				documents[len(documents)-1].DocumentTitle = val
+			case 9: // Discipline
+				documents[len(documents)-1].Discipline = val
+			// case 10: // Discipline Ori? what the hell is that?
+			// 	documents[len(documents)-1].Discipline = val
+			case 11: // SubDiscipline
+				if val != "" {
+					documents[len(documents)-1].SubDiscipline = &val
+				}
+			case 12: // DocumentType
+				documents[len(documents)-1].DocumentType = val
+			case 13: // DocumentCategory
+				documents[len(documents)-1].DocumentCategory = val
+			}
+		}
+	}
+
+	if err = rows.Close(); err != nil {
+		return nil, err
+	}
+
+	var documentsRes []dto.GetAllDocumentResponse
+	for _, document := range documents {
+		document, err = s.documentRepository.Create(ctx, nil, document)
+		documentsRes = append(documentsRes, dto.GetAllDocumentResponse{
+			ID: document.ID.String(),
+			CompanyDocumentNumber: document.CompanyDocumentNumber,
+			ContractorDocumentNumber: document.ContractorDocumentNumber,
+			DocumentTitle: document.DocumentTitle,
+			DocumentType: document.DocumentType,
+			DocumentCategory: document.DocumentCategory,
+			Package: document.Package.Name,
+			Status: string(document.Status),
+		})
+	}
+
+	return documentsRes, nil
 }
 
 func (s *documentService) GetAll(ctx context.Context, userId string, metaReq meta.Meta) ([]dto.GetAllDocumentResponse, meta.Meta, error) {
