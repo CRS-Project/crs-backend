@@ -1,11 +1,14 @@
 package controller
 
 import (
+	"net/http"
+
 	"github.com/CRS-Project/crs-backend/internal/api/service"
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/CRS-Project/crs-backend/internal/pkg/response"
+	"github.com/CRS-Project/crs-backend/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -69,7 +72,13 @@ func (c *userController) GetById(ctx *gin.Context) {
 }
 
 func (c *userController) Update(ctx *gin.Context) {
-	userId := ctx.Param("id")
+	userReqId := ctx.Param("id")
+	userId, err := utils.GetUserIdFromCtx(ctx)
+	if err != nil {
+		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
+		return
+	}
+
 	var req dto.UpdateUserRequest
 
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -78,6 +87,7 @@ func (c *userController) Update(ctx *gin.Context) {
 		return
 	}
 
+	req.ID = userReqId
 	result, err := c.userService.Update(ctx.Request.Context(), userId, req)
 	if err != nil {
 		response.NewFailed("failed update user", err).Send(ctx)

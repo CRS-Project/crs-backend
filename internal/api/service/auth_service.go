@@ -158,6 +158,7 @@ func (s *authService) GetMe(ctx context.Context, userId string) (dto.GetMe, erro
 			Role:         string(user.Role),
 		},
 		UserDisciplineInfo: dto.UserDisciplineInfo{
+			ID:               user.UserDisciplineID.String(),
 			Discipline:       user.UserDiscipline.Name,
 			Initial:          user.UserDiscipline.Initial,
 			DisciplineNumber: user.DisciplineNumber,

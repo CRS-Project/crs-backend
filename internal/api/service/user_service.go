@@ -189,9 +189,18 @@ func (s *userService) GetById(ctx context.Context, userId string) (dto.UserNonAd
 }
 
 func (s *userService) Update(ctx context.Context, userId string, req dto.UpdateUserRequest) (dto.UserNonAdminDetailResponse, error) {
-	user, err := s.userRepository.GetById(ctx, nil, userId, "UserDiscipline")
+	curUser, err := s.userRepository.GetById(ctx, nil, userId, "UserDiscipline")
 	if err != nil {
 		return dto.UserNonAdminDetailResponse{}, err
+	}
+
+	user, err := s.userRepository.GetById(ctx, nil, req.ID, "UserDiscipline")
+	if err != nil {
+		return dto.UserNonAdminDetailResponse{}, err
+	}
+
+	if curUser.Role != entity.RoleSuperAdmin && user.ID.String() != curUser.ID.String() {
+		return dto.UserNonAdminDetailResponse{}, myerror.New("role not allowed", http.StatusUnauthorized)
 	}
 
 	if req.Password != nil {

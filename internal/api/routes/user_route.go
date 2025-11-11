@@ -13,7 +13,7 @@ func User(app *gin.Engine, usercontroller controller.UserController, middleware 
 		routes.POST("", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), usercontroller.Create)
 		routes.GET("", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), usercontroller.GetAll)
 		routes.GET("/:id", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), usercontroller.GetById)
-		routes.PUT("/:id", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), usercontroller.Update)
+		routes.PUT("/:id", middleware.Authenticate(), usercontroller.Update)
 		routes.DELETE("/:id", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin)), usercontroller.Delete)
 	}
 }
