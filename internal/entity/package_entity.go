@@ -6,15 +6,17 @@ import (
 )
 
 type Package struct {
-	ID   uuid.UUID `json:"id" gorm:"type:uuid;primaryKey;default:uuid_generate_v4()"`
-	Name string    `json:"name" gorm:"not null;"`
+	ID          uuid.UUID `json:"id" gorm:"type:uuid;primaryKey;default:uuid_generate_v4()"`
+	Name        string    `json:"name" gorm:"not null;"`
+	Description string    `json:"description" gorm:""`
 
 	Timestamp
 }
 
 func (p *Package) ToInfo() dto.PackageInfo {
 	return dto.PackageInfo{
-		ID:   p.ID.String(),
-		Name: p.Name,
+		ID:          p.ID.String(),
+		Name:        p.Name,
+		Description: p.Description,
 	}
 }

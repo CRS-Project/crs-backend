@@ -141,8 +141,9 @@ func (s *authService) GetMe(ctx context.Context, userId string) (dto.GetMe, erro
 	var packageAccess *dto.PackageInfo
 	if user.PackageID != nil {
 		packageAccess = &dto.PackageInfo{
-			ID:   user.PackageID.String(),
-			Name: user.Package.Name,
+			ID:          user.PackageID.String(),
+			Name:        user.Package.Name,
+			Description: user.Package.Description,
 		}
 	}
 
