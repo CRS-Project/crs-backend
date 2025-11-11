@@ -1,0 +1,29 @@
+meta {
+  name: Get Comment User Data
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host}}/api/v1/statistic/comment-user-data/:package_id?take=10&page=1&filter&filter_by=search&sort=desc&sort_by=total_comment
+  body: none
+  auth: inherit
+}
+
+params:query {
+  take: 10
+  page: 1
+  filter: 
+  filter_by: search
+  sort: desc
+  sort_by: total_comment
+}
+
+params:path {
+  package_id: f49c3147-a8af-4c22-9aab-d7b8d663e6e2
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

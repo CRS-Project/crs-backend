@@ -12,5 +12,6 @@ func Statistic(app *gin.Engine, statisticcontroller controller.StatisticControll
 		routes.GET("/aoc-comment-chart/:package_id", statisticcontroller.GetAOCAndCommentChart)
 		routes.GET("/aoc-comment-card/:package_id", statisticcontroller.GetCommentCard)
 		routes.GET("/comment-user-chart/:package_id", statisticcontroller.GetCommentUserChart)
+		routes.GET("/comment-user-data/:package_id", statisticcontroller.GetCommentUserData)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/CRS-Project/crs-backend/internal/dto"
+	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"gorm.io/gorm"
 )
 
@@ -12,6 +13,7 @@ type (
 		GetAOCAndCommentChart(ctx context.Context, tx *gorm.DB, packageId string) ([]dto.StatisticAOCAndCommentChart, error)
 		GetCommentCard(ctx context.Context, tx *gorm.DB, packageId string) (dto.StatisticAOCAndCommentCard, error)
 		GetCommentUserChart(ctx context.Context, tx *gorm.DB, packageId string) ([]dto.StatisticCommentUsersChart, error)
+		GetCommentUserData(ctx context.Context, tx *gorm.DB, packageId string, metaReq meta.Meta) ([]dto.StatisticCommentUsersData, meta.Meta, error)
 	}
 
 	statisticRepository struct {
@@ -176,4 +178,49 @@ func (r *statisticRepository) GetCommentUserChart(ctx context.Context, tx *gorm.
 	}
 
 	return stats, nil
+}
+
+func (r *statisticRepository) GetCommentUserData(ctx context.Context, tx *gorm.DB, packageId string, metaReq meta.Meta) ([]dto.StatisticCommentUsersData, meta.Meta, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	cteSubQuery := tx.Raw(`
+		SELECT
+			u.id,
+			u.name AS name, 
+			u.initial AS initial,
+			COALESCE(COUNT(c.id), 0) AS total_comment,
+			COALESCE(COUNT(c.id) FILTER (WHERE c.status = 'ACCEPTED' OR c.status = 'REJECT'), 0) AS comment_closed
+		FROM users u
+		LEFT JOIN comments c ON c.user_id = u.id
+			AND c.deleted_at IS NULL
+			AND c.comment_reply_id IS NULL
+		WHERE u.deleted_at IS NULL
+			AND u.package_id = ?
+		GROUP BY u.id, u.name, u.initial
+	`, packageId)
+
+	tx = tx.Table("(?) as data", cteSubQuery)
+
+	filterMap := metaReq.SeparateFilter()
+	if find, ok := filterMap["search"]; ok {
+		tx = tx.Where("data.name ILIKE ? OR data.initial ILIKE ?",
+			"%"+find+"%",
+			"%"+find+"%")
+	}
+
+	var stats []dto.StatisticCommentUsersData
+	if err := WithFilters(tx, &metaReq,
+		AddCustomField("search", ""),
+		AddCustomField("name", "", "data.name"),
+		AddCustomField("initial", "", "data.initial"),
+		AddCustomField("total_comment", "", "data.total_comment"),
+		AddCustomField("comment_closed", "", "data.comment_closed"),
+		AddCustomField("id", "", "data.id"),
+	).Find(&stats).Error; err != nil {
+		return nil, meta.Meta{}, err
+	}
+
+	return stats, metaReq, nil
 }

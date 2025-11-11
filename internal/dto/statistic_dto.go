@@ -21,4 +21,11 @@ type (
 		CommentClosed int    `json:"comment_closed"`
 		TotalComment  int    `json:"total_comment"`
 	}
+
+	StatisticCommentUsersData struct {
+		ID            string `json:"id"`
+		Name          string `json:"name"`
+		CommentClosed int    `json:"comment_closed"`
+		TotalComment  int    `json:"total_comment"`
+	}
 )
