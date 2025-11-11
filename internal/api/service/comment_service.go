@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/CRS-Project/crs-backend/internal/api/repository"
@@ -72,13 +71,13 @@ func (s *commentService) Create(ctx context.Context, req dto.CommentRequest) (dt
 	}
 
 	return dto.CommentResponse{
-		ID:        commentResult.ID.String(),
-		Section:   commentResult.Section,
-		Comment:   commentResult.Comment,
-		Baseline:  commentResult.Baseline,
-		Status:    (*string)(commentResult.Status),
+		ID:         commentResult.ID.String(),
+		Section:    commentResult.Section,
+		Comment:    commentResult.Comment,
+		Baseline:   commentResult.Baseline,
+		Status:     (*string)(commentResult.Status),
 		DocumentID: commentResult.DocumentID.String(),
-		CommentAt: commentResult.CreatedAt.Format("15.04 • 02 Jan 2006"),
+		CommentAt:  commentResult.CreatedAt.Format("15.04 • 02 Jan 2006"),
 	}, nil
 }
 
