@@ -138,12 +138,35 @@ func (s *commentService) GetById(ctx context.Context, id string) (dto.CommentRes
 		return dto.CommentResponse{}, err
 	}
 
+	var replies []dto.CommentResponse
+	if len(comment.CommentReplies) > 0 {
+		for _, reply := range comment.CommentReplies {
+			replies = append(replies, dto.CommentResponse{
+				ID:                    reply.ID.String(),
+				Section:               reply.Section,
+				Comment:               reply.Comment,
+				Baseline:              reply.Baseline,
+				Status:                (*string)(reply.Status),
+				CommentAt:             reply.CreatedAt.Format("15.04 • 02 Jan 2006"),
+				DocumentID:            reply.DocumentID.String(),
+				CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
+				UserComment: &dto.UserComment{
+					ID:           comment.User.ID.String(),
+					Name:         comment.User.Name,
+					PhotoProfile: comment.User.PhotoProfile,
+					Role:         string(comment.User.Role),
+				},
+			})
+		}
+	}
+
 	return dto.CommentResponse{
 		ID:                    comment.ID.String(),
 		Section:               comment.Section,
 		Comment:               comment.Comment,
 		Baseline:              comment.Baseline,
 		Status:                (*string)(comment.Status),
+		DocumentID:            comment.Document.ID.String(),
 		CommentAt:             comment.CreatedAt.Format("15.04 • 02 Jan 2006"),
 		CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
 		UserComment: &dto.UserComment{
@@ -151,6 +174,7 @@ func (s *commentService) GetById(ctx context.Context, id string) (dto.CommentRes
 			PhotoProfile: comment.User.PhotoProfile,
 			Role:         string(comment.User.Role),
 		},
+		CommentReplies: replies,
 	}, nil
 }
 
