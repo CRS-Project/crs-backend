@@ -134,7 +134,7 @@ func (s *userService) GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.User
 
 	for _, user := range users {
 		var pkgId *string
-		pkg := "all"
+		pkg := "All Access"
 		if user.Package != nil {
 			pkg = user.Package.Name
 			pkgs := user.PackageID.String()

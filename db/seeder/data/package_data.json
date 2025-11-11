@@ -1,18 +1,22 @@
 [
   {
     "id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2",
-    "name": "FPSO ITS"
+    "name": "FPSO ITS",
+    "description": ""
   },
   {
     "id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5",
-    "name": "OLNG ITS"
+    "name": "OLNG ITS",
+    "description": ""
   },
   {
     "id": "f831510d-fc86-45f4-ab06-094a939ae29a",
-    "name": "FPSO ITB"
+    "name": "FPSO ITB",
+    "description": ""
   },
   {
     "id": "4661a21a-c28a-4560-aed3-c3f553288d99",
-    "name": "OLNG ITB"
+    "name": "OLNG ITB",
+    "description": ""
   }
 ]
