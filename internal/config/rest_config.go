@@ -45,7 +45,7 @@ func NewRest() RestConfig {
 
 		//=========== (SERVICE) ===========//
 		authService               service.AuthService               = service.NewAuth(userRepository, mailerService, oauthService, db)
-		userService               service.UserService               = service.NewUser(userRepository, userDisciplineRepository, packageRepository, db)
+		userService               service.UserService               = service.NewUser(userRepository, userDisciplineRepository, areaOfConcernConsolidatorRepository, packageRepository, db)
 		packageService            service.PackageService            = service.NewPackage(packageRepository, db)
 		userDisciplineService     service.UserDisciplineService     = service.NewUserDiscipline(userDisciplineRepository, db)
 		documentService           service.DocumentService           = service.NewDocument(documentRepository, packageRepository, userRepository, db)
