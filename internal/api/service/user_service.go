@@ -23,22 +23,25 @@ type (
 	}
 
 	userService struct {
-		userRepository           repository.UserRepository
-		userDisciplineRepository repository.UserDisciplineRepository
-		packageRepository        repository.PackageRepository
-		db                       *gorm.DB
+		userRepository            repository.UserRepository
+		userDisciplineRepository  repository.UserDisciplineRepository
+		areaOfConcernConsolidator repository.AreaOfConcernConsolidatorRepository
+		packageRepository         repository.PackageRepository
+		db                        *gorm.DB
 	}
 )
 
 func NewUser(userRepository repository.UserRepository,
 	userDisciplineRepository repository.UserDisciplineRepository,
+	areaOfConcernConsolidator repository.AreaOfConcernConsolidatorRepository,
 	packageRepository repository.PackageRepository,
 	db *gorm.DB) UserService {
 	return &userService{
-		userRepository:           userRepository,
-		userDisciplineRepository: userDisciplineRepository,
-		packageRepository:        packageRepository,
-		db:                       db,
+		userRepository:            userRepository,
+		userDisciplineRepository:  userDisciplineRepository,
+		areaOfConcernConsolidator: areaOfConcernConsolidator,
+		packageRepository:         packageRepository,
+		db:                        db,
 	}
 }
 
@@ -251,6 +254,10 @@ func (s *userService) Update(ctx context.Context, userId string, req dto.UpdateU
 func (s *userService) Delete(ctx context.Context, userId string) error {
 	user, err := s.userRepository.GetById(ctx, nil, userId)
 	if err != nil {
+		return err
+	}
+
+	if err := s.areaOfConcernConsolidator.DeleteByUserID(ctx, nil, userId); err != nil {
 		return err
 	}
 

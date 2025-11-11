@@ -16,6 +16,7 @@ type (
 		GetByID(ctx context.Context, tx *gorm.DB, areaOfConcernConsolidatorID string, preloads ...string) (entity.AreaOfConcernConsolidator, error)
 		Update(ctx context.Context, tx *gorm.DB, areaOfConcernConsolidator entity.AreaOfConcernConsolidator, preloads ...string) error
 		Delete(ctx context.Context, tx *gorm.DB, areaOfConcernConsolidator entity.AreaOfConcernConsolidator, preloads ...string) error
+		DeleteByUserID(ctx context.Context, tx *gorm.DB, userID string) error
 		DeleteBulk(ctx context.Context, tx *gorm.DB, areaOfConcernConcolidatorIDs []string) error
 	}
 
@@ -124,6 +125,20 @@ func (r *areaOfConcernConsolidatorRepository) Delete(ctx context.Context, tx *go
 	}
 
 	if err := tx.WithContext(ctx).Delete(&areaOfConcernConsolidator).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *areaOfConcernConsolidatorRepository) DeleteByUserID(ctx context.Context, tx *gorm.DB, userID string) error {
+	if tx == nil {
+		tx = r.db
+	}
+
+	if err := tx.WithContext(ctx).
+		Where("user_id = ?", userID).
+		Delete(&entity.AreaOfConcernConsolidator{}).Error; err != nil {
 		return err
 	}
 
