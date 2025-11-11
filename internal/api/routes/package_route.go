@@ -11,6 +11,7 @@ func Package(app *gin.Engine, packagecontroller controller.PackageController, mi
 	{
 		routes.GET("", packagecontroller.GetAll)
 		routes.GET("/:id", packagecontroller.GetByID)
+		routes.GET("/me", middleware.Authenticate(), packagecontroller.GetAllByUser)
 		routes.POST("", packagecontroller.CreatePackage)
 		routes.PUT("", packagecontroller.UpdatePackage)
 		routes.DELETE("/:id", packagecontroller.DeletePackage)

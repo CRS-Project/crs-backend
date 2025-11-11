@@ -1,8 +1,8 @@
 package dto
 
 type (
-	StatisticAOCAndCommentCharts struct {
-		Date                 string `json:"date"`
+	StatisticAOCAndCommentChart struct {
+		Name                 string `json:"name"`
 		TotalAreaOfConcern   int    `json:"total_area_of_concern"`
 		TotalDocuments       int    `json:"total_documents"`
 		TotalComments        int    `json:"total_comments"`
@@ -16,7 +16,7 @@ type (
 		TotalCommentRejected int `json:"total_comment_rejected"`
 	}
 
-	StatisticCommentUsersCharts struct {
+	StatisticCommentUsersChart struct {
 		SMEInitial    int `json:"sme_initial"`
 		CommentClosed int `json:"comment_closed"`
 		TotalComment  int `json:"total_comment"`

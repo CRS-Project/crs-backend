@@ -16,6 +16,7 @@ type (
 	PackageService interface {
 		CreatePackage(ctx context.Context, req dto.CreatePackageRequest) (dto.PackageInfo, error)
 		GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.PackageInfo, meta.Meta, error)
+		GetAllByUser(ctx context.Context, userId string) ([]dto.PackageInfo, error)
 		UpdatePackage(ctx context.Context, req dto.UpdatePackageRequest) (dto.PackageInfo, error)
 		DeletePackage(ctx context.Context, id string) error
 		GetByID(ctx context.Context, id string) (dto.PackageInfo, error)
@@ -23,13 +24,17 @@ type (
 
 	packageService struct {
 		packageRepository repository.PackageRepository
+		userRepository    repository.UserRepository
 		db                *gorm.DB
 	}
 )
 
-func NewPackage(packageRepository repository.PackageRepository, db *gorm.DB) PackageService {
+func NewPackage(packageRepository repository.PackageRepository,
+	userRepository repository.UserRepository,
+	db *gorm.DB) PackageService {
 	return &packageService{
 		packageRepository: packageRepository,
+		userRepository:    userRepository,
 		db:                db,
 	}
 }
@@ -64,6 +69,36 @@ func (s *packageService) GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.P
 	}
 
 	return pkgInfos, metaRes, nil
+}
+
+func (s *packageService) GetAllByUser(ctx context.Context, userId string) ([]dto.PackageInfo, error) {
+	user, err := s.userRepository.GetById(ctx, nil, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	pkgs, err := s.packageRepository.GetAllNoPag(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.PackageID != nil {
+		pkg, err := s.packageRepository.GetByID(ctx, nil, user.PackageID.String())
+		if err != nil {
+			return nil, err
+		}
+
+		pkgs = []entity.Package{
+			pkg,
+		}
+	}
+
+	var pkgInfos []dto.PackageInfo
+	for _, pkg := range pkgs {
+		pkgInfos = append(pkgInfos, pkg.ToInfo())
+	}
+
+	return pkgInfos, nil
 }
 
 func (s *packageService) UpdatePackage(ctx context.Context, req dto.UpdatePackageRequest) (dto.PackageInfo, error) {

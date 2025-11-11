@@ -1,11 +1,14 @@
 package controller
 
 import (
+	"net/http"
+
 	"github.com/CRS-Project/crs-backend/internal/api/service"
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/CRS-Project/crs-backend/internal/pkg/response"
+	"github.com/CRS-Project/crs-backend/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,6 +16,7 @@ type (
 	PackageController interface {
 		CreatePackage(ctx *gin.Context)
 		GetAll(ctx *gin.Context)
+		GetAllByUser(ctx *gin.Context)
 		UpdatePackage(ctx *gin.Context)
 		DeletePackage(ctx *gin.Context)
 		GetByID(ctx *gin.Context)
@@ -54,6 +58,22 @@ func (c *packageController) GetAll(ctx *gin.Context) {
 	}
 
 	response.NewSuccess("success get package", res, metaRes).Send(ctx)
+}
+
+func (c *packageController) GetAllByUser(ctx *gin.Context) {
+	userId, err := utils.GetUserIdFromCtx(ctx)
+	if err != nil {
+		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
+		return
+	}
+
+	res, err := c.packageService.GetAllByUser(ctx.Request.Context(), userId)
+	if err != nil {
+		response.NewFailed("failed to get packages", err).Send(ctx)
+		return
+	}
+
+	response.NewSuccess("success get package", res).Send(ctx)
 }
 
 func (c *packageController) UpdatePackage(ctx *gin.Context) {
