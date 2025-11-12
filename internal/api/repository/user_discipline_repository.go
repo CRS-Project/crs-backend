@@ -58,7 +58,7 @@ func (r *userDisciplineRepository) GetAllNotAdminAndContractor(ctx context.Conte
 	var userDiscipline []entity.UserDiscipline
 
 	tx = tx.WithContext(ctx).Model(entity.UserDiscipline{}).
-		Where("initial NOT IN ?", []string{"CONTRACTOR", "REVIEWER"})
+		Where("initial NOT IN ?", []string{"CONTRACTOR", "ADMIN"})
 	if err := WithFilters(tx.Debug(), &metaReq, AddModels(entity.UserDiscipline{})).Find(&userDiscipline).Error; err != nil {
 		return nil, err
 	}
