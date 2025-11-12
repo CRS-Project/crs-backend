@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   app-prod:
-    image: ghcr.io/${GHCR_USERNAME}/csr:latest
+    image: ghcr.io/${GHCR_USERNAME}/crs:latest
     container_name: crs-backend-app-prod
     expose:
       - "8888"
@@ -14,7 +14,7 @@ services:
       db-prod:
         condition: service_healthy
     networks:
-      - crs-app-prod-net
+      - backend_net
 
   db-prod:
     image: postgres:17
@@ -31,29 +31,11 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - crs-app-prod-net
-
-  nginx-prod:
-    image: nginx:stable
-    container_name: crs-backend-nginx-prod
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./nginx/logs:/var/log/nginx
-      - ./assets:/app/assets
-      - /var/www/certbot:/var/www/certbot
-      - /etc/letsencrypt:/etc/letsencrypt
-    depends_on:
-      - app-prod
-    networks:
-      - crs-app-prod-net
+      - backend_net
 
 volumes:
   pgdata_prod:
 
 networks:
-  crs-app-prod-net:
-    driver: bridge
+  backend_net:
+    external: true
