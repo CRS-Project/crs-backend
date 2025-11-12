@@ -8,6 +8,7 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
+	mylog "github.com/CRS-Project/crs-backend/internal/pkg/logger"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -185,7 +186,7 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 		return nil, meta.Meta{}, err
 	}
 
-	comments, metaRes, err := s.commentRepository.GetAllByAreaOfConcernID(ctx, nil, areaOfConcernId, metaReq, "User", "CommentReplies.User", "Document")
+	comments, metaRes, err := s.commentRepository.GetAllByAreaOfConcernID(ctx, nil, areaOfConcernId, metaReq, "User", "CommentReplies.User", "CommentReplies.Document", "Document")
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
@@ -195,6 +196,7 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 		var replies []dto.CommentResponse
 		if len(comment.CommentReplies) > 0 {
 			for _, reply := range comment.CommentReplies {
+				mylog.Infoln(reply)
 				replies = append(replies, dto.CommentResponse{
 					ID:                    reply.ID.String(),
 					Section:               reply.Section,
