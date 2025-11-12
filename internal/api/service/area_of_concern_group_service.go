@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -60,6 +61,9 @@ func (s *areaOfConcernGroupService) Create(ctx context.Context, req dto.AreaOfCo
 	if pkg == nil {
 		contractor, err = s.userRepository.GetContractorByPackage(ctx, nil, req.PackageID, "Package")
 		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return dto.AreaOfConcernGroupResponse{}, myerror.New("this package not have contractor", http.StatusBadRequest)
+			}
 			return dto.AreaOfConcernGroupResponse{}, err
 		}
 
