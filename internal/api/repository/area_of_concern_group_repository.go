@@ -142,7 +142,7 @@ func (r *areaOfConcernGroupRepository) Statistic(ctx context.Context, tx *gorm.D
 		(SELECT COUNT(*) FROM area_of_concerns a WHERE a.package_id = ? AND deleted_at is null) AS total_area_of_concern,
 		(SELECT COUNT(*) FROM comments c
 			JOIN area_of_concerns a ON a.id = c.area_of_concern_id
-			WHERE a.package_id = ? AND c.comment_reply_id IS NULL AND c.deleted_at is null) AS total_comments;
+			WHERE a.package_id = ? AND c.comment_reply_id IS NULL AND c.deleted_at is null) AS total_comment;
 	`, packageId, packageId, packageId).Scan(&stats).Error
 
 	if err != nil {
