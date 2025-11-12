@@ -108,7 +108,7 @@ func (s *commentService) Reply(ctx context.Context, req dto.CommentRequest) (dto
 		req.ReplyId = commentReplied.CommentReplyID.String()
 	}
 
-	replyId := uuid.MustParse(req.ReplyId)
+	replyId := commentReplied.ID
 	commentResult, err := s.commentRepository.Create(ctx, nil, entity.Comment{
 		Section:         req.Section,
 		Comment:         req.Comment,
@@ -203,12 +203,12 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 					Status:                (*string)(reply.Status),
 					CommentAt:             reply.CreatedAt.Format("15.04 • 02 Jan 2006"),
 					DocumentID:            reply.DocumentID.String(),
-					CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
+					CompanyDocumentNumber: reply.Document.CompanyDocumentNumber,
 					UserComment: &dto.UserComment{
-						ID:           comment.User.ID.String(),
-						Name:         comment.User.Name,
-						PhotoProfile: comment.User.PhotoProfile,
-						Role:         string(comment.User.Role),
+						ID:           reply.User.ID.String(),
+						Name:         reply.User.Name,
+						PhotoProfile: reply.User.PhotoProfile,
+						Role:         string(reply.User.Role),
 					},
 				})
 			}
