@@ -1,22 +1,32 @@
 [
   {
     "id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2",
-    "name": "FPSO ITS",
-    "description": ""
+    "name": "FPSO A - STTM",
+    "description": "Floating Production, Storage, and Offloading A - STTM"
   },
   {
     "id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5",
-    "name": "OLNG ITS",
-    "description": ""
+    "name": "FPSO B - TTJ",
+    "description": "Floating Production, Storage, and Offloading B - TTJ"
   },
   {
     "id": "f831510d-fc86-45f4-ab06-094a939ae29a",
-    "name": "FPSO ITB",
-    "description": ""
+    "name": "OLNG A - JT",
+    "description": "Onshore LNG (Liquefied Natural Gas) A - JT"
   },
   {
     "id": "4661a21a-c28a-4560-aed3-c3f553288d99",
-    "name": "OLNG ITB",
-    "description": ""
+    "name": "OLNG B - KSA",
+    "description": "Onshore LNG (Liquefied Natural Gas) B - KSA"
+  },
+  {
+    "id": "0889d5ac-09be-4d33-bc9f-baa249914dbb",
+    "name": "SURF - Worley",
+    "description": "Subsea Umbilicals, Risers, and Flowlines - Worley"
+  },
+  {
+    "id": "28e976aa-231a-4e71-af7e-8e6830819e89",
+    "name": "GEP - Worley",
+    "description": "Gas Export Pipeline - Worley"
   }
 ]

@@ -246,7 +246,7 @@ func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, are
 		requestData = append(requestData, mypdf.GenerateRequestData{
 			PackageInfoData: mypdf.PackageInfoData{
 				Package:           contractor.Package.Name,
-				ContractorInitial: contractor.Initial,
+				ContractorInitial: contractor.Initial + " - " + contractor.Name,
 			},
 			DisciplineSectionData: mypdf.DisciplineSectionData{
 				Discipline:               data.UserDiscipline.Name,

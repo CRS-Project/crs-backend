@@ -29,5 +29,5 @@ func NewUserDiscipline(userDisciplineRepository repository.UserDisciplineReposit
 }
 
 func (s *userDisciplineService) GetAll(ctx context.Context, metaReq meta.Meta) ([]entity.UserDiscipline, error) {
-	return s.userDisciplineRepository.GetAll(ctx, nil, metaReq)
+	return s.userDisciplineRepository.GetAllNotAdminAndContractor(ctx, nil, metaReq)
 }
