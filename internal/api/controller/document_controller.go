@@ -15,6 +15,7 @@ import (
 type (
 	DocumentController interface {
 		Create(ctx *gin.Context)
+		CreateBulk(ctx *gin.Context)
 		GetByID(ctx *gin.Context)
 		GetAll(ctx *gin.Context)
 		Update(ctx *gin.Context)
@@ -54,6 +55,33 @@ func (c *documentController) Create(ctx *gin.Context) {
 	}
 
 	response.NewSuccess("success create document", res).Send(ctx)
+}
+
+func (c *documentController) CreateBulk(ctx *gin.Context) {
+	userId, err := utils.GetUserIdFromCtx(ctx)
+	if err != nil {
+		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
+		return
+	}
+
+	var req dto.CreateBulkDocumentRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.NewFailed("failed get data from body", err).Send(ctx)
+		return
+	}
+
+	packageId := ctx.Param("package_id")
+
+	req.UserID = userId
+	req.PackageID = packageId
+
+	res, err := c.documentService.CreateBulk(ctx.Request.Context(), req)
+	if err != nil {
+		response.NewFailed("failed to create bulk document", err).Send(ctx)
+		return
+	}
+
+	response.NewSuccess("success to create bulk document", res).Send(ctx)
 }
 
 func (c *documentController) GetByID(ctx *gin.Context) {
