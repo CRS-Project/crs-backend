@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/CRS-Project/crs-backend/internal/api/repository"
@@ -24,6 +25,7 @@ type (
 
 	areaOfConcernService struct {
 		areaOfConcernRepository             repository.AreaOfConcernRepository
+		areaOfConcernGroupRepository        repository.AreaOfConcernGroupRepository
 		areaOfConcernConsolidatorRepository repository.AreaOfConcernConsolidatorRepository
 		packageRepository                   repository.PackageRepository
 		userRepository                      repository.UserRepository
@@ -33,6 +35,7 @@ type (
 )
 
 func NewAreaOfConcern(areaOfConcernRepository repository.AreaOfConcernRepository,
+	areaOfConcernGroupRepository repository.AreaOfConcernGroupRepository,
 	areaOfConcernConsolidatorRepository repository.AreaOfConcernConsolidatorRepository,
 	packageRepository repository.PackageRepository,
 	userRepository repository.UserRepository,
@@ -40,6 +43,7 @@ func NewAreaOfConcern(areaOfConcernRepository repository.AreaOfConcernRepository
 	db *gorm.DB) AreaOfConcernService {
 	return &areaOfConcernService{
 		areaOfConcernRepository:             areaOfConcernRepository,
+		areaOfConcernGroupRepository:        areaOfConcernGroupRepository,
 		areaOfConcernConsolidatorRepository: areaOfConcernConsolidatorRepository,
 		packageRepository:                   packageRepository,
 		userRepository:                      userRepository,
@@ -73,10 +77,18 @@ func (s *areaOfConcernService) Create(ctx context.Context, req dto.AreaOfConcern
 		})
 	}
 
+	areaofconcerngroup, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, req.AreaOfConcernGroupID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return dto.AreaOfConcernResponse{}, myerror.New("area of concern group not found", http.StatusNotFound)
+		}
+		return dto.AreaOfConcernResponse{}, err
+	}
+
 	areaOfConcernResult, err := s.areaOfConcernRepository.Create(ctx, nil, entity.AreaOfConcern{
 		Description:          req.Description,
 		AreaOfConcernId:      req.AreaOfConcernId,
-		AreaOfConcernGroupID: uuid.MustParse(req.AreaOfConcernGroupID),
+		AreaOfConcernGroupID: areaofconcerngroup.ID,
 		PackageID:            pkg.ID,
 		Consolidators:        consolidatorsInput,
 	})
