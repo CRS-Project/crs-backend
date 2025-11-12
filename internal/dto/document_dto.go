@@ -1,5 +1,7 @@
 package dto
 
+import "mime/multipart"
+
 type (
 	CreateDocumentRequest struct {
 		UserID                   string  `json:"-"`
@@ -36,9 +38,9 @@ type (
 	}
 
 	CreateBulkDocumentRequest struct {
-		UserID    string `json:"_"`
-		PackageID string `json:"-"`
-		SheetUrl  string `json:"sheet_url" binding:"required"`
+		UserID    string                `json:"_"`
+		PackageID string                `json:"-"`
+		FileSheet *multipart.FileHeader `multipart.FileHeader:"file_sheet" binding:"required"`
 	}
 
 	GetAllDocumentResponse struct {
