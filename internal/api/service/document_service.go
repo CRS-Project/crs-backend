@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/CRS-Project/crs-backend/internal/api/repository"
@@ -12,6 +11,7 @@ import (
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/xuri/excelize/v2"
+
 	"gorm.io/gorm"
 )
 
@@ -106,6 +106,9 @@ func (s *documentService) Create(ctx context.Context, req dto.CreateDocumentRequ
 
 func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocumentRequest) ([]dto.GetAllDocumentResponse, error) {
 	pkg, user, err := s.getPackagePermission(ctx, req.UserID)
+	if err != nil {
+		return nil, err
+	}
 
 	if pkg == nil {
 		pkgVal, err := s.packageRepository.GetByID(ctx, nil, req.PackageID)
@@ -229,6 +232,10 @@ func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocu
 	var documentsRes []dto.GetAllDocumentResponse
 	for _, document := range documents {
 		document, err = s.documentRepository.Create(ctx, nil, document)
+		if err != nil {
+			return nil, err
+		}
+
 		documentsRes = append(documentsRes, dto.GetAllDocumentResponse{
 			ID:                       document.ID.String(),
 			CompanyDocumentNumber:    document.CompanyDocumentNumber,
