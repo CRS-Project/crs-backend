@@ -21,6 +21,7 @@ type (
 		Update(ctx *gin.Context)
 		Delete(ctx *gin.Context)
 		GeneratePDF(ctx *gin.Context)
+		Statistic(ctx *gin.Context)
 	}
 
 	areaOfConcernGroupController struct {
@@ -67,11 +68,11 @@ func (c *areaOfConcernGroupController) GetAll(ctx *gin.Context) {
 
 	areaOfConcernGroups, metaRes, err := c.areaOfConcernGroupService.GetAll(ctx.Request.Context(), userId, meta.New(ctx))
 	if err != nil {
-		response.NewFailed("failed get all areaOfConcernGroups", err).Send(ctx)
+		response.NewFailed("failed get all area of concern groups", err).Send(ctx)
 		return
 	}
 
-	response.NewSuccess("success get all areaOfConcernGroups", areaOfConcernGroups, metaRes).Send(ctx)
+	response.NewSuccess("success get all area of concern groups", areaOfConcernGroups, metaRes).Send(ctx)
 }
 
 func (c *areaOfConcernGroupController) GetById(ctx *gin.Context) {
@@ -146,4 +147,15 @@ func (c *areaOfConcernGroupController) GeneratePDF(ctx *gin.Context) {
 	ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
 	ctx.Data(http.StatusOK, "application/pdf", pdfBuffer.Bytes())
 	response.NewSuccess("success generate pdf", nil).Send(ctx)
+}
+
+func (c *areaOfConcernGroupController) Statistic(ctx *gin.Context) {
+	packageId := ctx.Param("package_id")
+	res, err := c.areaOfConcernGroupService.GetStatistic(ctx.Request.Context(), packageId)
+	if err != nil {
+		response.NewFailed("failed get statistic area of concern group", err).Send(ctx)
+		return
+	}
+
+	response.NewSuccess("success get statistic area of concern group", res).Send(ctx)
 }

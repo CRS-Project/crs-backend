@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 
+	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"gorm.io/gorm"
@@ -15,6 +16,8 @@ type (
 		GetByID(ctx context.Context, tx *gorm.DB, areaOfConcernGroupID string, preloads ...string) (entity.AreaOfConcernGroup, error)
 		Update(ctx context.Context, tx *gorm.DB, areaOfConcernGroup entity.AreaOfConcernGroup, preloads ...string) error
 		Delete(ctx context.Context, tx *gorm.DB, areaOfConcernGroup entity.AreaOfConcernGroup, preloads ...string) error
+
+		Statistic(ctx context.Context, tx *gorm.DB, packageId string) (dto.AreaOfConcernGroupStatistic, error)
 	}
 
 	areaOfConcernGroupRepository struct {
@@ -124,4 +127,26 @@ func (r *areaOfConcernGroupRepository) Delete(ctx context.Context, tx *gorm.DB, 
 	}
 
 	return nil
+}
+
+func (r *areaOfConcernGroupRepository) Statistic(ctx context.Context, tx *gorm.DB, packageId string) (dto.AreaOfConcernGroupStatistic, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	var stats dto.AreaOfConcernGroupStatistic
+	err := tx.Raw(`
+		SELECT
+		(SELECT COUNT(*) FROM area_of_concern_groups ag WHERE ag.package_id = ? AND deleted_at is null) AS total_area_of_concern_group,
+		(SELECT COUNT(*) FROM area_of_concerns a WHERE a.package_id = ? AND deleted_at is null) AS total_area_of_concern,
+		(SELECT COUNT(*) FROM comments c
+			JOIN area_of_concerns a ON a.id = c.area_of_concern_id
+			WHERE a.package_id = ? AND c.comment_reply_id IS NULL AND c.deleted_at is null) AS total_comments;
+	`, packageId, packageId, packageId).Scan(&stats).Error
+
+	if err != nil {
+		return dto.AreaOfConcernGroupStatistic{}, err
+	}
+
+	return stats, nil
 }

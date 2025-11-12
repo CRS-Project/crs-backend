@@ -15,4 +15,10 @@ type (
 		Package        string `json:"package"`
 		UserDiscipline string `json:"user_discipline"`
 	}
+
+	AreaOfConcernGroupStatistic struct {
+		TotalAreaOfConcernGroup int `json:"total_area_of_concern_group"`
+		TotalAreaOfConcern      int `json:"total_area_of_concern"`
+		TotalComment            int `json:"total_comment"`
+	}
 )

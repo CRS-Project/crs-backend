@@ -1,0 +1,24 @@
+meta {
+  name: Statistic
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{host}}/api/v1/area-of-concern-group/statistic/:package_id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  package_id: 03397d6e-706f-467d-adad-38335f175099
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -11,6 +11,7 @@ func AreaOfConcernGroup(app *gin.Engine, areaOfConcernGroupcontroller controller
 	{
 		routes.POST("", middleware.Authenticate(), areaOfConcernGroupcontroller.Create)
 		routes.GET("", middleware.Authenticate(), areaOfConcernGroupcontroller.GetAll)
+		routes.GET("/statistic/:package_id", middleware.Authenticate(), areaOfConcernGroupcontroller.Statistic)
 		routes.GET("/:area_of_concern_group_id/generate-pdf", middleware.Authenticate(), areaOfConcernGroupcontroller.GeneratePDF)
 		routes.GET("/:area_of_concern_group_id", middleware.Authenticate(), areaOfConcernGroupcontroller.GetById)
 		routes.PUT("/:area_of_concern_group_id", middleware.Authenticate(), areaOfConcernGroupcontroller.Update)

@@ -69,11 +69,11 @@ func (c *areaOfConcernController) GetAll(ctx *gin.Context) {
 
 	areaOfConcerns, metaRes, err := c.areaOfConcernService.GetAll(ctx.Request.Context(), areaOfConcernGroupId, userId, meta.New(ctx))
 	if err != nil {
-		response.NewFailed("failed get all areaOfConcerns", err).Send(ctx)
+		response.NewFailed("failed get all area of Concerns", err).Send(ctx)
 		return
 	}
 
-	response.NewSuccess("success get all areaOfConcerns", areaOfConcerns, metaRes).Send(ctx)
+	response.NewSuccess("success get all area of concerns", areaOfConcerns, metaRes).Send(ctx)
 }
 
 func (c *areaOfConcernController) GetById(ctx *gin.Context) {

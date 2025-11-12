@@ -24,6 +24,7 @@ type (
 		Update(ctx context.Context, req dto.AreaOfConcernGroupRequest) error
 		Delete(ctx context.Context, userId, areaOfConcernGroupId string) error
 		GeneratePDF(ctx context.Context, userId, areaOfConcernGroupId string) (*bytes.Buffer, string, error)
+		GetStatistic(ctx context.Context, packageId string) (dto.AreaOfConcernGroupStatistic, error)
 	}
 
 	areaOfConcernGroupService struct {
@@ -259,6 +260,10 @@ func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, are
 	}
 
 	return pdfBuffer, filename, nil
+}
+
+func (s *areaOfConcernGroupService) GetStatistic(ctx context.Context, packageId string) (dto.AreaOfConcernGroupStatistic, error) {
+	return s.areaOfConcernGroupRepository.Statistic(ctx, nil, packageId)
 }
 
 func (s *areaOfConcernGroupService) getPackagePermission(ctx context.Context, userId string) (*entity.Package, entity.User, error) {
