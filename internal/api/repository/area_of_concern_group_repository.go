@@ -73,7 +73,8 @@ func (r *areaOfConcernGroupRepository) GetAll(ctx context.Context, tx *gorm.DB, 
 	}
 
 	if err := WithFilters(tx, &metaReq, AddModels(entity.AreaOfConcernGroup{}),
-		AddCustomField("search", "")).Find(&areaOfConcernGroups).Error; err != nil {
+		AddCustomField("search", ""),
+		AddCustomField("user_discipline", "", "user_disciplines.name")).Find(&areaOfConcernGroups).Error; err != nil {
 		return nil, meta.Meta{}, err
 	}
 
