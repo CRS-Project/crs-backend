@@ -90,7 +90,7 @@ func (s *areaOfConcernGroupService) Create(ctx context.Context, req dto.AreaOfCo
 }
 
 func (s *areaOfConcernGroupService) GetById(ctx context.Context, id string) (dto.AreaOfConcernGroupResponse, error) {
-	areaOfConcernGroup, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, id, "Package", "UserDiscipline")
+	areaOfConcernGroup, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, id, "Package")
 	if err != nil {
 		return dto.AreaOfConcernGroupResponse{}, err
 	}
@@ -114,7 +114,7 @@ func (s *areaOfConcernGroupService) GetAll(ctx context.Context, userId string, m
 		packageId = pkg.ID.String()
 	}
 
-	areaOfConcernGroups, metaRes, err := s.areaOfConcernGroupRepository.GetAll(ctx, nil, packageId, metaReq, "Package", "UserDiscipline")
+	areaOfConcernGroups, metaRes, err := s.areaOfConcernGroupRepository.GetAll(ctx, nil, packageId, metaReq, "Package")
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
@@ -180,7 +180,7 @@ func (s *areaOfConcernGroupService) Delete(ctx context.Context, userId, areaOfCo
 }
 
 func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, areaOfConcernGroupId string) (*bytes.Buffer, string, error) {
-	data, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, areaOfConcernGroupId, "AreaOfConcerns.Consolidators.User", "AreaOfConcerns.Comments.CommentReplies", "AreaOfConcerns.Comments.User", "AreaOfConcerns.Comments.Document", "UserDiscipline", "Package")
+	data, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, areaOfConcernGroupId, "AreaOfConcerns.Consolidators.User", "AreaOfConcerns.Comments.CommentReplies", "AreaOfConcerns.Comments.User", "AreaOfConcerns.Comments.Document", "Package")
 	if err != nil {
 		return nil, "", err
 	}
