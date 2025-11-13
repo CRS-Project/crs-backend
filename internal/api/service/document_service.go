@@ -139,12 +139,6 @@ func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocu
 		return nil, err
 	}
 
-	_ = []string{"PIC", "FEED", "Contractor", "SN",
-		"CTR", "WBS", "CompanyDocumentNumber", "ContractorDocumentNumber",
-		"DocumentTitle", "Discipline", "Discipline Ori",
-		"SubDiscipline", "DocumentType", "DocumentCategory"}
-	nullableColIdx := []int{10, 11}
-
 	cnt := 0
 	endDocument := false
 	var documents []entity.Document
@@ -166,30 +160,16 @@ func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocu
 		documents = append(documents, entity.Document{})
 		documents[len(documents)-1].Package = pkg
 
-		validRow := true
 		for i, val := range row {
-			nullable := false
-			for _, j := range nullableColIdx {
-				if i == j {
-					nullable = true
-				}
-			}
-			if val == "" && !nullable {
-				endDocument = true
-				break
-				// errorMessage := fmt.Sprintf("column %s is missing", columns[i])
-				// return nil, myerror.New(errorMessage, http.StatusBadRequest)
-			}
-
 			switch i {
 			case 2:
-				if val != user.Initial {
-					validRow = false
-				}
-
 				contractor, err := s.userRepository.GetContractorByPackage(ctx, nil, pkg.ID.String())
 				if err != nil {
-					validRow = false
+					break
+				}
+
+				if user.Role == entity.RoleContractor && user.ID != contractor.ID {
+					break
 				}
 
 				documents[len(documents)-1].Contractor = &contractor
@@ -210,9 +190,10 @@ func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocu
 			// case 10: // Discipline Ori? what the hell is that?
 			// 	documents[len(documents)-1].Discipline = val
 			case 11:
-				if val != "" {
-					documents[len(documents)-1].SubDiscipline = &val
+				if val == "" {
+					break
 				}
+				documents[len(documents)-1].SubDiscipline = &val
 			case 12:
 				documents[len(documents)-1].DocumentType = val
 			case 13:
@@ -220,7 +201,12 @@ func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocu
 			}
 		}
 
-		if !validRow || endDocument {
+		validRow := documents[len(documents)-1].Contractor != nil
+		validRow = validRow && documents[len(documents)-1].CompanyDocumentNumber != ""
+		validRow = validRow && documents[len(documents)-1].ContractorDocumentNumber != ""
+		validRow = validRow && documents[len(documents)-1].DocumentTitle != ""
+
+		if !validRow {
 			documents = documents[:len(documents)-1]
 		}
 	}
@@ -246,6 +232,10 @@ func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocu
 			Package:                  pkg.Name,
 			Status:                   string(document.Status),
 		})
+	}
+
+	if len(documentsRes) == 0 {
+		return nil, myerror.New("no valid data in sheets", http.StatusBadRequest)
 	}
 
 	return documentsRes, nil
