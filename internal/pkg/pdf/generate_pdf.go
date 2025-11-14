@@ -53,10 +53,12 @@ func setupPDFDefaults(pdf *gofpdf.Fpdf) {
 }
 
 func drawHeader(pdf *gofpdf.Fpdf) {
-	pdf.Rect(10, 8, 25, 12, "D")
-	pdf.SetFont("Arial", "B", 9)
-	pdf.SetXY(10, 11)
-	pdf.CellFormat(25, 6, "LOGO", "", 0, "C", false, 0, "")
+	logoOpt := gofpdf.ImageOptions{
+		ImageType: "PNG",
+		ReadDpi:   true,
+	}
+
+	pdf.ImageOptions("assets/image/Logo-CRS.png", 10, 8, 40, 12, false, logoOpt, 0, "")
 
 	pdf.SetFont("Arial", "B", 16)
 	pdf.SetXY(100, 10)

@@ -2,7 +2,7 @@
 .env.prod
 
 tmp/
-assets/
+assets/uploads/
 logs/
 tests/
 
