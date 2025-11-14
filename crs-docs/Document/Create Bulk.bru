@@ -1,0 +1,24 @@
+meta {
+  name: Create Bulk
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/api/v1/document/bulk/:package_id
+  body: multipartForm
+  auth: inherit
+}
+
+params:path {
+  package_id: nil
+}
+
+body:multipart-form {
+  FileSheet: @file(Document/BulkTemplate.xlsx)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

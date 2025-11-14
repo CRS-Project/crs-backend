@@ -11,6 +11,7 @@ import (
 type (
 	UserDisciplineRepository interface {
 		GetAll(ctx context.Context, tx *gorm.DB, metaReq meta.Meta, preloads ...string) ([]entity.UserDiscipline, error)
+		GetAllNotAdminAndContractor(ctx context.Context, tx *gorm.DB, metaReq meta.Meta, preloads ...string) ([]entity.UserDiscipline, error)
 		FindAll(ctx context.Context, tx *gorm.DB, preloads ...string) ([]entity.UserDiscipline, error)
 		GetByID(ctx context.Context, tx *gorm.DB, userDisciplineId string, preloads ...string) (entity.UserDiscipline, error)
 		GetContractorDiscipline(ctx context.Context, tx *gorm.DB) (entity.UserDiscipline, error)
@@ -38,6 +39,26 @@ func (r *userDisciplineRepository) GetAll(ctx context.Context, tx *gorm.DB, meta
 	var userDiscipline []entity.UserDiscipline
 
 	tx = tx.WithContext(ctx).Model(entity.UserDiscipline{})
+	if err := WithFilters(tx.Debug(), &metaReq, AddModels(entity.UserDiscipline{})).Find(&userDiscipline).Error; err != nil {
+		return nil, err
+	}
+
+	return userDiscipline, nil
+}
+
+func (r *userDisciplineRepository) GetAllNotAdminAndContractor(ctx context.Context, tx *gorm.DB, metaReq meta.Meta, preloads ...string) ([]entity.UserDiscipline, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
+	}
+
+	var userDiscipline []entity.UserDiscipline
+
+	tx = tx.WithContext(ctx).Model(entity.UserDiscipline{}).
+		Where("initial NOT IN ?", []string{"CONTRACTOR", "ADMIN"})
 	if err := WithFilters(tx.Debug(), &metaReq, AddModels(entity.UserDiscipline{})).Find(&userDiscipline).Error; err != nil {
 		return nil, err
 	}

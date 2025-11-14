@@ -1,38 +1,46 @@
 package dto
 
+import "mime/multipart"
+
 type (
 	CreateDocumentRequest struct {
 		UserID                   string  `json:"-"`
-		PackageID                string  `json:"package_id" binding:"required"`
+		PackageID                string  `json:"package_id" binding:""`
 		DocumentUrl              *string `json:"document_url" binding:""`
-		DocumentSerialNumber     string  `json:"document_serial_number" binding:"required"`
-		CTRNumber                string  `json:"ctr_number" binding:"required"`
-		WBS                      string  `json:"wbs" binding:"required"`
-		CompanyDocumentNumber    string  `json:"company_document_number" binding:"required"`
+		DocumentSerialNumber     string  `json:"document_serial_number" binding:""`
+		CTRNumber                string  `json:"ctr_number" binding:""`
+		WBS                      string  `json:"wbs" binding:""`
+		CompanyDocumentNumber    string  `json:"company_document_number" binding:""`
 		ContractorDocumentNumber string  `json:"contractor_document_number"`
-		DocumentTitle            string  `json:"document_title" binding:"required"`
-		Discipline               string  `json:"discipline" binding:"required"`
+		DocumentTitle            string  `json:"document_title" binding:""`
+		Discipline               string  `json:"discipline" binding:""`
 		SubDiscipline            *string `json:"sub_discipline"`
-		DocumentType             string  `json:"document_type" binding:"required"`
-		DocumentCategory         string  `json:"document_category" binding:"required"`
-		Status                   string  `json:"status" binding:"required"`
+		DocumentType             string  `json:"document_type" binding:""`
+		DocumentCategory         string  `json:"document_category" binding:""`
+		Status                   string  `json:"status" binding:""`
 	}
 
 	UpdateDocumentRequest struct {
 		ID                       string  `json:"_"`
 		UserID                   string  `json:"-"`
 		DocumentUrl              *string `json:"document_url" binding:""`
-		DocumentSerialNumber     string  `json:"document_serial_number" binding:"required"`
-		CTRNumber                string  `json:"ctr_number" binding:"required"`
-		WBS                      string  `json:"wbs" binding:"required"`
-		CompanyDocumentNumber    string  `json:"company_document_number" binding:"required"`
-		ContractorDocumentNumber string  `json:"contractor_document_number" binding:"required"`
-		DocumentTitle            string  `json:"document_title" binding:"required"`
-		Discipline               string  `json:"discipline" binding:"required"`
+		DocumentSerialNumber     string  `json:"document_serial_number" binding:""`
+		CTRNumber                string  `json:"ctr_number" binding:""`
+		WBS                      string  `json:"wbs" binding:""`
+		CompanyDocumentNumber    string  `json:"company_document_number" binding:""`
+		ContractorDocumentNumber string  `json:"contractor_document_number" binding:""`
+		DocumentTitle            string  `json:"document_title" binding:""`
+		Discipline               string  `json:"discipline" binding:""`
 		SubDiscipline            *string `json:"sub_discipline"`
-		DocumentType             string  `json:"document_type" binding:"required"`
-		DocumentCategory         string  `json:"document_category"  binding:"required"`
-		Status                   string  `json:"status" binding:"required"`
+		DocumentType             string  `json:"document_type" binding:""`
+		DocumentCategory         string  `json:"document_category"  binding:""`
+		Status                   string  `json:"status" binding:""`
+	}
+
+	CreateBulkDocumentRequest struct {
+		UserID    string                `json:"_"`
+		PackageID string                `json:"-"`
+		FileSheet *multipart.FileHeader `multipart.FileHeader:"file_sheet" binding:"required"`
 	}
 
 	GetAllDocumentResponse struct {

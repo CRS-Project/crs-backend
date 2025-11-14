@@ -58,23 +58,20 @@ func (r *areaOfConcernGroupRepository) GetAll(ctx context.Context, tx *gorm.DB, 
 
 	var areaOfConcernGroups []entity.AreaOfConcernGroup
 
-	tx = tx.WithContext(ctx).Model(&entity.AreaOfConcernGroup{}).
-		Joins("LEFT JOIN user_disciplines ON user_disciplines.id = area_of_concern_groups.user_discipline_id")
-
+	tx = tx.WithContext(ctx).Model(&entity.AreaOfConcernGroup{})
 	if packageId != "" {
 		tx = tx.Where("package_id = ?", packageId)
 	}
 
 	filterMap := metaReq.SeparateFilter()
 	if find, ok := filterMap["search"]; ok {
-		tx = tx.Where("area_of_concern_groups.review_focus ILIKE ? OR user_disciplines.name ILIKE ?",
+		tx = tx.Where("area_of_concern_groups.review_focus ILIKE ? OR area_of_concern_groups.user_discipline ILIKE ?",
 			"%"+find+"%",
 			"%"+find+"%")
 	}
 
 	if err := WithFilters(tx, &metaReq, AddModels(entity.AreaOfConcernGroup{}),
-		AddCustomField("search", ""),
-		AddCustomField("user_discipline", "", "user_disciplines.name")).Find(&areaOfConcernGroups).Error; err != nil {
+		AddCustomField("search", "")).Find(&areaOfConcernGroups).Error; err != nil {
 		return nil, meta.Meta{}, err
 	}
 
@@ -142,7 +139,7 @@ func (r *areaOfConcernGroupRepository) Statistic(ctx context.Context, tx *gorm.D
 		(SELECT COUNT(*) FROM area_of_concerns a WHERE a.package_id = ? AND deleted_at is null) AS total_area_of_concern,
 		(SELECT COUNT(*) FROM comments c
 			JOIN area_of_concerns a ON a.id = c.area_of_concern_id
-			WHERE a.package_id = ? AND c.comment_reply_id IS NULL AND c.deleted_at is null) AS total_comments;
+			WHERE a.package_id = ? AND c.comment_reply_id IS NULL AND c.deleted_at is null) AS total_comment;
 	`, packageId, packageId, packageId).Scan(&stats).Error
 
 	if err != nil {

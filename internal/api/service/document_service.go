@@ -10,12 +10,15 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
+	"github.com/xuri/excelize/v2"
+
 	"gorm.io/gorm"
 )
 
 type (
 	DocumentService interface {
 		Create(ctx context.Context, req dto.CreateDocumentRequest) (dto.DocumentDetailResponse, error)
+		CreateBulk(ctx context.Context, req dto.CreateBulkDocumentRequest) ([]dto.GetAllDocumentResponse, error)
 		GetAll(ctx context.Context, userId string, metaReq meta.Meta) ([]dto.GetAllDocumentResponse, meta.Meta, error)
 		GetByID(ctx context.Context, documentId string) (dto.DocumentDetailResponse, error)
 		Update(ctx context.Context, req dto.UpdateDocumentRequest) (dto.DocumentDetailResponse, error)
@@ -99,6 +102,143 @@ func (s *documentService) Create(ctx context.Context, req dto.CreateDocumentRequ
 		Package:                  pkg.Name,
 		Status:                   string(documentResult.Status),
 	}, nil
+}
+
+func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocumentRequest) ([]dto.GetAllDocumentResponse, error) {
+	pkg, user, err := s.getPackagePermission(ctx, req.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	if pkg == nil {
+		pkgVal, err := s.packageRepository.GetByID(ctx, nil, req.PackageID)
+		if err != nil {
+			return nil, err
+		}
+		pkg = &pkgVal
+	}
+
+	file, err := req.FileSheet.Open()
+	if err != nil {
+		return nil, err
+	}
+
+	xlsx, err := excelize.OpenReader(file)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(xlsx.GetSheetList()) == 0 {
+		return nil, myerror.New("received sheet does not have a worksheet", http.StatusNotFound)
+	}
+
+	sheetName := xlsx.GetSheetList()[0]
+
+	rows, err := xlsx.Rows(sheetName)
+	if err != nil {
+		return nil, err
+	}
+
+	cnt := 0
+	endDocument := false
+	var documents []entity.Document
+	for rows.Next() {
+		if endDocument {
+			break
+		}
+
+		cnt++
+		if cnt < 4 {
+			continue
+		}
+
+		row, err := rows.Columns()
+		if err != nil {
+			return nil, err
+		}
+
+		documents = append(documents, entity.Document{})
+		documents[len(documents)-1].Package = pkg
+
+		for i, val := range row {
+			switch i {
+			case 2:
+				contractor, err := s.userRepository.GetContractorByPackage(ctx, nil, pkg.ID.String())
+				if err != nil {
+					break
+				}
+
+				if user.Role == entity.RoleContractor && user.ID != contractor.ID {
+					break
+				}
+
+				documents[len(documents)-1].Contractor = &contractor
+			case 3:
+				documents[len(documents)-1].DocumentSerialNumber = val
+			case 4:
+				documents[len(documents)-1].CTRNumber = val
+			case 5:
+				documents[len(documents)-1].WBS = val
+			case 6:
+				documents[len(documents)-1].CompanyDocumentNumber = val
+			case 7:
+				documents[len(documents)-1].ContractorDocumentNumber = val
+			case 8:
+				documents[len(documents)-1].DocumentTitle = val
+			case 9:
+				documents[len(documents)-1].Discipline = val
+			// case 10: // Discipline Ori? what the hell is that?
+			// 	documents[len(documents)-1].Discipline = val
+			case 11:
+				if val == "" {
+					break
+				}
+				documents[len(documents)-1].SubDiscipline = &val
+			case 12:
+				documents[len(documents)-1].DocumentType = val
+			case 13:
+				documents[len(documents)-1].DocumentCategory = val
+			}
+		}
+
+		validRow := documents[len(documents)-1].Contractor != nil
+		validRow = validRow && documents[len(documents)-1].CompanyDocumentNumber != ""
+		validRow = validRow && documents[len(documents)-1].ContractorDocumentNumber != ""
+		validRow = validRow && documents[len(documents)-1].DocumentTitle != ""
+
+		if !validRow {
+			documents = documents[:len(documents)-1]
+		}
+	}
+
+	if err = rows.Close(); err != nil {
+		return nil, err
+	}
+
+	var documentsRes []dto.GetAllDocumentResponse
+	for _, document := range documents {
+		document, err = s.documentRepository.Create(ctx, nil, document)
+		if err != nil {
+			return nil, err
+		}
+
+		documentsRes = append(documentsRes, dto.GetAllDocumentResponse{
+			ID:                       document.ID.String(),
+			CompanyDocumentNumber:    document.CompanyDocumentNumber,
+			ContractorDocumentNumber: document.ContractorDocumentNumber,
+			DocumentTitle:            document.DocumentTitle,
+			DocumentType:             document.DocumentType,
+			DocumentCategory:         document.DocumentCategory,
+			Package:                  pkg.Name,
+			Status:                   string(document.Status),
+		})
+	}
+
+	if len(documentsRes) == 0 {
+		return nil, myerror.New("no valid data in sheets", http.StatusBadRequest)
+	}
+
+	return documentsRes, nil
 }
 
 func (s *documentService) GetAll(ctx context.Context, userId string, metaReq meta.Meta) ([]dto.GetAllDocumentResponse, meta.Meta, error) {

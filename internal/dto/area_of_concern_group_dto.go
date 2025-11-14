@@ -2,11 +2,11 @@ package dto
 
 type (
 	AreaOfConcernGroupRequest struct {
-		ID               string `json:"-"`
-		ReviewFocus      string `json:"review_focus" binding:"required"`
-		UserDisciplineID string `json:"user_discipline_id" binding:"required"`
-		PackageID        string `json:"package_id" binding:"required"`
-		UserId           string `json:"-"`
+		ID             string `json:"-"`
+		ReviewFocus    string `json:"review_focus" binding:"required"`
+		UserDiscipline string `json:"user_discipline" binding:"required"`
+		PackageID      string `json:"package_id" binding:"required"`
+		UserId         string `json:"-"`
 	}
 
 	AreaOfConcernGroupResponse struct {

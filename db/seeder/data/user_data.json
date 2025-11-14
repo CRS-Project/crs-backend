@@ -1,7 +1,7 @@
 [
   {
-    "id": "a1a2b473-f398-4489-b7ef-6984b60e4f10",
-    "name": "super admin",
+    "id": "30e1d2a5-7bc5-434d-9143-e50d8ed816f0",
+    "name": "Super Admin",
     "email": "administrator@email.com",
     "password": "Admin123Super!",
     "is_verified": true,
@@ -13,29 +13,29 @@
     "package_id": null
   },
   {
-    "id": "7373f727-1a73-48ea-9342-dd9a47fa4b26",
-    "name": "contractor 1",
-    "email": "testc1@email.com",
-    "password": "Contractor.1",
+    "id": "b677953d-8173-4b88-be06-9bf63747f7b2",
+    "name": "Trial Contractor",
+    "email": "contractor@trial.com",
+    "password": "Contractor123!",
     "is_verified": true,
     "role": "CONTRACTOR",
-    "initial": "CON A",
-    "institution": "CONTRACTOR",
+    "initial": "TC",
+    "institution": "Contractor",
     "discipline_number": 1,
     "user_discipline_id": "f952528e-5c14-4b77-a722-c8efa2736051",
     "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
   },
   {
-    "id": "0d78ddf1-2cfa-436c-ad87-88360def402f",
-    "name": "contractor 1",
-    "email": "azkarizqullah99@gmail.com",
-    "password": "Password.1",
+    "id": "a1a2b473-f398-4489-b7ef-6984b60e4f10",
+    "name": "Trial Reviewer",
+    "email": "reviewer@trial.com",
+    "password": "Reviewer123!",
     "is_verified": true,
-    "role": "CONTRACTOR",
-    "initial": "CON B",
+    "role": "REVIEWER",
+    "initial": "TR",
+    "institution": "Reviewer Testing Demo",
     "discipline_number": 1,
-    "institution": "CONTRACTOR",
-    "user_discipline_id": "f952528e-5c14-4b77-a722-c8efa2736051",
-    "package_id": "e6f49ed5-9eee-42c9-8677-45d84bb04eb5"
+    "user_discipline_id": "f46a082d-15d4-4127-b5b6-5b7d4c3ffc7a",
+    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2"
   }
 ]

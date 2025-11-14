@@ -35,6 +35,7 @@ type (
 		DocumentID            string            `json:"document_id"`
 		CommentAt             string            `json:"comment_at"`
 		CompanyDocumentNumber string            `json:"company_document_number"`
+		IsCloseOutComment     bool              `json:"is_close_out_comment"`
 		UserComment           *UserComment      `json:"user_comment,omitempty"`
 		CommentReplies        []CommentResponse `json:"comment_replies"`
 	}

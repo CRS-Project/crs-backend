@@ -8,6 +8,7 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
+	mylog "github.com/CRS-Project/crs-backend/internal/pkg/logger"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -108,15 +109,16 @@ func (s *commentService) Reply(ctx context.Context, req dto.CommentRequest) (dto
 		req.ReplyId = commentReplied.CommentReplyID.String()
 	}
 
-	replyId := uuid.MustParse(req.ReplyId)
+	replyId := commentReplied.ID
 	commentResult, err := s.commentRepository.Create(ctx, nil, entity.Comment{
-		Section:         req.Section,
-		Comment:         req.Comment,
-		Baseline:        req.Baseline,
-		DocumentID:      document.ID,
-		UserID:          user.ID,
-		AreaOfConcernID: areaOfConcern.ID,
-		CommentReplyID:  &replyId,
+		Section:           req.Section,
+		Comment:           req.Comment,
+		Baseline:          req.Baseline,
+		DocumentID:        document.ID,
+		UserID:            user.ID,
+		IsCloseOutComment: req.IsCloseOutComment,
+		AreaOfConcernID:   areaOfConcern.ID,
+		CommentReplyID:    &replyId,
 	}, "Document")
 	if err != nil {
 		return dto.CommentResponse{}, err
@@ -185,7 +187,7 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 		return nil, meta.Meta{}, err
 	}
 
-	comments, metaRes, err := s.commentRepository.GetAllByAreaOfConcernID(ctx, nil, areaOfConcernId, metaReq, "User", "CommentReplies.User", "Document")
+	comments, metaRes, err := s.commentRepository.GetAllByAreaOfConcernID(ctx, nil, areaOfConcernId, metaReq, "User", "CommentReplies.User", "CommentReplies.Document", "Document")
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
@@ -195,6 +197,7 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 		var replies []dto.CommentResponse
 		if len(comment.CommentReplies) > 0 {
 			for _, reply := range comment.CommentReplies {
+				mylog.Infoln(reply)
 				replies = append(replies, dto.CommentResponse{
 					ID:                    reply.ID.String(),
 					Section:               reply.Section,
@@ -203,12 +206,13 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 					Status:                (*string)(reply.Status),
 					CommentAt:             reply.CreatedAt.Format("15.04 • 02 Jan 2006"),
 					DocumentID:            reply.DocumentID.String(),
-					CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
+					IsCloseOutComment:     reply.IsCloseOutComment,
+					CompanyDocumentNumber: reply.Document.CompanyDocumentNumber,
 					UserComment: &dto.UserComment{
-						ID:           comment.User.ID.String(),
-						Name:         comment.User.Name,
-						PhotoProfile: comment.User.PhotoProfile,
-						Role:         string(comment.User.Role),
+						ID:           reply.User.ID.String(),
+						Name:         reply.User.Name,
+						PhotoProfile: reply.User.PhotoProfile,
+						Role:         string(reply.User.Role),
 					},
 				})
 			}
@@ -222,6 +226,7 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 			Status:                (*string)(comment.Status),
 			CommentAt:             comment.CreatedAt.Format("15.04 • 02 Jan 2006"),
 			DocumentID:            comment.DocumentID.String(),
+			IsCloseOutComment:     comment.IsCloseOutComment,
 			CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
 			UserComment: &dto.UserComment{
 				ID:           comment.User.ID.String(),

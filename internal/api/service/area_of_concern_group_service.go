@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -60,6 +61,9 @@ func (s *areaOfConcernGroupService) Create(ctx context.Context, req dto.AreaOfCo
 	if pkg == nil {
 		contractor, err = s.userRepository.GetContractorByPackage(ctx, nil, req.PackageID, "Package")
 		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return dto.AreaOfConcernGroupResponse{}, myerror.New("this package not have contractor", http.StatusBadRequest)
+			}
 			return dto.AreaOfConcernGroupResponse{}, err
 		}
 
@@ -69,15 +73,10 @@ func (s *areaOfConcernGroupService) Create(ctx context.Context, req dto.AreaOfCo
 	}
 
 	areaOfConcernGroupResult, err := s.areaOfConcernGroupRepository.Create(ctx, nil, entity.AreaOfConcernGroup{
-		ReviewFocus:      req.ReviewFocus,
-		UserDisciplineID: uuid.MustParse(req.UserDisciplineID),
-		PackageID:        uuid.MustParse(req.PackageID),
+		ReviewFocus:    req.ReviewFocus,
+		UserDiscipline: req.UserDiscipline,
+		PackageID:      uuid.MustParse(req.PackageID),
 	})
-	if err != nil {
-		return dto.AreaOfConcernGroupResponse{}, err
-	}
-
-	userDiscipline, err := s.userDisciplineRepository.GetByID(ctx, nil, req.UserDisciplineID)
 	if err != nil {
 		return dto.AreaOfConcernGroupResponse{}, err
 	}
@@ -86,12 +85,12 @@ func (s *areaOfConcernGroupService) Create(ctx context.Context, req dto.AreaOfCo
 		ID:             areaOfConcernGroupResult.ID.String(),
 		ReviewFocus:    areaOfConcernGroupResult.ReviewFocus,
 		Package:        pkg.Name,
-		UserDiscipline: userDiscipline.Name,
+		UserDiscipline: areaOfConcernGroupResult.UserDiscipline,
 	}, nil
 }
 
 func (s *areaOfConcernGroupService) GetById(ctx context.Context, id string) (dto.AreaOfConcernGroupResponse, error) {
-	areaOfConcernGroup, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, id, "Package", "UserDiscipline")
+	areaOfConcernGroup, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, id, "Package")
 	if err != nil {
 		return dto.AreaOfConcernGroupResponse{}, err
 	}
@@ -100,7 +99,7 @@ func (s *areaOfConcernGroupService) GetById(ctx context.Context, id string) (dto
 		ID:             areaOfConcernGroup.ID.String(),
 		ReviewFocus:    areaOfConcernGroup.ReviewFocus,
 		Package:        areaOfConcernGroup.Package.Name,
-		UserDiscipline: areaOfConcernGroup.UserDiscipline.Name,
+		UserDiscipline: areaOfConcernGroup.UserDiscipline,
 	}, nil
 }
 
@@ -115,7 +114,7 @@ func (s *areaOfConcernGroupService) GetAll(ctx context.Context, userId string, m
 		packageId = pkg.ID.String()
 	}
 
-	areaOfConcernGroups, metaRes, err := s.areaOfConcernGroupRepository.GetAll(ctx, nil, packageId, metaReq, "Package", "UserDiscipline")
+	areaOfConcernGroups, metaRes, err := s.areaOfConcernGroupRepository.GetAll(ctx, nil, packageId, metaReq, "Package")
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
@@ -126,7 +125,7 @@ func (s *areaOfConcernGroupService) GetAll(ctx context.Context, userId string, m
 			ID:             areaOfConcernGroup.ID.String(),
 			ReviewFocus:    areaOfConcernGroup.ReviewFocus,
 			Package:        areaOfConcernGroup.Package.Name,
-			UserDiscipline: areaOfConcernGroup.UserDiscipline.Name,
+			UserDiscipline: areaOfConcernGroup.UserDiscipline,
 		})
 	}
 
@@ -148,12 +147,7 @@ func (s *areaOfConcernGroupService) Update(ctx context.Context, req dto.AreaOfCo
 		return myerror.New("you not allowed to this package", http.StatusUnauthorized)
 	}
 
-	userDiscipline, err := s.userDisciplineRepository.GetByID(ctx, nil, req.UserDisciplineID)
-	if err != nil {
-		return err
-	}
-
-	areaOfConcernGroup.UserDisciplineID = userDiscipline.ID
+	areaOfConcernGroup.UserDiscipline = req.UserDiscipline
 	areaOfConcernGroup.ReviewFocus = req.ReviewFocus
 
 	if err = s.areaOfConcernGroupRepository.Update(ctx, nil, areaOfConcernGroup); err != nil {
@@ -186,7 +180,7 @@ func (s *areaOfConcernGroupService) Delete(ctx context.Context, userId, areaOfCo
 }
 
 func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, areaOfConcernGroupId string) (*bytes.Buffer, string, error) {
-	data, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, areaOfConcernGroupId, "AreaOfConcerns.Consolidators.User", "AreaOfConcerns.Comments.CommentReplies", "AreaOfConcerns.Comments.User", "AreaOfConcerns.Comments.Document", "UserDiscipline", "Package")
+	data, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, areaOfConcernGroupId, "AreaOfConcerns.Consolidators.User", "AreaOfConcerns.Comments.CommentReplies", "AreaOfConcerns.Comments.User", "AreaOfConcerns.Comments.Document", "Package")
 	if err != nil {
 		return nil, "", err
 	}
@@ -242,10 +236,10 @@ func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, are
 		requestData = append(requestData, mypdf.GenerateRequestData{
 			PackageInfoData: mypdf.PackageInfoData{
 				Package:           contractor.Package.Name,
-				ContractorInitial: contractor.Initial,
+				ContractorInitial: contractor.Name,
 			},
 			DisciplineSectionData: mypdf.DisciplineSectionData{
-				Discipline:               data.UserDiscipline.Name,
+				Discipline:               data.UserDiscipline,
 				AreaOfConcernID:          aoc.AreaOfConcernId,
 				AreaOfConcernDescription: aoc.Description,
 				Consolidator:             consolidator,
