@@ -111,13 +111,14 @@ func (s *commentService) Reply(ctx context.Context, req dto.CommentRequest) (dto
 
 	replyId := commentReplied.ID
 	commentResult, err := s.commentRepository.Create(ctx, nil, entity.Comment{
-		Section:         req.Section,
-		Comment:         req.Comment,
-		Baseline:        req.Baseline,
-		DocumentID:      document.ID,
-		UserID:          user.ID,
-		AreaOfConcernID: areaOfConcern.ID,
-		CommentReplyID:  &replyId,
+		Section:           req.Section,
+		Comment:           req.Comment,
+		Baseline:          req.Baseline,
+		DocumentID:        document.ID,
+		UserID:            user.ID,
+		IsCloseOutComment: req.IsCloseOutComment,
+		AreaOfConcernID:   areaOfConcern.ID,
+		CommentReplyID:    &replyId,
 	}, "Document")
 	if err != nil {
 		return dto.CommentResponse{}, err
