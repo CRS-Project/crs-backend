@@ -207,6 +207,10 @@ func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, are
 
 		var comments []mypdf.CommentRow
 		for i, c := range aoc.Comments {
+			if c.CommentReplyID != nil {
+				continue
+			}
+
 			status := "N/A"
 			if c.Status != nil {
 				status = string(*c.Status)
@@ -219,15 +223,20 @@ func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, are
 					break
 				}
 			}
-
+			refDocNo, refDocTitle, docStatus := "N/A", "N/A", "N/A"
+			if c.Document != nil {
+				refDocNo = c.Document.CompanyDocumentNumber
+				refDocTitle = c.Document.DocumentTitle
+				docStatus = string(c.Document.Status)
+			}
 			comments = append(comments, mypdf.CommentRow{
 				No:              fmt.Sprintf("%d", i+1),
 				Page:            c.Section,
 				SMEInitial:      c.User.Name,
 				SMEComment:      c.Comment,
-				RefDocNo:        c.Document.CompanyDocumentNumber,
-				RefDocTitle:     c.Document.DocumentTitle,
-				DocStatus:       string(c.Document.Status),
+				RefDocNo:        refDocNo,
+				RefDocTitle:     refDocTitle,
+				DocStatus:       string(docStatus),
 				Status:          status,
 				SMECloseComment: closeOutComments,
 			})
