@@ -139,16 +139,12 @@ func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocu
 		return nil, err
 	}
 
-	cnt := 0
-	endDocument := false
+	rowCounter := 0
 	var documents []entity.Document
-	for rows.Next() {
-		if endDocument {
-			break
-		}
 
-		cnt++
-		if cnt < 4 {
+	for rows.Next() {
+		rowCounter++
+		if rowCounter < 4 {
 			continue
 		}
 
@@ -230,7 +226,7 @@ func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocu
 			DocumentType:             document.DocumentType,
 			DocumentCategory:         document.DocumentCategory,
 			Package:                  pkg.Name,
-			Status:                   string(document.Status),
+			Status:                   string(entity.StatusDocumentIFR),
 		})
 	}
 
