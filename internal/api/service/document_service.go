@@ -226,7 +226,7 @@ func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocu
 			DocumentType:             document.DocumentType,
 			DocumentCategory:         document.DocumentCategory,
 			Package:                  pkg.Name,
-			Status:                   string(document.Status),
+			Status:                   string(entity.StatusDocumentIFR),
 		})
 	}
 
