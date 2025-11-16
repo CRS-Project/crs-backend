@@ -8,7 +8,7 @@ type StatusDocument string
 
 const (
 	StatusDocumentIFR StatusDocument = "IFR Comment"
-	StatusDocumentIFU StatusDocument = "IFU Comment"
+	StatusDocumentIFU StatusDocument = "IFU"
 )
 
 type Document struct {

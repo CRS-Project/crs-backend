@@ -5,18 +5,18 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/document?take=3&page=1&sort=asc&sort_by=created_at&filter=fpso&filter_by=search
+  url: {{host}}/api/v1/document?take=10&page=2&sort=asc&sort_by=created_at&filter=,f49c3147-a8af-4c22-9aab-d7b8d663e6e2&filter_by=search,package_id
   body: none
   auth: inherit
 }
 
 params:query {
-  take: 3
-  page: 1
+  take: 10
+  page: 2
   sort: asc
   sort_by: created_at
-  filter: fpso
-  filter_by: search
+  filter: ,f49c3147-a8af-4c22-9aab-d7b8d663e6e2
+  filter_by: search,package_id
 }
 
 settings {

@@ -58,7 +58,7 @@ func drawHeader(pdf *gofpdf.Fpdf) {
 		ReadDpi:   true,
 	}
 
-	pdf.ImageOptions("./assets/image/Logo-CRS.png", 10, 8, 40, 12, false, logoOpt, 0, "")
+	pdf.ImageOptions("./assets/image/Logo-CRS.png", 10, 8, 55, 12, false, logoOpt, 0, "")
 
 	pdf.SetFont("Arial", "B", 16)
 	pdf.SetXY(100, 10)
