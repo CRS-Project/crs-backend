@@ -194,6 +194,8 @@ func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocu
 				documents[len(documents)-1].DocumentType = val
 			case 13:
 				documents[len(documents)-1].DocumentCategory = val
+			case 14:
+				documents[len(documents)-1].Status = entity.StatusDocument(val)
 			}
 		}
 
@@ -201,6 +203,12 @@ func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocu
 		validRow = validRow && documents[len(documents)-1].CompanyDocumentNumber != ""
 		validRow = validRow && documents[len(documents)-1].ContractorDocumentNumber != ""
 		validRow = validRow && documents[len(documents)-1].DocumentTitle != ""
+
+		switch documents[len(documents)-1].Status {
+		case entity.StatusDocumentIFR, entity.StatusDocumentIFU:
+		default:
+			validRow = false
+		}
 
 		if !validRow {
 			documents = documents[:len(documents)-1]
@@ -226,7 +234,7 @@ func (s *documentService) CreateBulk(ctx context.Context, req dto.CreateBulkDocu
 			DocumentType:             document.DocumentType,
 			DocumentCategory:         document.DocumentCategory,
 			Package:                  pkg.Name,
-			Status:                   string(entity.StatusDocumentIFR),
+			Status:                   string(document.Status),
 		})
 	}
 
