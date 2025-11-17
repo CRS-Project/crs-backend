@@ -230,6 +230,7 @@ func (s *userService) Update(ctx context.Context, userId string, req dto.UpdateU
 	user.DisciplineNumber = req.DisciplineNumber
 	if req.DisciplineID != nil {
 		user.UserDisciplineID = discipline.ID
+		user.UserDiscipline = nil
 	}
 
 	_, err = s.userRepository.Update(ctx, nil, user)
