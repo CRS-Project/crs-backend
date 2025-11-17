@@ -51,8 +51,8 @@ func NewRest() RestConfig {
 		userDisciplineService     service.UserDisciplineService     = service.NewUserDiscipline(userDisciplineRepository, db)
 		documentService           service.DocumentService           = service.NewDocument(documentRepository, packageRepository, userRepository, db)
 		commentService            service.CommentService            = service.NewComment(commentRepository, documentRepository, areaOfConcernRepository, userRepository, db)
-		areaOfConcernGroupService service.AreaOfConcernGroupService = service.NewAreaOfConcernGroup(areaOfConcernGroupRepository, packageRepository, userRepository, userDisciplineRepository, db)
-		areaOfConcernService      service.AreaOfConcernService      = service.NewAreaOfConcern(areaOfConcernRepository, areaOfConcernGroupRepository, areaOfConcernConsolidatorRepository, packageRepository, userRepository, userDisciplineRepository, db)
+		areaOfConcernGroupService service.AreaOfConcernGroupService = service.NewAreaOfConcernGroup(areaOfConcernGroupRepository, areaOfConcernRepository, packageRepository, commentRepository, userRepository, userDisciplineRepository, db)
+		areaOfConcernService      service.AreaOfConcernService      = service.NewAreaOfConcern(areaOfConcernRepository, areaOfConcernGroupRepository, areaOfConcernConsolidatorRepository, commentRepository, packageRepository, userRepository, userDisciplineRepository, db)
 		statisticService          service.StatisticService          = service.NewStatistic(statisticRepository, commentRepository, documentRepository, areaOfConcernRepository, userRepository, db)
 
 		//=========== (CONTROLLER) ===========//

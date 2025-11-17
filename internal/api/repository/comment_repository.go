@@ -18,6 +18,7 @@ type (
 		GetAllByReplyID(ctx context.Context, tx *gorm.DB, replyId string, metaReq meta.Meta, preloads ...string) ([]entity.Comment, meta.Meta, error)
 		Update(ctx context.Context, tx *gorm.DB, comment entity.Comment, preloads ...string) error
 		Delete(ctx context.Context, tx *gorm.DB, comment entity.Comment, preloads ...string) error
+		DeleteByAreaOfConcernID(ctx context.Context, tx *gorm.DB, areaOfConcernID []string) error
 	}
 
 	commentRepository struct {
@@ -172,6 +173,18 @@ func (r *commentRepository) Delete(ctx context.Context, tx *gorm.DB, comment ent
 	}
 
 	if err := tx.WithContext(ctx).Delete(&comment).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *commentRepository) DeleteByAreaOfConcernID(ctx context.Context, tx *gorm.DB, areaOfConcernID []string) error {
+	if tx == nil {
+		tx = r.db
+	}
+
+	if err := tx.WithContext(ctx).Where("area_of_concern_id IN (?)", areaOfConcernID).Delete(&entity.Comment{}).Error; err != nil {
 		return err
 	}
 

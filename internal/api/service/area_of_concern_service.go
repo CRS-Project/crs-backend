@@ -27,6 +27,7 @@ type (
 		areaOfConcernRepository             repository.AreaOfConcernRepository
 		areaOfConcernGroupRepository        repository.AreaOfConcernGroupRepository
 		areaOfConcernConsolidatorRepository repository.AreaOfConcernConsolidatorRepository
+		commentRepository                   repository.CommentRepository
 		packageRepository                   repository.PackageRepository
 		userRepository                      repository.UserRepository
 		userDisciplineRepository            repository.UserDisciplineRepository
@@ -37,6 +38,7 @@ type (
 func NewAreaOfConcern(areaOfConcernRepository repository.AreaOfConcernRepository,
 	areaOfConcernGroupRepository repository.AreaOfConcernGroupRepository,
 	areaOfConcernConsolidatorRepository repository.AreaOfConcernConsolidatorRepository,
+	commentRepository repository.CommentRepository,
 	packageRepository repository.PackageRepository,
 	userRepository repository.UserRepository,
 	userDisciplineRepository repository.UserDisciplineRepository,
@@ -45,6 +47,7 @@ func NewAreaOfConcern(areaOfConcernRepository repository.AreaOfConcernRepository
 		areaOfConcernRepository:             areaOfConcernRepository,
 		areaOfConcernGroupRepository:        areaOfConcernGroupRepository,
 		areaOfConcernConsolidatorRepository: areaOfConcernConsolidatorRepository,
+		commentRepository:                   commentRepository,
 		packageRepository:                   packageRepository,
 		userRepository:                      userRepository,
 		userDisciplineRepository:            userDisciplineRepository,
@@ -224,6 +227,10 @@ func (s *areaOfConcernService) Delete(ctx context.Context, userId, areaOfConcern
 
 	if pkg != nil && pkg.ID != areaOfConcern.PackageID {
 		return myerror.New("you not allowed to this package", http.StatusUnauthorized)
+	}
+
+	if err := s.commentRepository.DeleteByAreaOfConcernID(ctx, nil, []string{areaOfConcern.ID.String()}); err != nil {
+		return err
 	}
 
 	if err = s.areaOfConcernRepository.Delete(ctx, nil, areaOfConcern); err != nil {

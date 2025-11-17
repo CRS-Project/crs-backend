@@ -16,6 +16,7 @@ type (
 		GetByID(ctx context.Context, tx *gorm.DB, areaOfConcernID string, preloads ...string) (entity.AreaOfConcern, error)
 		Update(ctx context.Context, tx *gorm.DB, areaOfConcern entity.AreaOfConcern, preloads ...string) error
 		Delete(ctx context.Context, tx *gorm.DB, areaOfConcern entity.AreaOfConcern, preloads ...string) error
+		DeleteByAreaOfConcernGroupID(ctx context.Context, tx *gorm.DB, areaOfConcernGroupID string, preloads ...string) error
 	}
 
 	areaOfConcernRepository struct {
@@ -135,6 +136,22 @@ func (r *areaOfConcernRepository) Delete(ctx context.Context, tx *gorm.DB, areaO
 	}
 
 	if err := tx.WithContext(ctx).Delete(&areaOfConcern).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *areaOfConcernRepository) DeleteByAreaOfConcernGroupID(ctx context.Context, tx *gorm.DB, areaOfConcernGroupID string, preloads ...string) error {
+	if tx == nil {
+		tx = r.db
+	}
+
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
+	}
+
+	if err := tx.WithContext(ctx).Where("area_of_concern_group_id = ?", areaOfConcernGroupID).Delete(&entity.AreaOfConcern{}).Error; err != nil {
 		return err
 	}
 

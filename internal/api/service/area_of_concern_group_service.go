@@ -30,7 +30,9 @@ type (
 
 	areaOfConcernGroupService struct {
 		areaOfConcernGroupRepository repository.AreaOfConcernGroupRepository
+		areaOfConcernRepository      repository.AreaOfConcernRepository
 		packageRepository            repository.PackageRepository
+		commentRepository            repository.CommentRepository
 		userRepository               repository.UserRepository
 		userDisciplineRepository     repository.UserDisciplineRepository
 		db                           *gorm.DB
@@ -38,13 +40,17 @@ type (
 )
 
 func NewAreaOfConcernGroup(areaOfConcernGroupRepository repository.AreaOfConcernGroupRepository,
+	areaOfConcernRepository repository.AreaOfConcernRepository,
 	packageRepository repository.PackageRepository,
+	commentRepository repository.CommentRepository,
 	userRepository repository.UserRepository,
 	userDisciplineRepository repository.UserDisciplineRepository,
 	db *gorm.DB) AreaOfConcernGroupService {
 	return &areaOfConcernGroupService{
 		areaOfConcernGroupRepository: areaOfConcernGroupRepository,
+		areaOfConcernRepository:      areaOfConcernRepository,
 		packageRepository:            packageRepository,
+		commentRepository:            commentRepository,
 		userRepository:               userRepository,
 		userDisciplineRepository:     userDisciplineRepository,
 		db:                           db,
@@ -163,13 +169,26 @@ func (s *areaOfConcernGroupService) Delete(ctx context.Context, userId, areaOfCo
 		return err
 	}
 
-	areaOfConcernGroup, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, areaOfConcernGroupId)
+	areaOfConcernGroup, err := s.areaOfConcernGroupRepository.GetByID(ctx, nil, areaOfConcernGroupId, "AreaOfConcerns")
 	if err != nil {
 		return err
 	}
 
 	if pkg != nil && pkg.ID != areaOfConcernGroup.PackageID {
 		return myerror.New("you not allowed to this package", http.StatusUnauthorized)
+	}
+
+	var areaOfConcernIDs []string
+	for _, aoc := range areaOfConcernGroup.AreaOfConcerns {
+		areaOfConcernIDs = append(areaOfConcernIDs, aoc.ID.String())
+	}
+
+	if err := s.commentRepository.DeleteByAreaOfConcernID(ctx, nil, areaOfConcernIDs); err != nil {
+		return err
+	}
+
+	if err := s.areaOfConcernRepository.DeleteByAreaOfConcernGroupID(ctx, nil, areaOfConcernGroup.ID.String()); err != nil {
+		return err
 	}
 
 	if err = s.areaOfConcernGroupRepository.Delete(ctx, nil, areaOfConcernGroup); err != nil {
