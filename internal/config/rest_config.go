@@ -47,13 +47,13 @@ func NewRest() RestConfig {
 		//=========== (SERVICE) ===========//
 		authService               service.AuthService               = service.NewAuth(userRepository, mailerService, oauthService, db)
 		userService               service.UserService               = service.NewUser(userRepository, userDisciplineRepository, areaOfConcernConsolidatorRepository, packageRepository, db)
-		packageService            service.PackageService            = service.NewPackage(packageRepository, userRepository, db)
 		userDisciplineService     service.UserDisciplineService     = service.NewUserDiscipline(userDisciplineRepository, db)
 		documentService           service.DocumentService           = service.NewDocument(documentRepository, packageRepository, userRepository, db)
 		commentService            service.CommentService            = service.NewComment(commentRepository, documentRepository, areaOfConcernRepository, userRepository, db)
 		areaOfConcernGroupService service.AreaOfConcernGroupService = service.NewAreaOfConcernGroup(areaOfConcernGroupRepository, areaOfConcernRepository, packageRepository, commentRepository, userRepository, userDisciplineRepository, db)
 		areaOfConcernService      service.AreaOfConcernService      = service.NewAreaOfConcern(areaOfConcernRepository, areaOfConcernGroupRepository, areaOfConcernConsolidatorRepository, commentRepository, packageRepository, userRepository, userDisciplineRepository, db)
 		statisticService          service.StatisticService          = service.NewStatistic(statisticRepository, commentRepository, documentRepository, areaOfConcernRepository, userRepository, db)
+		packageService            service.PackageService            = service.NewPackage(packageRepository, userRepository, areaOfConcernGroupService, db)
 
 		//=========== (CONTROLLER) ===========//
 		authController               controller.AuthController               = controller.NewAuth(authService)

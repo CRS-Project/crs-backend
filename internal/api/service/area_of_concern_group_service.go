@@ -26,6 +26,7 @@ type (
 		Delete(ctx context.Context, userId, areaOfConcernGroupId string) error
 		GeneratePDF(ctx context.Context, userId, areaOfConcernGroupId string) (*bytes.Buffer, string, error)
 		GetStatistic(ctx context.Context, packageId string) (dto.AreaOfConcernGroupStatistic, error)
+		ConstructGeneratePDF(areaOfConcernGroup entity.AreaOfConcernGroup, contractor entity.User) []mypdf.GenerateRequestData
 	}
 
 	areaOfConcernGroupService struct {
@@ -209,8 +210,22 @@ func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, are
 		return nil, "", err
 	}
 
+	requestData := s.ConstructGeneratePDF(data, contractor)
+	pdfBuffer, filename, err := mypdf.Generate(requestData)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return pdfBuffer, filename, nil
+}
+
+func (s *areaOfConcernGroupService) GetStatistic(ctx context.Context, packageId string) (dto.AreaOfConcernGroupStatistic, error) {
+	return s.areaOfConcernGroupRepository.Statistic(ctx, nil, packageId)
+}
+
+func (s *areaOfConcernGroupService) ConstructGeneratePDF(areaOfConcernGroup entity.AreaOfConcernGroup, contractor entity.User) []mypdf.GenerateRequestData {
 	var requestData []mypdf.GenerateRequestData
-	for _, aoc := range data.AreaOfConcerns {
+	for _, aoc := range areaOfConcernGroup.AreaOfConcerns {
 		consolidator := ""
 		for i, c := range aoc.Consolidators {
 			userName := "deleted user"
@@ -267,7 +282,7 @@ func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, are
 				ContractorInitial: contractor.Name,
 			},
 			DisciplineSectionData: mypdf.DisciplineSectionData{
-				Discipline:               data.UserDiscipline,
+				Discipline:               areaOfConcernGroup.UserDiscipline,
 				AreaOfConcernID:          aoc.AreaOfConcernId,
 				AreaOfConcernDescription: aoc.Description,
 				Consolidator:             consolidator,
@@ -276,16 +291,7 @@ func (s *areaOfConcernGroupService) GeneratePDF(ctx context.Context, userId, are
 		})
 	}
 
-	pdfBuffer, filename, err := mypdf.Generate(requestData)
-	if err != nil {
-		return nil, "", err
-	}
-
-	return pdfBuffer, filename, nil
-}
-
-func (s *areaOfConcernGroupService) GetStatistic(ctx context.Context, packageId string) (dto.AreaOfConcernGroupStatistic, error) {
-	return s.areaOfConcernGroupRepository.Statistic(ctx, nil, packageId)
+	return requestData
 }
 
 func (s *areaOfConcernGroupService) getPackagePermission(ctx context.Context, userId string) (*entity.Package, entity.User, error) {

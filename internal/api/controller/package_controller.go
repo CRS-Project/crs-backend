@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/CRS-Project/crs-backend/internal/api/service"
@@ -20,6 +21,7 @@ type (
 		UpdatePackage(ctx *gin.Context)
 		DeletePackage(ctx *gin.Context)
 		GetByID(ctx *gin.Context)
+		GeneratePDF(ctx *gin.Context)
 	}
 
 	packageController struct {
@@ -114,4 +116,19 @@ func (c *packageController) GetByID(ctx *gin.Context) {
 	}
 
 	response.NewSuccess("success get package", res).Send(ctx)
+}
+
+func (c *packageController) GeneratePDF(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	pdfBuffer, filename, err := c.packageService.GeneratePDF(ctx.Request.Context(), id)
+	if err != nil {
+		response.NewFailed("failed generate pdf", err).Send(ctx)
+		return
+	}
+
+	ctx.Header("Content-Type", "application/pdf")
+	ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+	ctx.Data(http.StatusOK, "application/pdf", pdfBuffer.Bytes())
+	response.NewSuccess("success generate pdf", nil).Send(ctx)
 }

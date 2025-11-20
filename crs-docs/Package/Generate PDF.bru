@@ -1,0 +1,20 @@
+meta {
+  name: Generate PDF
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{host}}/api/v1/package/:id/generate-pdf
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: f49c3147-a8af-4c22-9aab-d7b8d663e6e2
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

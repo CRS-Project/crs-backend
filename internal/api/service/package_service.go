@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"net/http"
 
@@ -9,33 +10,38 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
+	mypdf "github.com/CRS-Project/crs-backend/internal/pkg/pdf"
 	"gorm.io/gorm"
 )
 
 type (
 	PackageService interface {
 		CreatePackage(ctx context.Context, req dto.CreatePackageRequest) (dto.PackageInfo, error)
+		GetByID(ctx context.Context, id string) (dto.PackageInfo, error)
 		GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.PackageInfo, meta.Meta, error)
 		GetAllByUser(ctx context.Context, userId string) ([]dto.PackageInfo, error)
 		UpdatePackage(ctx context.Context, req dto.UpdatePackageRequest) (dto.PackageInfo, error)
 		DeletePackage(ctx context.Context, id string) error
-		GetByID(ctx context.Context, id string) (dto.PackageInfo, error)
+		GeneratePDF(ctx context.Context, id string) (*bytes.Buffer, string, error)
 	}
 
 	packageService struct {
-		packageRepository repository.PackageRepository
-		userRepository    repository.UserRepository
-		db                *gorm.DB
+		packageRepository         repository.PackageRepository
+		userRepository            repository.UserRepository
+		areaOfConcernGroupService AreaOfConcernGroupService
+		db                        *gorm.DB
 	}
 )
 
 func NewPackage(packageRepository repository.PackageRepository,
 	userRepository repository.UserRepository,
+	areaOfConcernGroupService AreaOfConcernGroupService,
 	db *gorm.DB) PackageService {
 	return &packageService{
-		packageRepository: packageRepository,
-		userRepository:    userRepository,
-		db:                db,
+		packageRepository:         packageRepository,
+		userRepository:            userRepository,
+		areaOfConcernGroupService: areaOfConcernGroupService,
+		db:                        db,
 	}
 }
 
@@ -55,6 +61,15 @@ func (s *packageService) CreatePackage(ctx context.Context, req dto.CreatePackag
 	}
 
 	return pkgResult.ToInfo(), nil
+}
+
+func (s *packageService) GetByID(ctx context.Context, id string) (dto.PackageInfo, error) {
+	pkg, err := s.packageRepository.GetByID(ctx, nil, id)
+	if err != nil {
+		return dto.PackageInfo{}, err
+	}
+
+	return pkg.ToInfo(), nil
 }
 
 func (s *packageService) GetAll(ctx context.Context, metaReq meta.Meta) ([]dto.PackageInfo, meta.Meta, error) {
@@ -129,11 +144,27 @@ func (s *packageService) DeletePackage(ctx context.Context, id string) error {
 	return nil
 }
 
-func (s *packageService) GetByID(ctx context.Context, id string) (dto.PackageInfo, error) {
-	pkg, err := s.packageRepository.GetByID(ctx, nil, id)
+func (s *packageService) GeneratePDF(ctx context.Context, id string) (*bytes.Buffer, string, error) {
+	data, err := s.packageRepository.GetByID(ctx, nil, id, "AreaOfConcernGroups.AreaOfConcerns.Consolidators.User", "AreaOfConcernGroups.AreaOfConcerns.Comments.CommentReplies", "AreaOfConcernGroups.AreaOfConcerns.Comments.User", "AreaOfConcernGroups.AreaOfConcerns.Comments.Document")
 	if err != nil {
-		return dto.PackageInfo{}, err
+		return nil, "", err
 	}
 
-	return pkg.ToInfo(), nil
+	contractor, err := s.userRepository.GetContractorByPackage(ctx, nil, id, "Package")
+	if err != nil {
+		return nil, "", err
+	}
+
+	var requestData []mypdf.GenerateRequestData
+	for _, aocg := range data.AreaOfConcernGroups {
+		generateData := s.areaOfConcernGroupService.ConstructGeneratePDF(aocg, contractor)
+		requestData = append(requestData, generateData...)
+	}
+
+	pdfBuffer, filename, err := mypdf.Generate(requestData)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return pdfBuffer, filename, nil
 }

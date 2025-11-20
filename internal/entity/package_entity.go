@@ -10,6 +10,7 @@ type Package struct {
 	Name        string    `json:"name" gorm:"not null;"`
 	Description string    `json:"description" gorm:""`
 
+	AreaOfConcernGroups []AreaOfConcernGroup `json:"area_of_concern_groups,omitempty" gorm:"foreignKey:PackageID"`
 	Timestamp
 }
 
