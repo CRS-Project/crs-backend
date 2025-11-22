@@ -10,10 +10,11 @@ type (
 	}
 
 	StatisticAOCAndCommentCard struct {
-		TotalAreaOfConcern   int `json:"total_area_of_concern"`
-		TotalDocuments       int `json:"total_documents"`
-		TotalComments        int `json:"total_comments"`
-		TotalCommentRejected int `json:"total_comment_rejected"`
+		TotalAreaOfConcern           int `json:"total_area_of_concern"`
+		TotalDocuments               int `json:"total_documents"`
+		TotalComments                int `json:"total_comments"`
+		TotalCommentRejected         int `json:"total_comment_rejected"`
+		TotalDocumentsWithoutComment int `json:"total_documents_without_comment"`
 	}
 
 	StatisticCommentUsersChart struct {

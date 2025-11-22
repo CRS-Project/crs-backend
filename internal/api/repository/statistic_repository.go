@@ -139,9 +139,13 @@ func (r *statisticRepository) GetCommentCard(ctx context.Context, tx *gorm.DB, p
 			WHERE a.package_id = ? AND c.comment_reply_id IS NULL AND c.deleted_at is null) AS total_comments,
 		(SELECT COUNT(*) FROM comments c
 			JOIN area_of_concerns a ON a.id = c.area_of_concern_id
-			WHERE a.package_id = ? AND c.status = 'REJECT' AND c.deleted_at is null) AS total_comment_rejected;
-	`, packageId, packageId, packageId, packageId).Scan(&stats).Error
-
+			WHERE a.package_id = ? AND c.status = 'REJECT' AND c.deleted_at is null) AS total_comment_rejected,
+			(SELECT COUNT(*) FROM documents d WHERE d.package_id = ? AND deleted_at is null) AS total_documents,
+		(SELECT COUNT(*) FROM documents d 
+			LEFT JOIN comments c ON c.document_id = d.id 
+            AND c.deleted_at IS NULL WHERE d.package_id = ? AND d.deleted_at IS NULL
+			AND c.id IS NULL) AS total_documents_without_comment
+	`, packageId, packageId, packageId, packageId, packageId, packageId).Scan(&stats).Error
 	if err != nil {
 		return dto.StatisticAOCAndCommentCard{}, err
 	}
