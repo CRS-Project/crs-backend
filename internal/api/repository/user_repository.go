@@ -139,7 +139,7 @@ func (r *userRepository) Update(ctx context.Context, tx *gorm.DB, user entity.Us
 		tx = tx.Preload(preload)
 	}
 
-	if err := tx.WithContext(ctx).Save(user).Error; err != nil {
+	if err := tx.WithContext(ctx).Save(&user).Error; err != nil {
 		return entity.User{}, err
 	}
 

@@ -228,6 +228,7 @@ func (s *userService) Update(ctx context.Context, userId string, req dto.UpdateU
 	user.Initial = req.Initial
 	user.Institution = req.Institution
 	user.DisciplineNumber = req.DisciplineNumber
+	user.PhotoProfile = req.PhotoProfile
 	if req.DisciplineID != nil {
 		user.UserDisciplineID = discipline.ID
 		user.UserDiscipline = nil
