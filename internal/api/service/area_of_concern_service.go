@@ -65,6 +65,9 @@ func (s *areaOfConcernService) Create(ctx context.Context, req dto.AreaOfConcern
 	if pkg == nil {
 		contractor, err = s.userRepository.GetContractorByPackage(ctx, nil, req.PackageID, "Package")
 		if err != nil {
+			if errors.Is(err,gorm.ErrRecordNotFound){
+				return dto.AreaOfConcernResponse{}, myerror.New("this package not have contractor", http.StatusBadRequest)
+			}
 			return dto.AreaOfConcernResponse{}, err
 		}
 
