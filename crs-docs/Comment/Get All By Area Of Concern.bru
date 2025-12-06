@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/area-of-concern-group/:area_of_concern_group_id/area-of-concern/:area_of_concern_id/comment?sort=desc&sort_by=created_at
+  url: {{host}}/api/v1/area-of-concern-group/:discipline_group_id/area-of-concern/:discipline_list_document_id/comment?sort=desc&sort_by=created_at
   body: none
   auth: bearer
 }
@@ -16,8 +16,8 @@ params:query {
 }
 
 params:path {
-  area_of_concern_group_id: 071ce89d-f8c3-4bef-bef9-f27c3b159179
-  area_of_concern_id: 2405c192-0ff4-4ecc-82d9-9d0d1512df40
+  discipline_group_id: 071ce89d-f8c3-4bef-bef9-f27c3b159179
+  discipline_list_document_id: 2405c192-0ff4-4ecc-82d9-9d0d1512df40
 }
 
 auth:bearer {

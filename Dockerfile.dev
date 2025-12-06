@@ -1,18 +1,33 @@
-FROM golang:1.25.1-alpine
-
-# Install dependencies
-RUN apk add --no-cache git curl bash build-base
+# ========= Builder =========
+FROM golang:1.25-alpine AS builder
 
 WORKDIR /app
 
-# Install Air (hot reload)
-RUN go install github.com/air-verse/air@latest
-
-# Copy go mod dulu biar cache build lebih efektif
+# Copy dan download dependencies
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy semua source
+# Copy seluruh source code
 COPY . .
 
-CMD ["air", "-c", ".air.linux.toml"]
+RUN mkdir -p /app/assets/image
+RUN mkdir -p /app/assets/uploads
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o main .
+
+# ========= Production =========
+FROM gcr.io/distroless/base-debian12
+
+WORKDIR /app
+
+# Copy hasil build dari builder
+COPY --from=builder /app/main .
+
+COPY --from=builder /app/assets/image ./assets/image
+
+COPY --from=builder /app/internal/pkg/email/template ./internal/pkg/email/template
+
+EXPOSE 8887
+
+# Jalankan binary
+CMD ["./main"]

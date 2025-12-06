@@ -36,7 +36,7 @@ func (r *statisticRepository) GetAOCAndCommentChart(ctx context.Context, tx *gor
 	WITH date_series AS (
 		SELECT generate_series(
 			LEAST(
-				(SELECT MIN(created_at)::date FROM area_of_concerns WHERE package_id = ?),
+				(SELECT MIN(created_at)::date FROM discipline_list_documents WHERE package_id = ?),
 				(SELECT MIN(created_at)::date FROM documents WHERE package_id = ?)
 			),
 			NOW()::date,
@@ -46,8 +46,8 @@ func (r *statisticRepository) GetAOCAndCommentChart(ctx context.Context, tx *gor
 	aoc_count AS (
 		SELECT
 			DATE_TRUNC('day', created_at)::date AS created_date,
-			COUNT(*) AS total_area_of_concern
-		FROM area_of_concerns
+			COUNT(*) AS total_discipline_list_document
+		FROM discipline_list_documents
 		WHERE deleted_at IS NULL
 		AND package_id = ?
 		GROUP BY 1
@@ -67,7 +67,7 @@ func (r *statisticRepository) GetAOCAndCommentChart(ctx context.Context, tx *gor
 			COUNT(*) FILTER (WHERE c.comment_reply_id IS NULL) AS total_comments,
 			COUNT(*) FILTER (WHERE c.status = 'REJECT') AS total_comment_rejected
 		FROM comments c
-		JOIN area_of_concerns a ON a.id = c.area_of_concern_id
+		JOIN discipline_list_documents a ON a.id = c.discipline_list_document_id
 		WHERE c.deleted_at IS NULL
 		AND a.deleted_at IS NULL
 		AND a.package_id = ?
@@ -76,7 +76,7 @@ func (r *statisticRepository) GetAOCAndCommentChart(ctx context.Context, tx *gor
 	aoc_by_interval AS (
 		SELECT
 			ds.start_date,
-			COALESCE(SUM(a.total_area_of_concern), 0) AS total_area_of_concern
+			COALESCE(SUM(a.total_discipline_list_document), 0) AS total_discipline_list_document
 		FROM date_series ds
 		LEFT JOIN aoc_count a ON a.created_date >= ds.start_date 
 			AND a.created_date < ds.start_date + INTERVAL '2 days'
@@ -103,7 +103,7 @@ func (r *statisticRepository) GetAOCAndCommentChart(ctx context.Context, tx *gor
 	)
 	SELECT
 		TO_CHAR(ds.start_date, 'DD-Mon') AS name,
-		a.total_area_of_concern,
+		a.total_discipline_list_document,
 		d.total_documents,
 		c.total_comments,
 		c.total_comment_rejected
@@ -132,13 +132,13 @@ func (r *statisticRepository) GetCommentCard(ctx context.Context, tx *gorm.DB, p
 	var stats dto.StatisticAOCAndCommentCard
 	err := tx.Raw(`
 		SELECT
-		(SELECT COUNT(*) FROM area_of_concerns a WHERE a.package_id = ? AND deleted_at is null) AS total_area_of_concern,
+		(SELECT COUNT(*) FROM discipline_list_documents a WHERE a.package_id = ? AND deleted_at is null) AS total_discipline_list_document,
 		(SELECT COUNT(*) FROM documents d WHERE d.package_id = ? AND deleted_at is null) AS total_documents,
 		(SELECT COUNT(*) FROM comments c
-			JOIN area_of_concerns a ON a.id = c.area_of_concern_id
+			JOIN discipline_list_documents a ON a.id = c.discipline_list_document_id
 			WHERE a.package_id = ? AND c.comment_reply_id IS NULL AND c.deleted_at is null) AS total_comments,
 		(SELECT COUNT(*) FROM comments c
-			JOIN area_of_concerns a ON a.id = c.area_of_concern_id
+			JOIN discipline_list_documents a ON a.id = c.discipline_list_document_id
 			WHERE a.package_id = ? AND c.status = 'REJECT' AND c.deleted_at is null) AS total_comment_rejected,
 			(SELECT COUNT(*) FROM documents d WHERE d.package_id = ? AND deleted_at is null) AS total_documents,
 		(SELECT COUNT(*) FROM documents d 

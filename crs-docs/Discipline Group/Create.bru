@@ -1,0 +1,36 @@
+meta {
+  name: Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/api/v1/discipline-group
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "review_focus": "Integration between mooring analysis and riser layout; consistency of environmental load cases; hull global strength and fatigue criteria; FPSO motion impact on process and safety systems; interface loads to subsea/export lines; intact/damaged stability compliance; metocean basis alignment with SURF/OLNG.",
+    "user_discipline": "Naval and Hull Marine Engineering",
+    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2",
+    "discipline_group_consolidators": [
+      {
+        "user_id": "65aa69e9-ce70-4655-a240-7665757cfbba"
+      },
+      {
+        "user_id": "16eca071-aa23-410c-9ae8-2bb4654d0f84"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/user?take=10&page=1&sort=desc&sort_by=name&filter=Reviewer&filter_by=search
+  url: {{host}}/api/v1/user?take=10&page=1&sort=desc&sort_by=name&filter=Reviewer,f49c3147-a8af-4c22-9aab-d7b8d663e6e2&filter_by=search,package_id
   body: none
   auth: bearer
 }
@@ -15,8 +15,8 @@ params:query {
   page: 1
   sort: desc
   sort_by: name
-  filter: Reviewer
-  filter_by: search
+  filter: Reviewer,f49c3147-a8af-4c22-9aab-d7b8d663e6e2
+  filter_by: search,package_id
 }
 
 auth:bearer {

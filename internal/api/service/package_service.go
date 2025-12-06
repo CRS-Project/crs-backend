@@ -26,22 +26,22 @@ type (
 	}
 
 	packageService struct {
-		packageRepository         repository.PackageRepository
-		userRepository            repository.UserRepository
-		areaOfConcernGroupService AreaOfConcernGroupService
-		db                        *gorm.DB
+		packageRepository      repository.PackageRepository
+		userRepository         repository.UserRepository
+		disciplineGroupService DisciplineGroupService
+		db                     *gorm.DB
 	}
 )
 
 func NewPackage(packageRepository repository.PackageRepository,
 	userRepository repository.UserRepository,
-	areaOfConcernGroupService AreaOfConcernGroupService,
+	disciplineGroupService DisciplineGroupService,
 	db *gorm.DB) PackageService {
 	return &packageService{
-		packageRepository:         packageRepository,
-		userRepository:            userRepository,
-		areaOfConcernGroupService: areaOfConcernGroupService,
-		db:                        db,
+		packageRepository:      packageRepository,
+		userRepository:         userRepository,
+		disciplineGroupService: disciplineGroupService,
+		db:                     db,
 	}
 }
 
@@ -145,7 +145,7 @@ func (s *packageService) DeletePackage(ctx context.Context, id string) error {
 }
 
 func (s *packageService) GeneratePDF(ctx context.Context, id string) (*bytes.Buffer, string, error) {
-	data, err := s.packageRepository.GetByID(ctx, nil, id, "AreaOfConcernGroups.AreaOfConcerns.Consolidators.User", "AreaOfConcernGroups.AreaOfConcerns.Comments.CommentReplies", "AreaOfConcernGroups.AreaOfConcerns.Comments.User", "AreaOfConcernGroups.AreaOfConcerns.Comments.Document")
+	data, err := s.packageRepository.GetByID(ctx, nil, id, "DisciplineGroups.Package", "DisciplineGroups.DisciplineGroupConsolidators.User", "DisciplineGroups.DisciplineListDocuments.Comments.CommentReplies", "DisciplineGroups.DisciplineListDocuments.Comments.User", "DisciplineGroups.DisciplineListDocuments.Document")
 	if err != nil {
 		return nil, "", err
 	}
@@ -156,8 +156,8 @@ func (s *packageService) GeneratePDF(ctx context.Context, id string) (*bytes.Buf
 	}
 
 	var requestData []mypdf.GenerateRequestData
-	for _, aocg := range data.AreaOfConcernGroups {
-		generateData := s.areaOfConcernGroupService.ConstructGeneratePDF(aocg, contractor)
+	for _, aocg := range data.DisciplineGroups {
+		generateData := s.disciplineGroupService.ConstructGeneratePDF(aocg, contractor)
 		requestData = append(requestData, generateData...)
 	}
 

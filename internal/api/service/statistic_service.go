@@ -18,28 +18,28 @@ type (
 	}
 
 	statisticService struct {
-		statisticRepository     repository.StatisticRepository
-		commentRepository       repository.CommentRepository
-		documentRepository      repository.DocumentRepository
-		areaOfConcernRepository repository.AreaOfConcernRepository
-		userRepository          repository.UserRepository
-		db                      *gorm.DB
+		statisticRepository              repository.StatisticRepository
+		commentRepository                repository.CommentRepository
+		documentRepository               repository.DocumentRepository
+		disciplineListDocumentRepository repository.DisciplineListDocumentRepository
+		userRepository                   repository.UserRepository
+		db                               *gorm.DB
 	}
 )
 
 func NewStatistic(statisticRepository repository.StatisticRepository,
 	commentRepository repository.CommentRepository,
 	documentRepository repository.DocumentRepository,
-	areaOfConcernRepository repository.AreaOfConcernRepository,
+	disciplineListDocumentRepository repository.DisciplineListDocumentRepository,
 	userRepository repository.UserRepository,
 	db *gorm.DB) StatisticService {
 	return &statisticService{
-		statisticRepository:     statisticRepository,
-		commentRepository:       commentRepository,
-		documentRepository:      documentRepository,
-		areaOfConcernRepository: areaOfConcernRepository,
-		userRepository:          userRepository,
-		db:                      db,
+		statisticRepository:              statisticRepository,
+		commentRepository:                commentRepository,
+		documentRepository:               documentRepository,
+		disciplineListDocumentRepository: disciplineListDocumentRepository,
+		userRepository:                   userRepository,
+		db:                               db,
 	}
 }
 

@@ -19,37 +19,37 @@ type (
 		Create(ctx context.Context, req dto.CommentRequest) (dto.CommentResponse, error)
 		Reply(ctx context.Context, req dto.CommentRequest) (dto.CommentResponse, error)
 		GetById(ctx context.Context, id string) (dto.CommentResponse, error)
-		GetAllByAreaOfConcernId(ctx context.Context, userId, areaOfConcernId string, metaReq meta.Meta) ([]dto.CommentResponse, meta.Meta, error)
-		GetAllByReplyId(ctx context.Context, userId, areaOfConcernId, replyId string, metaReq meta.Meta) ([]dto.CommentResponse, meta.Meta, error)
+		GetAllByDisciplineListDocumentId(ctx context.Context, userId, disciplineListDocumentId string, metaReq meta.Meta) ([]dto.CommentResponse, meta.Meta, error)
+		GetAllByReplyId(ctx context.Context, userId, disciplineListDocumentId, replyId string, metaReq meta.Meta) ([]dto.CommentResponse, meta.Meta, error)
 		Update(ctx context.Context, req dto.UpdateCommentRequest) error
-		Delete(ctx context.Context, userId, areaOfConcernId, commentId string) error
+		Delete(ctx context.Context, userId, disciplineListDocumentId, commentId string) error
 	}
 
 	commentService struct {
-		commentRepository       repository.CommentRepository
-		documentRepository      repository.DocumentRepository
-		areaOfConcernRepository repository.AreaOfConcernRepository
-		userRepository          repository.UserRepository
-		db                      *gorm.DB
+		commentRepository                repository.CommentRepository
+		documentRepository               repository.DocumentRepository
+		disciplineListDocumentRepository repository.DisciplineListDocumentRepository
+		userRepository                   repository.UserRepository
+		db                               *gorm.DB
 	}
 )
 
 func NewComment(commentRepository repository.CommentRepository,
 	documentRepository repository.DocumentRepository,
-	areaOfConcernRepository repository.AreaOfConcernRepository,
+	disciplineListDocumentRepository repository.DisciplineListDocumentRepository,
 	userRepository repository.UserRepository,
 	db *gorm.DB) CommentService {
 	return &commentService{
-		commentRepository:       commentRepository,
-		documentRepository:      documentRepository,
-		areaOfConcernRepository: areaOfConcernRepository,
-		userRepository:          userRepository,
-		db:                      db,
+		commentRepository:                commentRepository,
+		documentRepository:               documentRepository,
+		disciplineListDocumentRepository: disciplineListDocumentRepository,
+		userRepository:                   userRepository,
+		db:                               db,
 	}
 }
 
 func (s *commentService) Create(ctx context.Context, req dto.CommentRequest) (dto.CommentResponse, error) {
-	areaOfConcern, _, _, err := s.checkPackagePermission(ctx, req.AreaOfConcernId, req.DocumentId, req.UserId)
+	disciplineListDocument, _, err := s.checkPackagePermission(ctx, req.DisciplineListDocumentId, req.UserId)
 	if err != nil {
 		return dto.CommentResponse{}, err
 	}
@@ -59,36 +59,37 @@ func (s *commentService) Create(ctx context.Context, req dto.CommentRequest) (dt
 	}
 
 	commentResult, err := s.commentRepository.Create(ctx, nil, entity.Comment{
-		Section:           req.Section,
-		Comment:           req.Comment,
-		Baseline:          req.Baseline,
-		AreaOfConcernID:   areaOfConcern.ID,
-		IsCloseOutComment: req.IsCloseOutComment,
-		DocumentID:        uuid.MustParse(req.DocumentId),
-		UserID:            uuid.MustParse(req.UserId),
+		Section:                  req.Section,
+		Comment:                  req.Comment,
+		Baseline:                 req.Baseline,
+		DisciplineListDocumentID: disciplineListDocument.ID,
+		IsCloseOutComment:        req.IsCloseOutComment,
+		AttachFileUrl:            req.AttachFileUrl,
+		UserID:                   uuid.MustParse(req.UserId),
 	})
 	if err != nil {
 		return dto.CommentResponse{}, err
 	}
 
 	return dto.CommentResponse{
-		ID:         commentResult.ID.String(),
-		Section:    commentResult.Section,
-		Comment:    commentResult.Comment,
-		Baseline:   commentResult.Baseline,
-		Status:     (*string)(commentResult.Status),
-		DocumentID: commentResult.DocumentID.String(),
-		CommentAt:  commentResult.CreatedAt.Format("15.04 • 02 Jan 2006"),
+		ID:                    commentResult.ID.String(),
+		Section:               commentResult.Section,
+		Comment:               commentResult.Comment,
+		Baseline:              commentResult.Baseline,
+		Status:                (*string)(commentResult.Status),
+		AttachFileUrl:         commentResult.AttachFileUrl,
+		CommentAt:             commentResult.CreatedAt.Format("15.04 • 02 Jan 2006"),
+		CompanyDocumentNumber: disciplineListDocument.Document.CompanyDocumentNumber,
 	}, nil
 }
 
 func (s *commentService) Reply(ctx context.Context, req dto.CommentRequest) (dto.CommentResponse, error) {
-	areaOfConcern, document, user, err := s.checkPackagePermission(ctx, req.AreaOfConcernId, req.DocumentId, req.UserId)
+	disciplineListDocument, user, err := s.checkPackagePermission(ctx, req.DisciplineListDocumentId, req.UserId)
 	if err != nil {
 		return dto.CommentResponse{}, err
 	}
 
-	commentReplied, err := s.commentRepository.GetByID(ctx, nil, req.ReplyId, "Document")
+	commentReplied, err := s.commentRepository.GetByID(ctx, nil, req.ReplyId)
 	if err != nil {
 		return dto.CommentResponse{}, err
 	}
@@ -111,15 +112,14 @@ func (s *commentService) Reply(ctx context.Context, req dto.CommentRequest) (dto
 
 	replyId := commentReplied.ID
 	commentResult, err := s.commentRepository.Create(ctx, nil, entity.Comment{
-		Section:           req.Section,
-		Comment:           req.Comment,
-		Baseline:          req.Baseline,
-		DocumentID:        document.ID,
-		UserID:            user.ID,
-		IsCloseOutComment: req.IsCloseOutComment,
-		AreaOfConcernID:   areaOfConcern.ID,
-		CommentReplyID:    &replyId,
-	}, "Document")
+		Section:                  req.Section,
+		Comment:                  req.Comment,
+		Baseline:                 req.Baseline,
+		UserID:                   user.ID,
+		IsCloseOutComment:        req.IsCloseOutComment,
+		DisciplineListDocumentID: disciplineListDocument.ID,
+		CommentReplyID:           &replyId,
+	})
 	if err != nil {
 		return dto.CommentResponse{}, err
 	}
@@ -130,13 +130,14 @@ func (s *commentService) Reply(ctx context.Context, req dto.CommentRequest) (dto
 		Comment:               commentResult.Comment,
 		Baseline:              commentResult.Baseline,
 		Status:                (*string)(commentResult.Status),
+		AttachFileUrl:         commentResult.AttachFileUrl,
 		CommentAt:             commentResult.CreatedAt.Format("15.04 • 02 Jan 2006"),
-		CompanyDocumentNumber: commentResult.Document.CompanyDocumentNumber,
+		CompanyDocumentNumber: disciplineListDocument.Document.CompanyDocumentNumber,
 	}, nil
 }
 
 func (s *commentService) GetById(ctx context.Context, id string) (dto.CommentResponse, error) {
-	comment, err := s.commentRepository.GetByID(ctx, nil, id, "User", "Document")
+	comment, err := s.commentRepository.GetByID(ctx, nil, id, "User", "DisciplineListDocument.Document")
 	if err != nil {
 		return dto.CommentResponse{}, err
 	}
@@ -151,8 +152,7 @@ func (s *commentService) GetById(ctx context.Context, id string) (dto.CommentRes
 				Baseline:              reply.Baseline,
 				Status:                (*string)(reply.Status),
 				CommentAt:             reply.CreatedAt.Format("15.04 • 02 Jan 2006"),
-				DocumentID:            reply.DocumentID.String(),
-				CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
+				CompanyDocumentNumber: comment.DisciplineListDocument.Document.CompanyDocumentNumber,
 				UserComment: &dto.UserComment{
 					ID:           comment.User.ID.String(),
 					Name:         comment.User.Name,
@@ -169,9 +169,9 @@ func (s *commentService) GetById(ctx context.Context, id string) (dto.CommentRes
 		Comment:               comment.Comment,
 		Baseline:              comment.Baseline,
 		Status:                (*string)(comment.Status),
-		DocumentID:            comment.Document.ID.String(),
+		DocumentID:            comment.DisciplineListDocument.Document.ID.String(),
 		CommentAt:             comment.CreatedAt.Format("15.04 • 02 Jan 2006"),
-		CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
+		CompanyDocumentNumber: comment.DisciplineListDocument.Document.CompanyDocumentNumber,
 		UserComment: &dto.UserComment{
 			Name:         comment.User.Name,
 			PhotoProfile: comment.User.PhotoProfile,
@@ -181,13 +181,13 @@ func (s *commentService) GetById(ctx context.Context, id string) (dto.CommentRes
 	}, nil
 }
 
-func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, areaOfConcernId string, metaReq meta.Meta) ([]dto.CommentResponse, meta.Meta, error) {
-	_, _, _, err := s.checkPackagePermission(ctx, areaOfConcernId, "", userId)
+func (s *commentService) GetAllByDisciplineListDocumentId(ctx context.Context, userId, disciplineListDocumentId string, metaReq meta.Meta) ([]dto.CommentResponse, meta.Meta, error) {
+	disciplineListDocument, _, err := s.checkPackagePermission(ctx, disciplineListDocumentId, userId)
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
 
-	comments, metaRes, err := s.commentRepository.GetAllByAreaOfConcernID(ctx, nil, areaOfConcernId, metaReq, "User", "CommentReplies.User", "CommentReplies.Document", "Document")
+	comments, metaRes, err := s.commentRepository.GetAllByDisciplineListDocumentID(ctx, nil, disciplineListDocumentId, metaReq, "User", "CommentReplies.User", "CommentReplies")
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
@@ -205,9 +205,9 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 					Baseline:              reply.Baseline,
 					Status:                (*string)(reply.Status),
 					CommentAt:             reply.CreatedAt.Format("15.04 • 02 Jan 2006"),
-					DocumentID:            reply.DocumentID.String(),
+					DocumentID:            disciplineListDocument.Document.ID.String(),
 					IsCloseOutComment:     reply.IsCloseOutComment,
-					CompanyDocumentNumber: reply.Document.CompanyDocumentNumber,
+					CompanyDocumentNumber: disciplineListDocument.Document.CompanyDocumentNumber,
 					UserComment: &dto.UserComment{
 						ID:           reply.User.ID.String(),
 						Name:         reply.User.Name,
@@ -225,9 +225,9 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 			Baseline:              comment.Baseline,
 			Status:                (*string)(comment.Status),
 			CommentAt:             comment.CreatedAt.Format("15.04 • 02 Jan 2006"),
-			DocumentID:            comment.DocumentID.String(),
+			DocumentID:            disciplineListDocument.Document.ID.String(),
 			IsCloseOutComment:     comment.IsCloseOutComment,
-			CompanyDocumentNumber: comment.Document.CompanyDocumentNumber,
+			CompanyDocumentNumber: disciplineListDocument.Document.CompanyDocumentNumber,
 			UserComment: &dto.UserComment{
 				ID:           comment.User.ID.String(),
 				Name:         comment.User.Name,
@@ -241,8 +241,8 @@ func (s *commentService) GetAllByAreaOfConcernId(ctx context.Context, userId, ar
 	return commentResponse, metaRes, nil
 }
 
-func (s *commentService) GetAllByReplyId(ctx context.Context, userId, areaOfConcernId, replyId string, metaReq meta.Meta) ([]dto.CommentResponse, meta.Meta, error) {
-	_, _, _, err := s.checkPackagePermission(ctx, areaOfConcernId, "", userId)
+func (s *commentService) GetAllByReplyId(ctx context.Context, userId, disciplineListDocumentId, replyId string, metaReq meta.Meta) ([]dto.CommentResponse, meta.Meta, error) {
+	_, _, err := s.checkPackagePermission(ctx, disciplineListDocumentId, userId)
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
@@ -272,7 +272,7 @@ func (s *commentService) GetAllByReplyId(ctx context.Context, userId, areaOfConc
 }
 
 func (s *commentService) Update(ctx context.Context, req dto.UpdateCommentRequest) error {
-	_, _, user, err := s.checkPackagePermission(ctx, req.AreaOfConcernId, req.DocumentId, req.UserId)
+	_, user, err := s.checkPackagePermission(ctx, req.DisciplineListDocumentId, req.UserId)
 	if err != nil {
 		return err
 	}
@@ -298,6 +298,7 @@ func (s *commentService) Update(ctx context.Context, req dto.UpdateCommentReques
 	comment.Baseline = req.Baseline
 	comment.Section = req.Section
 	comment.Status = (*entity.CommentStatus)(req.Status)
+	comment.AttachFileUrl = req.AttachFileUrl
 
 	if err = s.commentRepository.Update(ctx, nil, comment); err != nil {
 		return err
@@ -306,8 +307,8 @@ func (s *commentService) Update(ctx context.Context, req dto.UpdateCommentReques
 	return nil
 }
 
-func (s *commentService) Delete(ctx context.Context, userId, areaOfConcernId, commentId string) error {
-	_, _, user, err := s.checkPackagePermission(ctx, areaOfConcernId, "", userId)
+func (s *commentService) Delete(ctx context.Context, userId, disciplineListDocumentId, commentId string) error {
+	_, user, err := s.checkPackagePermission(ctx, disciplineListDocumentId, userId)
 	if err != nil {
 		return err
 	}
@@ -328,30 +329,20 @@ func (s *commentService) Delete(ctx context.Context, userId, areaOfConcernId, co
 	return nil
 }
 
-func (s *commentService) checkPackagePermission(ctx context.Context, areaOfConcernId, documentId, userId string) (entity.AreaOfConcern, *entity.Document, entity.User, error) {
-	areaOfConcern, err := s.areaOfConcernRepository.GetByID(ctx, nil, areaOfConcernId)
+func (s *commentService) checkPackagePermission(ctx context.Context, disciplineListDocumentId, userId string) (entity.DisciplineListDocument, entity.User, error) {
+	disciplineListDocument, err := s.disciplineListDocumentRepository.GetByID(ctx, nil, disciplineListDocumentId, "Document")
 	if err != nil {
-		return entity.AreaOfConcern{}, nil, entity.User{}, err
-	}
-
-	var document *entity.Document
-	if documentId != "" {
-		documentR, err := s.documentRepository.GetByID(ctx, nil, documentId)
-		if err != nil {
-			return entity.AreaOfConcern{}, nil, entity.User{}, err
-		}
-
-		document = &documentR
+		return entity.DisciplineListDocument{}, entity.User{}, err
 	}
 
 	user, err := s.userRepository.GetById(ctx, nil, userId)
 	if err != nil {
-		return entity.AreaOfConcern{}, nil, entity.User{}, err
+		return entity.DisciplineListDocument{}, entity.User{}, err
 	}
 
-	if user.PackageID != nil && areaOfConcern.PackageID != *user.PackageID {
-		return entity.AreaOfConcern{}, nil, entity.User{}, myerror.New("you dont have permission in this package", http.StatusUnauthorized)
+	if user.PackageID != nil && disciplineListDocument.PackageID != *user.PackageID {
+		return entity.DisciplineListDocument{}, entity.User{}, myerror.New("you dont have permission in this package", http.StatusUnauthorized)
 	}
 
-	return areaOfConcern, document, user, nil
+	return disciplineListDocument, user, nil
 }
