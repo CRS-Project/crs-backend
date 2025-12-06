@@ -5,14 +5,14 @@ meta {
 }
 
 put {
-  url: {{host}}/api/v1/area-of-concern-group/:area_of_concern_group_id/area-of-concern/:area_of_concern_id
+  url: {{host}}/api/v1/area-of-concern-group/:discipline_group_id/area-of-concern/:discipline_list_document_id
   body: json
   auth: bearer
 }
 
 params:path {
-  area_of_concern_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
-  area_of_concern_id: 432fc4a6-b932-4a58-a2e6-76b8b252f313
+  discipline_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
+  discipline_list_document_id: 432fc4a6-b932-4a58-a2e6-76b8b252f313
 }
 
 auth:bearer {
@@ -21,7 +21,7 @@ auth:bearer {
 
 body:json {
   {
-    "area_of_concern_id": "B011",
+    "discipline_list_document_id": "B011",
     "description": "03. Alignment of project execution strategy across Dual FEED",
     "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2",
     "consolidators": [

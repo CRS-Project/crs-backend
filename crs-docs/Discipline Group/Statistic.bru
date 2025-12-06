@@ -1,17 +1,17 @@
 meta {
-  name: Get By Id
+  name: Statistic
   type: http
-  seq: 3
+  seq: 8
 }
 
 get {
-  url: {{host}}/api/v1/area-of-concern-group/:discipline_group_id
+  url: {{host}}/api/v1/discipline-group/statistic/:package_id
   body: none
   auth: bearer
 }
 
 params:path {
-  discipline_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
+  package_id: f49c3147-a8af-4c22-9aab-d7b8d663e6e2
 }
 
 auth:bearer {

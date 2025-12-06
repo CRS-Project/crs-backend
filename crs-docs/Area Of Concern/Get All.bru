@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/area-of-concern-group/:area_of_concern_group_id/area-of-concern?take&page&sort&sort_by&filter=0&filter_by=search
+  url: {{host}}/api/v1/area-of-concern-group/:discipline_group_id/area-of-concern?take&page&sort&sort_by&filter=0&filter_by=search
   body: none
   auth: bearer
 }
@@ -20,7 +20,7 @@ params:query {
 }
 
 params:path {
-  area_of_concern_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
+  discipline_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
 }
 
 auth:bearer {

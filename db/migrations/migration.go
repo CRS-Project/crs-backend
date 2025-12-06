@@ -22,9 +22,10 @@ func Migrate(db *gorm.DB) error {
 		&entity.Package{},
 		&entity.UserDiscipline{},
 		&entity.Comment{},
-		&entity.AreaOfConcernGroup{},
-		&entity.AreaOfConcern{},
-		&entity.AreaOfConcernConsolidator{},
+		&entity.DisciplineGroup{},
+		&entity.DisciplineGroupConsolidator{},
+		&entity.DisciplineListDocument{},
+		&entity.DisciplineListDocumentConsolidator{},
 	); err != nil {
 		return err
 	}

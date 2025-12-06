@@ -5,14 +5,14 @@ meta {
 }
 
 post {
-  url: {{host}}/api/v1/area-of-concern-group/:area_of_concern_group_id/area-of-concern/:area_of_concern_id/comment/:comment_id/reply
+  url: {{host}}/api/v1/area-of-concern-group/:discipline_group_id/area-of-concern/:discipline_list_document_id/comment/:comment_id/reply
   body: json
   auth: bearer
 }
 
 params:path {
-  area_of_concern_group_id: 99690c62-0971-4cbb-a11e-08ea4b7662e6
-  area_of_concern_id: 7655d75a-ff49-4dd4-93e1-7c0e99a4393a
+  discipline_group_id: 99690c62-0971-4cbb-a11e-08ea4b7662e6
+  discipline_list_document_id: 7655d75a-ff49-4dd4-93e1-7c0e99a4393a
   comment_id: fe60686b-69b3-4419-893f-249982307fac
 }
 

@@ -2,15 +2,15 @@ package dto
 
 type (
 	StatisticAOCAndCommentChart struct {
-		Name                 string `json:"name"`
-		TotalAreaOfConcern   int    `json:"total_area_of_concern"`
-		TotalDocuments       int    `json:"total_documents"`
-		TotalComments        int    `json:"total_comments"`
-		TotalCommentRejected int    `json:"total_comment_rejected"`
+		Name                        string `json:"name"`
+		TotalDisciplineListDocument int    `json:"total_discipline_list_document"`
+		TotalDocuments              int    `json:"total_documents"`
+		TotalComments               int    `json:"total_comments"`
+		TotalCommentRejected        int    `json:"total_comment_rejected"`
 	}
 
 	StatisticAOCAndCommentCard struct {
-		TotalAreaOfConcern           int `json:"total_area_of_concern"`
+		TotalDisciplineListDocument  int `json:"total_discipline_list_document"`
 		TotalDocuments               int `json:"total_documents"`
 		TotalComments                int `json:"total_comments"`
 		TotalCommentRejected         int `json:"total_comment_rejected"`

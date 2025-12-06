@@ -16,7 +16,7 @@ type (
 	CommentController interface {
 		Create(ctx *gin.Context)
 		ReplyId(ctx *gin.Context)
-		GetAllByAreaOfConcernId(ctx *gin.Context)
+		GetAllByDisciplineListDocumentId(ctx *gin.Context)
 		GetAllReplyByCommentId(ctx *gin.Context)
 		GetById(ctx *gin.Context)
 		Update(ctx *gin.Context)
@@ -35,7 +35,7 @@ func NewComment(commentService service.CommentService) CommentController {
 }
 
 func (c *commentController) Create(ctx *gin.Context) {
-	areaOfConcernId := ctx.Param("area_of_concern_id")
+	disciplineListDocumentId := ctx.Param("discipline_list_document_id")
 	userId, err := utils.GetUserIdFromCtx(ctx)
 	if err != nil {
 		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
@@ -49,7 +49,7 @@ func (c *commentController) Create(ctx *gin.Context) {
 		return
 	}
 
-	req.AreaOfConcernId = areaOfConcernId
+	req.DisciplineListDocumentId = disciplineListDocumentId
 	req.UserId = userId
 	comment, err := c.commentService.Create(ctx, req)
 	if err != nil {
@@ -61,7 +61,7 @@ func (c *commentController) Create(ctx *gin.Context) {
 }
 
 func (c *commentController) ReplyId(ctx *gin.Context) {
-	areaOfConcernId := ctx.Param("area_of_concern_id")
+	disciplineListDocumentId := ctx.Param("discipline_list_document_id")
 	commentId := ctx.Param("comment_id")
 
 	userId, err := utils.GetUserIdFromCtx(ctx)
@@ -77,7 +77,7 @@ func (c *commentController) ReplyId(ctx *gin.Context) {
 		return
 	}
 
-	req.AreaOfConcernId = areaOfConcernId
+	req.DisciplineListDocumentId = disciplineListDocumentId
 	req.UserId = userId
 	req.ReplyId = commentId
 
@@ -90,8 +90,8 @@ func (c *commentController) ReplyId(ctx *gin.Context) {
 	response.NewSuccess("success create comment", comment).Send(ctx)
 }
 
-func (c *commentController) GetAllByAreaOfConcernId(ctx *gin.Context) {
-	areaOfConcernId := ctx.Param("area_of_concern_id")
+func (c *commentController) GetAllByDisciplineListDocumentId(ctx *gin.Context) {
+	disciplineListDocumentId := ctx.Param("discipline_list_document_id")
 
 	userId, err := utils.GetUserIdFromCtx(ctx)
 	if err != nil {
@@ -99,7 +99,7 @@ func (c *commentController) GetAllByAreaOfConcernId(ctx *gin.Context) {
 		return
 	}
 
-	comments, metaRes, err := c.commentService.GetAllByAreaOfConcernId(ctx.Request.Context(), userId, areaOfConcernId, meta.New(ctx))
+	comments, metaRes, err := c.commentService.GetAllByDisciplineListDocumentId(ctx.Request.Context(), userId, disciplineListDocumentId, meta.New(ctx))
 	if err != nil {
 		response.NewFailed("failed get all comments", err).Send(ctx)
 		return
@@ -110,13 +110,13 @@ func (c *commentController) GetAllByAreaOfConcernId(ctx *gin.Context) {
 
 func (c *commentController) GetAllReplyByCommentId(ctx *gin.Context) {
 	commentId := ctx.Param("comment_id")
-	areaOfConcernId := ctx.Param("area_of_concern_id")
+	disciplineListDocumentId := ctx.Param("discipline_list_document_id")
 	userId, err := utils.GetUserIdFromCtx(ctx)
 	if err != nil {
 		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
 		return
 	}
-	comments, metaRes, err := c.commentService.GetAllByReplyId(ctx.Request.Context(), userId, areaOfConcernId, commentId, meta.New(ctx))
+	comments, metaRes, err := c.commentService.GetAllByReplyId(ctx.Request.Context(), userId, disciplineListDocumentId, commentId, meta.New(ctx))
 	if err != nil {
 		response.NewFailed("failed get all comments", err).Send(ctx)
 		return
@@ -138,7 +138,7 @@ func (c *commentController) GetById(ctx *gin.Context) {
 
 func (c *commentController) Update(ctx *gin.Context) {
 	commentId := ctx.Param("comment_id")
-	areaOfConcernId := ctx.Param("area_of_concern_id")
+	disciplineListDocumentId := ctx.Param("discipline_list_document_id")
 	userId, err := utils.GetUserIdFromCtx(ctx)
 	if err != nil {
 		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
@@ -153,7 +153,7 @@ func (c *commentController) Update(ctx *gin.Context) {
 
 	req.ID = commentId
 	req.UserId = userId
-	req.AreaOfConcernId = areaOfConcernId
+	req.DisciplineListDocumentId = disciplineListDocumentId
 	err = c.commentService.Update(ctx.Request.Context(), req)
 	if err != nil {
 		response.NewFailed("failed update comment", err).Send(ctx)
@@ -165,14 +165,14 @@ func (c *commentController) Update(ctx *gin.Context) {
 
 func (c *commentController) Delete(ctx *gin.Context) {
 	commentId := ctx.Param("comment_id")
-	areaOfConcernId := ctx.Param("area_of_concern_id")
+	disciplineListDocumentId := ctx.Param("discipline_list_document_id")
 	userId, err := utils.GetUserIdFromCtx(ctx)
 	if err != nil {
 		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
 		return
 	}
 
-	err = c.commentService.Delete(ctx.Request.Context(), userId, areaOfConcernId, commentId)
+	err = c.commentService.Delete(ctx.Request.Context(), userId, disciplineListDocumentId, commentId)
 	if err != nil {
 		response.NewFailed("failed delete comment", err).Send(ctx)
 		return
