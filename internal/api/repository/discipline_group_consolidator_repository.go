@@ -96,7 +96,7 @@ func (r *disciplineGroupConsolidatorRepository) GetAllConsolidator(ctx context.C
 
 	var disciplineGroupConsolidators []entity.DisciplineGroupConsolidator
 
-	tx = tx.Debug().WithContext(ctx).Model(&entity.DisciplineGroupConsolidator{}).
+	tx = tx.WithContext(ctx).Model(&entity.DisciplineGroupConsolidator{}).
 		Joins("LEFT JOIN users u ON u.id = discipline_group_consolidators.user_id").
 		Where("discipline_group_consolidators.discipline_group_id = ?", disciplineGroupId)
 

@@ -8,7 +8,7 @@ import (
 )
 
 func Comment(app *gin.Engine, commentcontroller controller.CommentController, middleware middleware.Middleware) {
-	routes := app.Group("/api/v1/area-of-concern-group/:discipline_group_id/area-of-concern/:discipline_list_document_id/comment")
+	routes := app.Group("/api/v1/discipline-group/:discipline_group_id/discipline-list-document/:discipline_list_document_id/comment")
 	{
 		routes.POST("", middleware.Authenticate(), middleware.OnlyAllow(string(entity.RoleSuperAdmin), string(entity.RoleReviewer)), commentcontroller.Create)
 		routes.POST("/:comment_id/reply", middleware.Authenticate(), commentcontroller.ReplyId)

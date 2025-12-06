@@ -8,7 +8,6 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
-	mylog "github.com/CRS-Project/crs-backend/internal/pkg/logger"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -118,6 +117,7 @@ func (s *commentService) Reply(ctx context.Context, req dto.CommentRequest) (dto
 		UserID:                   user.ID,
 		IsCloseOutComment:        req.IsCloseOutComment,
 		DisciplineListDocumentID: disciplineListDocument.ID,
+		AttachFileUrl:            req.AttachFileUrl,
 		CommentReplyID:           &replyId,
 	})
 	if err != nil {
@@ -172,6 +172,7 @@ func (s *commentService) GetById(ctx context.Context, id string) (dto.CommentRes
 		DocumentID:            comment.DisciplineListDocument.Document.ID.String(),
 		CommentAt:             comment.CreatedAt.Format("15.04 • 02 Jan 2006"),
 		CompanyDocumentNumber: comment.DisciplineListDocument.Document.CompanyDocumentNumber,
+		AttachFileUrl:         comment.AttachFileUrl,
 		UserComment: &dto.UserComment{
 			Name:         comment.User.Name,
 			PhotoProfile: comment.User.PhotoProfile,
@@ -197,7 +198,6 @@ func (s *commentService) GetAllByDisciplineListDocumentId(ctx context.Context, u
 		var replies []dto.CommentResponse
 		if len(comment.CommentReplies) > 0 {
 			for _, reply := range comment.CommentReplies {
-				mylog.Infoln(reply)
 				replies = append(replies, dto.CommentResponse{
 					ID:                    reply.ID.String(),
 					Section:               reply.Section,
@@ -299,7 +299,6 @@ func (s *commentService) Update(ctx context.Context, req dto.UpdateCommentReques
 	comment.Section = req.Section
 	comment.Status = (*entity.CommentStatus)(req.Status)
 	comment.AttachFileUrl = req.AttachFileUrl
-
 	if err = s.commentRepository.Update(ctx, nil, comment); err != nil {
 		return err
 	}

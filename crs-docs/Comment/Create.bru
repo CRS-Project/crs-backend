@@ -5,14 +5,14 @@ meta {
 }
 
 post {
-  url: {{host}}/api/v1/area-of-concern-group/:discipline_group_id/area-of-concern/:discipline_list_document_id/comment
+  url: {{host}}/api/v1/discipline-group/:discipline_group_id/discipline-list-document/:discipline_list_document_id/comment
   body: json
   auth: bearer
 }
 
 params:path {
-  discipline_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
-  discipline_list_document_id: 0240ddc0-48d3-420c-919d-8f0f4f758cac
+  discipline_group_id: 6f0a80c9-1445-4a6a-936d-469806073ecf
+  discipline_list_document_id: 0ecd872c-890e-498d-9b37-9a055fca850a
 }
 
 auth:bearer {
@@ -24,7 +24,7 @@ body:json {
     "section": "1",
     "comment": "kamu harus punya ini aku contractor",
     "baseline": "document abc halaman 2",
-    "document_id": "be5eb9c9-fbc5-4cf7-b88a-ae72afbb91be"
+    "attach_file_url": "abdsbsbfv"
   }
 }
 

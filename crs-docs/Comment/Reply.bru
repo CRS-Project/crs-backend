@@ -5,15 +5,15 @@ meta {
 }
 
 post {
-  url: {{host}}/api/v1/area-of-concern-group/:discipline_group_id/area-of-concern/:discipline_list_document_id/comment/:comment_id/reply
+  url: {{host}}/api/v1/discipline-group/:discipline_group_id/discipline-list-document/:discipline_list_document_id/comment/:comment_id/reply
   body: json
   auth: bearer
 }
 
 params:path {
-  discipline_group_id: 99690c62-0971-4cbb-a11e-08ea4b7662e6
-  discipline_list_document_id: 7655d75a-ff49-4dd4-93e1-7c0e99a4393a
-  comment_id: fe60686b-69b3-4419-893f-249982307fac
+  discipline_group_id: 6f0a80c9-1445-4a6a-936d-469806073ecf
+  discipline_list_document_id: 0ecd872c-890e-498d-9b37-9a055fca850a
+  comment_id: 7ec5d3c1-2b83-4e06-b47e-39a4cb4af2de
 }
 
 auth:bearer {
@@ -32,7 +32,7 @@ body:json {
   {
     "comment": "sadam jelek",
     "is_close_out_comment": false,
-    "document_id": "79e5f0b9-813c-4629-ba46-29411b119584"
+    "attach_file_url": "abdsbsbfv"
   }
 }
 

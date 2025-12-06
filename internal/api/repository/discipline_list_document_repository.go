@@ -68,7 +68,7 @@ func (r *disciplineListDocumentRepository) GetAll(ctx context.Context, tx *gorm.
 
 func (r *disciplineListDocumentRepository) GetAllByDisciplineGroupID(ctx context.Context, tx *gorm.DB, disciplineGroupId string, metaReq meta.Meta, preloads ...string) ([]entity.DisciplineListDocument, meta.Meta, error) {
 	if tx == nil {
-		tx = r.db.Debug()
+		tx = r.db
 	}
 
 	for _, preload := range preloads {

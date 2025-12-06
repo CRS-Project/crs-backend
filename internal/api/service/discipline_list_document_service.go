@@ -9,7 +9,6 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
-	mylog "github.com/CRS-Project/crs-backend/internal/pkg/logger"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -77,15 +76,13 @@ func (s *disciplineListDocumentService) Create(ctx context.Context, req dto.Disc
 		contractor = user
 	}
 
-	mylog.Debug()
 	var consolidatorsInput []entity.DisciplineListDocumentConsolidator
 	for _, consolidator := range req.Consolidators {
-		mylog.Infoln(consolidator)
 		consolidatorsInput = append(consolidatorsInput, entity.DisciplineListDocumentConsolidator{
 			DisciplineGroupConsolidatorID: uuid.MustParse(consolidator.DisciplineGroupConsolidatorID),
 		})
 	}
-	mylog.Debug()
+
 	disciplinegroup, err := s.disciplineGroupRepository.GetByID(ctx, nil, req.DisciplineGroupID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

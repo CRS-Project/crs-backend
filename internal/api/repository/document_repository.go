@@ -69,7 +69,7 @@ func (r *documentRepository) GetByID(ctx context.Context, tx *gorm.DB, documentI
 
 func (r *documentRepository) GetAll(ctx context.Context, tx *gorm.DB, packageId string, metaReq meta.Meta, preloads ...string) ([]entity.Document, meta.Meta, error) {
 	if tx == nil {
-		tx = r.db.Debug()
+		tx = r.db
 	}
 
 	for _, preload := range preloads {
@@ -95,7 +95,7 @@ func (r *documentRepository) GetAll(ctx context.Context, tx *gorm.DB, packageId 
 			"%"+find+"%")
 	}
 
-	if err := WithFilters(tx.Debug(), &metaReq, AddModels(entity.Document{}),
+	if err := WithFilters(tx, &metaReq, AddModels(entity.Document{}),
 		AddCustomField("search", "")).
 		Find(&documents).Error; err != nil {
 		return nil, meta.Meta{}, err
