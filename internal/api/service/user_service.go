@@ -23,25 +23,28 @@ type (
 	}
 
 	userService struct {
-		userRepository            repository.UserRepository
-		userDisciplineRepository  repository.UserDisciplineRepository
-		areaOfConcernConsolidator repository.AreaOfConcernConsolidatorRepository
-		packageRepository         repository.PackageRepository
-		db                        *gorm.DB
+		userRepository                        repository.UserRepository
+		userDisciplineRepository              repository.UserDisciplineRepository
+		disciplineGroupConsolidatorRepository repository.DisciplineGroupConsolidatorRepository
+		disciplineListDocumentConsolidator    repository.DisciplineListDocumentConsolidatorRepository
+		packageRepository                     repository.PackageRepository
+		db                                    *gorm.DB
 	}
 )
 
 func NewUser(userRepository repository.UserRepository,
 	userDisciplineRepository repository.UserDisciplineRepository,
-	areaOfConcernConsolidator repository.AreaOfConcernConsolidatorRepository,
+	disciplineGroupConsolidatorRepository repository.DisciplineGroupConsolidatorRepository,
+	disciplineListDocumentConsolidator repository.DisciplineListDocumentConsolidatorRepository,
 	packageRepository repository.PackageRepository,
 	db *gorm.DB) UserService {
 	return &userService{
-		userRepository:            userRepository,
-		userDisciplineRepository:  userDisciplineRepository,
-		areaOfConcernConsolidator: areaOfConcernConsolidator,
-		packageRepository:         packageRepository,
-		db:                        db,
+		userRepository:                        userRepository,
+		userDisciplineRepository:              userDisciplineRepository,
+		disciplineGroupConsolidatorRepository: disciplineGroupConsolidatorRepository,
+		disciplineListDocumentConsolidator:    disciplineListDocumentConsolidator,
+		packageRepository:                     packageRepository,
+		db:                                    db,
 	}
 }
 
@@ -268,7 +271,17 @@ func (s *userService) Delete(ctx context.Context, userId string) error {
 		return err
 	}
 
-	if err := s.areaOfConcernConsolidator.DeleteByUserID(ctx, nil, userId); err != nil {
+	consolidators, err := s.disciplineGroupConsolidatorRepository.GetByUserID(ctx, nil, userId)
+	if err != nil {
+		return err
+	}
+
+	var consolidatorId []string
+	for _, c := range consolidators {
+		consolidatorId = append(consolidatorId, c.ID.String())
+	}
+
+	if err := s.disciplineListDocumentConsolidator.DeleteByDisciplineGroupConsolidatorID(ctx, nil, consolidatorId); err != nil {
 		return err
 	}
 

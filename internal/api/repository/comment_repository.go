@@ -14,11 +14,11 @@ type (
 		GetByID(ctx context.Context, tx *gorm.DB, commentID string, preloads ...string) (entity.Comment, error)
 		GetAll(ctx context.Context, tx *gorm.DB, metaReq meta.Meta, preloads ...string) ([]entity.Comment, meta.Meta, error)
 		GetAllByDocumentID(ctx context.Context, tx *gorm.DB, documentId string, metaReq meta.Meta, preloads ...string) ([]entity.Comment, meta.Meta, error)
-		GetAllByAreaOfConcernID(ctx context.Context, tx *gorm.DB, areaOfConcernId string, metaReq meta.Meta, preloads ...string) ([]entity.Comment, meta.Meta, error)
+		GetAllByDisciplineListDocumentID(ctx context.Context, tx *gorm.DB, disciplineListDocumentId string, metaReq meta.Meta, preloads ...string) ([]entity.Comment, meta.Meta, error)
 		GetAllByReplyID(ctx context.Context, tx *gorm.DB, replyId string, metaReq meta.Meta, preloads ...string) ([]entity.Comment, meta.Meta, error)
 		Update(ctx context.Context, tx *gorm.DB, comment entity.Comment, preloads ...string) error
 		Delete(ctx context.Context, tx *gorm.DB, comment entity.Comment, preloads ...string) error
-		DeleteByAreaOfConcernID(ctx context.Context, tx *gorm.DB, areaOfConcernID []string) error
+		DeleteByDisciplineListDocumentID(ctx context.Context, tx *gorm.DB, disciplineListDocumentID []string) error
 	}
 
 	commentRepository struct {
@@ -109,7 +109,7 @@ func (r *commentRepository) GetAllByDocumentID(ctx context.Context, tx *gorm.DB,
 	return comments, metaReq, nil
 }
 
-func (r *commentRepository) GetAllByAreaOfConcernID(ctx context.Context, tx *gorm.DB, areaOfConcernId string, metaReq meta.Meta, preloads ...string) ([]entity.Comment, meta.Meta, error) {
+func (r *commentRepository) GetAllByDisciplineListDocumentID(ctx context.Context, tx *gorm.DB, disciplineListDocumentId string, metaReq meta.Meta, preloads ...string) ([]entity.Comment, meta.Meta, error) {
 	if tx == nil {
 		tx = r.db
 	}
@@ -120,7 +120,7 @@ func (r *commentRepository) GetAllByAreaOfConcernID(ctx context.Context, tx *gor
 
 	var comments []entity.Comment
 
-	tx = tx.WithContext(ctx).Model(&entity.Comment{}).Where("area_of_concern_id = ? AND comment_reply_id IS NULL", areaOfConcernId)
+	tx = tx.WithContext(ctx).Model(&entity.Comment{}).Where("discipline_list_document_id = ? AND comment_reply_id IS NULL", disciplineListDocumentId)
 	if err := WithFilters(tx, &metaReq, AddModels(entity.Comment{})).Find(&comments).Error; err != nil {
 		return nil, meta.Meta{}, err
 	}
@@ -179,12 +179,12 @@ func (r *commentRepository) Delete(ctx context.Context, tx *gorm.DB, comment ent
 	return nil
 }
 
-func (r *commentRepository) DeleteByAreaOfConcernID(ctx context.Context, tx *gorm.DB, areaOfConcernID []string) error {
+func (r *commentRepository) DeleteByDisciplineListDocumentID(ctx context.Context, tx *gorm.DB, disciplineListDocumentID []string) error {
 	if tx == nil {
 		tx = r.db
 	}
 
-	if err := tx.WithContext(ctx).Where("area_of_concern_id IN (?)", areaOfConcernID).Delete(&entity.Comment{}).Error; err != nil {
+	if err := tx.WithContext(ctx).Where("discipline_list_document_id IN (?)", disciplineListDocumentID).Delete(&entity.Comment{}).Error; err != nil {
 		return err
 	}
 

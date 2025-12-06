@@ -16,7 +16,7 @@ const (
 type User struct {
 	ID         uuid.UUID `json:"id" gorm:"type:uuid;primaryKey;default:uuid_generate_v4()"`
 	Name       string    `json:"name" gorm:"not null"`
-	Email      string    `json:"email" gorm:"uniqueIndex;not null"`
+	Email      string    `json:"email" gorm:"not null"`
 	Password   string    `json:"password" gorm:"not null"`
 	IsVerified bool      `json:"is_verified" gorm:"default:false;not null"`
 	Role       Role      `json:"role" gorm:"default:REVIEWER;not null"`

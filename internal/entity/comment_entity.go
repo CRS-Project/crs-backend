@@ -16,18 +16,17 @@ type Comment struct {
 	Comment           string         `json:"comment" gorm:"not null"`
 	Baseline          string         `json:"baseline" gorm:"not null"`
 	IsCloseOutComment bool           `json:"is_close_out_comment" gorm:"default:false"`
+	AttachFileUrl     *string        `json:"attach_file_url" gorm:""`
 	Status            *CommentStatus `json:"comment_status" gorm:""`
 
-	AreaOfConcernID uuid.UUID  `json:"area_of_concern_id" gorm:"not null"`
-	DocumentID      uuid.UUID  `json:"document_id" gorm:"not null"`
-	UserID          uuid.UUID  `json:"user_id" gorm:"not null"`
-	CommentReplyID  *uuid.UUID `json:"comment_reply_id" gorm:""`
+	DisciplineListDocumentID uuid.UUID  `json:"discipline_list_document_id" gorm:"not null"`
+	UserID                   uuid.UUID  `json:"user_id" gorm:"not null"`
+	CommentReplyID           *uuid.UUID `json:"comment_reply_id" gorm:""`
 
 	Timestamp
 
-	AreaOfConcern  *AreaOfConcern `json:"area_of_concern,omitempty" gorm:"foreignKey:AreaOfConcernID"`
-	User           *User          `json:"user" gorm:"foreignKey:UserID"`
-	Document       *Document      `json:"document,omitempty" gorm:"foreignKey:DocumentID"`
-	CommentReply   *Comment       `json:"comment_reply,omitempty" gorm:"foreignKey:CommentReplyID"`
-	CommentReplies []Comment      `json:"comment_replies,omitempty" gorm:"foreignKey:CommentReplyID"`
+	DisciplineListDocument *DisciplineListDocument `json:"discipline_list_document,omitempty" gorm:"foreignKey:DisciplineListDocumentID"`
+	User                   *User                   `json:"user" gorm:"foreignKey:UserID"`
+	CommentReply           *Comment                `json:"comment_reply,omitempty" gorm:"foreignKey:CommentReplyID"`
+	CommentReplies         []Comment               `json:"comment_replies,omitempty" gorm:"foreignKey:CommentReplyID"`
 }
