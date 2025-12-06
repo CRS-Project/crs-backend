@@ -28,7 +28,7 @@ jobs:
           if [[ "${{ github.ref_name }}" == "main" ]]; then
             echo "TAG=latest" >> $GITHUB_ENV
             echo "DOCKERFILE=Dockerfile.prod" >> $GITHUB_ENV
-          else if [[ "${{ github.ref_name }}" == "dev" ]]; then
+          elif [[ "${{ github.ref_name }}" == "dev" ]]; then
             echo "TAG=dev" >> $GITHUB_ENV
             echo "DOCKERFILE=Dockerfile.dev" >> $GITHUB_ENV
           fi
@@ -48,7 +48,7 @@ jobs:
             echo "TAG=latest" >> $GITHUB_ENV
             echo "DEPLOY_DIR=/home/deploy/be" >> $GITHUB_ENV
             echo "COMPOSE_FILE=docker-compose.prod.yml" >> $GITHUB_ENV
-          else if [[ "${{ github.ref_name }}" == "dev" ]]; then
+          elif [[ "${{ github.ref_name }}" == "dev" ]]; then
             echo "TAG=dev" >> $GITHUB_ENV
             echo "DEPLOY_DIR=/home/deploy/be-dev" >> $GITHUB_ENV
             echo "COMPOSE_FILE=docker-compose.dev.yml" >> $GITHUB_ENV
