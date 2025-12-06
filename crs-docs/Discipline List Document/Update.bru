@@ -1,0 +1,41 @@
+meta {
+  name: Update
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{host}}/api/v1/area-of-concern-group/:discipline_group_id/area-of-concern/:discipline_list_document_id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  discipline_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
+  discipline_list_document_id: 432fc4a6-b932-4a58-a2e6-76b8b252f313
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "discipline_list_document_id": "B011",
+    "description": "03. Alignment of project execution strategy across Dual FEED",
+    "package_id": "f49c3147-a8af-4c22-9aab-d7b8d663e6e2",
+    "consolidators": [
+      {
+        "user_id": "8a4054af-1ac6-48a8-8574-c26fb791bcc1"
+      },
+      {
+        "user_id": "ff497f2d-86c2-49a1-aca4-c7bc04d46028"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

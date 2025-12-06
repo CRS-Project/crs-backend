@@ -16,6 +16,13 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
+	if err := db.Exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email
+ON users(email)
+WHERE deleted_at IS NULL;
+`).Error; err != nil {
+		return err
+	}
+
 	//migrate table
 	if err := db.AutoMigrate(
 		&entity.User{},
