@@ -69,7 +69,7 @@ func (r *documentRepository) GetByID(ctx context.Context, tx *gorm.DB, documentI
 
 func (r *documentRepository) GetAll(ctx context.Context, tx *gorm.DB, packageId string, metaReq meta.Meta, preloads ...string) ([]entity.Document, meta.Meta, error) {
 	if tx == nil {
-		tx = r.db
+		tx = r.db.Debug()
 	}
 
 	for _, preload := range preloads {

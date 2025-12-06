@@ -176,8 +176,9 @@ func (s *disciplineGroupService) GetAllConsolidator(ctx context.Context, search,
 	var response []dto.DisciplineGroupConsolidatorResponse
 	for _, c := range consolidator {
 		response = append(response, dto.DisciplineGroupConsolidatorResponse{
-			ID:   c.UserID.String(),
-			Name: c.User.Name,
+			ID:                            c.UserID.String(),
+			DisciplineGroupConsolidatorID: c.ID.String(),
+			Name:                          c.User.Name,
 		})
 	}
 

@@ -68,7 +68,7 @@ func (r *disciplineListDocumentRepository) GetAll(ctx context.Context, tx *gorm.
 
 func (r *disciplineListDocumentRepository) GetAllByDisciplineGroupID(ctx context.Context, tx *gorm.DB, disciplineGroupId string, metaReq meta.Meta, preloads ...string) ([]entity.DisciplineListDocument, meta.Meta, error) {
 	if tx == nil {
-		tx = r.db
+		tx = r.db.Debug()
 	}
 
 	for _, preload := range preloads {
@@ -81,7 +81,7 @@ func (r *disciplineListDocumentRepository) GetAllByDisciplineGroupID(ctx context
 
 	filterMap := metaReq.SeparateFilter()
 	if find, ok := filterMap["search"]; ok {
-		tx = tx.Where("discipline_list_documents.description ILIKE ? OR discipline_list_documents.discipline_list_document_id ILIKE ?",
+		tx = tx.Joins("LEFT JOIN documents d ON d.id = discipline_list_documents.document_id").Where("d.company_document_number ILIKE ? OR d.document_serial_number ILIKE ?",
 			"%"+find+"%",
 			"%"+find+"%")
 	}
