@@ -1,0 +1,25 @@
+meta {
+  name: Get By ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/api/v1/area-of-concern-group/:discipline_group_id/area-of-concern/:discipline_list_document_id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  discipline_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
+  discipline_list_document_id: 432fc4a6-b932-4a58-a2e6-76b8b252f313
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
