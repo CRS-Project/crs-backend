@@ -10,6 +10,7 @@ type DisciplineGroupConsolidator struct {
 
 	Timestamp
 
-	User            *User            `json:"user,omitempty" gorm:"foreignKey:UserID"`
-	DisciplineGroup *DisciplineGroup `json:"discipline_group,omitempty" gorm:"foreignKey:DisciplineGroupID"`
+	User                                *User                                `json:"user,omitempty" gorm:"foreignKey:UserID"`
+	DisciplineGroup                     *DisciplineGroup                     `json:"discipline_group,omitempty" gorm:"foreignKey:DisciplineGroupID"`
+	DisciplineListDocumentConsolidators []DisciplineListDocumentConsolidator `json:"discipline_list_document_consolidators,omitempty" gorm:"foreignKey:DisciplineGroupConsolidatorID"`
 }
