@@ -129,8 +129,6 @@ func (s *disciplineListDocumentService) GetById(ctx context.Context, id string) 
 		})
 	}
 
-	mylog.Debug()
-
 	return dto.DisciplineListDocumentResponse{
 		ID:      disciplineListDocument.ID.String(),
 		Package: disciplineListDocument.Package.Name,
@@ -160,13 +158,22 @@ func (s *disciplineListDocumentService) GetAll(ctx context.Context, disciplineGr
 		return nil, meta.Meta{}, err
 	}
 
-	disciplineListDocuments, metaRes, err := s.disciplineListDocumentRepository.GetAllByDisciplineGroupID(ctx, nil, disciplineGroupId, metaReq, "Package", "Document")
+	disciplineListDocuments, metaRes, err := s.disciplineListDocumentRepository.GetAllByDisciplineGroupID(ctx, nil, disciplineGroupId, metaReq, "Package", "Document", "Consolidators.DisciplineGroupConsolidator.User")
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
 
 	var disciplineListDocumentResponse []dto.DisciplineListDocumentResponse
 	for _, disciplineListDocument := range disciplineListDocuments {
+		var consolidatorResponse []dto.DisciplineListDocumentConsolidatorResponse
+		for _, c := range disciplineListDocument.Consolidators {
+			consolidatorResponse = append(consolidatorResponse, dto.DisciplineListDocumentConsolidatorResponse{
+				UserID:                   c.DisciplineGroupConsolidator.User.ID.String(),
+				DisciplineListDocumentID: disciplineListDocument.ID.String(),
+				Name:                     c.DisciplineGroupConsolidator.User.Name,
+			})
+		}
+
 		disciplineListDocumentResponse = append(disciplineListDocumentResponse, dto.DisciplineListDocumentResponse{
 			ID:      disciplineListDocument.ID.String(),
 			Package: disciplineListDocument.Package.Name,
@@ -186,6 +193,7 @@ func (s *disciplineListDocumentService) GetAll(ctx context.Context, disciplineGr
 				Package:                  disciplineListDocument.Package.Name,
 				Status:                   string(disciplineListDocument.Document.Status),
 			},
+			Consolidators: consolidatorResponse,
 		})
 	}
 
