@@ -10,7 +10,7 @@ type (
 	}
 
 	StatisticAOCAndCommentCard struct {
-		TotalDisciplineListDocument  int `json:"total_discipline_list_document"`
+		TotalDisciplineGroup         int `json:"total_discipline_group"`
 		TotalDocuments               int `json:"total_documents"`
 		TotalComments                int `json:"total_comments"`
 		TotalCommentRejected         int `json:"total_comment_rejected"`

@@ -132,7 +132,7 @@ func (r *statisticRepository) GetCommentCard(ctx context.Context, tx *gorm.DB, p
 	var stats dto.StatisticAOCAndCommentCard
 	err := tx.Raw(`
 		SELECT
-		(SELECT COUNT(*) FROM discipline_list_documents a WHERE a.package_id = ? AND deleted_at is null) AS total_discipline_list_document,
+		(SELECT COUNT(*) FROM discipline_groups a WHERE a.package_id = ? AND deleted_at is null) AS total_discipline_group,
 		(SELECT COUNT(*) FROM documents d WHERE d.package_id = ? AND deleted_at is null) AS total_documents,
 		(SELECT COUNT(*) FROM comments c
 			JOIN discipline_list_documents a ON a.id = c.discipline_list_document_id
@@ -140,12 +140,8 @@ func (r *statisticRepository) GetCommentCard(ctx context.Context, tx *gorm.DB, p
 		(SELECT COUNT(*) FROM comments c
 			JOIN discipline_list_documents a ON a.id = c.discipline_list_document_id
 			WHERE a.package_id = ? AND c.status = 'REJECT' AND c.deleted_at is null) AS total_comment_rejected,
-			(SELECT COUNT(*) FROM documents d WHERE d.package_id = ? AND deleted_at is null) AS total_documents,
-		(SELECT COUNT(*) FROM documents d 
-			LEFT JOIN comments c ON c.document_id = d.id 
-            AND c.deleted_at IS NULL WHERE d.package_id = ? AND d.deleted_at IS NULL
-			AND c.id IS NULL) AS total_documents_without_comment
-	`, packageId, packageId, packageId, packageId, packageId, packageId).Scan(&stats).Error
+			(SELECT COUNT(*) FROM documents d WHERE d.package_id = ? AND deleted_at is null) AS total_documents
+	`, packageId, packageId, packageId, packageId, packageId).Scan(&stats).Error
 	if err != nil {
 		return dto.StatisticAOCAndCommentCard{}, err
 	}
