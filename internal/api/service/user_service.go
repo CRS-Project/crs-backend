@@ -23,28 +23,28 @@ type (
 	}
 
 	userService struct {
-		userRepository                        repository.UserRepository
-		userDisciplineRepository              repository.UserDisciplineRepository
-		disciplineGroupConsolidatorRepository repository.DisciplineGroupConsolidatorRepository
-		disciplineListDocumentConsolidator    repository.DisciplineListDocumentConsolidatorRepository
-		packageRepository                     repository.PackageRepository
-		db                                    *gorm.DB
+		userRepository                               repository.UserRepository
+		userDisciplineRepository                     repository.UserDisciplineRepository
+		disciplineGroupConsolidatorRepository        repository.DisciplineGroupConsolidatorRepository
+		disciplineListDocumentConsolidatorRepository repository.DisciplineListDocumentConsolidatorRepository
+		packageRepository                            repository.PackageRepository
+		db                                           *gorm.DB
 	}
 )
 
 func NewUser(userRepository repository.UserRepository,
 	userDisciplineRepository repository.UserDisciplineRepository,
 	disciplineGroupConsolidatorRepository repository.DisciplineGroupConsolidatorRepository,
-	disciplineListDocumentConsolidator repository.DisciplineListDocumentConsolidatorRepository,
+	disciplineListDocumentConsolidatorRepository repository.DisciplineListDocumentConsolidatorRepository,
 	packageRepository repository.PackageRepository,
 	db *gorm.DB) UserService {
 	return &userService{
-		userRepository:                        userRepository,
-		userDisciplineRepository:              userDisciplineRepository,
-		disciplineGroupConsolidatorRepository: disciplineGroupConsolidatorRepository,
-		disciplineListDocumentConsolidator:    disciplineListDocumentConsolidator,
-		packageRepository:                     packageRepository,
-		db:                                    db,
+		userRepository:                               userRepository,
+		userDisciplineRepository:                     userDisciplineRepository,
+		disciplineGroupConsolidatorRepository:        disciplineGroupConsolidatorRepository,
+		disciplineListDocumentConsolidatorRepository: disciplineListDocumentConsolidatorRepository,
+		packageRepository:                            packageRepository,
+		db:                                           db,
 	}
 }
 
@@ -271,17 +271,25 @@ func (s *userService) Delete(ctx context.Context, userId string) error {
 		return err
 	}
 
-	consolidators, err := s.disciplineGroupConsolidatorRepository.GetByUserID(ctx, nil, userId)
+	disciplineGroupConsolidators, err := s.disciplineGroupConsolidatorRepository.GetByUserID(ctx, nil, userId, "DisciplineListDocumentConsolidators")
 	if err != nil {
 		return err
 	}
 
-	var consolidatorId []string
-	for _, c := range consolidators {
-		consolidatorId = append(consolidatorId, c.ID.String())
+	var disciplineGroupConsolidatorIds []string
+	// var disciplineListDocumentConsolidatorIds []string
+	for _, c := range disciplineGroupConsolidators {
+		disciplineGroupConsolidatorIds = append(disciplineGroupConsolidatorIds, c.ID.String())
+		// for _, dld := range c.DisciplineListDocumentConsolidators {
+		// 	disciplineListDocumentConsolidatorIds = append(disciplineListDocumentConsolidatorIds, dld.ID.String())
+		// }
 	}
 
-	if err := s.disciplineListDocumentConsolidator.DeleteByDisciplineGroupConsolidatorID(ctx, nil, consolidatorId); err != nil {
+	if err := s.disciplineListDocumentConsolidatorRepository.DeleteByDisciplineGroupConsolidatorID(ctx, nil, disciplineGroupConsolidatorIds); err != nil {
+		return err
+	}
+
+	if err := s.disciplineGroupConsolidatorRepository.DeleteBulk(ctx, nil, disciplineGroupConsolidatorIds); err != nil {
 		return err
 	}
 
