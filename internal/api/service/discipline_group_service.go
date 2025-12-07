@@ -122,8 +122,9 @@ func (s *disciplineGroupService) GetById(ctx context.Context, id string) (dto.Di
 	var consolidatorResponse []dto.DisciplineGroupConsolidatorResponse
 	for _, c := range disciplineGroup.DisciplineGroupConsolidators {
 		consolidatorResponse = append(consolidatorResponse, dto.DisciplineGroupConsolidatorResponse{
-			ID:   c.User.ID.String(),
-			Name: c.User.Name,
+			ID:                            c.User.ID.String(),
+			DisciplineGroupConsolidatorID: c.ID.String(),
+			Name:                          c.User.Name,
 		})
 	}
 
@@ -148,19 +149,29 @@ func (s *disciplineGroupService) GetAll(ctx context.Context, userId string, meta
 		packageId = pkg.ID.String()
 	}
 
-	disciplineGroups, metaRes, err := s.disciplineGroupRepository.GetAll(ctx, nil, packageId, metaReq, "Package")
+	disciplineGroups, metaRes, err := s.disciplineGroupRepository.GetAll(ctx, nil, packageId, metaReq, "Package", "DisciplineGroupConsolidators.User")
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
 
 	var disciplineGroupResponse []dto.DisciplineGroupResponse
 	for _, disciplineGroup := range disciplineGroups {
+		var consolidatorResponse []dto.DisciplineGroupConsolidatorResponse
+		for _, c := range disciplineGroup.DisciplineGroupConsolidators {
+			consolidatorResponse = append(consolidatorResponse, dto.DisciplineGroupConsolidatorResponse{
+				ID:                            c.User.ID.String(),
+				DisciplineGroupConsolidatorID: c.ID.String(),
+				Name:                          c.User.Name,
+			})
+		}
+
 		disciplineGroupResponse = append(disciplineGroupResponse, dto.DisciplineGroupResponse{
-			ID:                disciplineGroup.ID.String(),
-			ReviewFocus:       disciplineGroup.ReviewFocus,
-			Package:           disciplineGroup.Package.Name,
-			UserDiscipline:    disciplineGroup.UserDiscipline,
-			DisciplineInitial: disciplineGroup.DisciplineInitial,
+			ID:                           disciplineGroup.ID.String(),
+			ReviewFocus:                  disciplineGroup.ReviewFocus,
+			Package:                      disciplineGroup.Package.Name,
+			UserDiscipline:               disciplineGroup.UserDiscipline,
+			DisciplineInitial:            disciplineGroup.DisciplineInitial,
+			DisciplineGroupConsolidators: consolidatorResponse,
 		})
 	}
 
