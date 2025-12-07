@@ -9,6 +9,7 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
+	mylog "github.com/CRS-Project/crs-backend/internal/pkg/logger"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -120,12 +121,15 @@ func (s *disciplineListDocumentService) GetById(ctx context.Context, id string) 
 
 	var consolidatorResponse []dto.DisciplineListDocumentConsolidatorResponse
 	for _, c := range disciplineListDocument.Consolidators {
+		mylog.Infoln(c)
 		consolidatorResponse = append(consolidatorResponse, dto.DisciplineListDocumentConsolidatorResponse{
 			UserID:                   c.DisciplineGroupConsolidator.User.ID.String(),
 			DisciplineListDocumentID: disciplineListDocument.ID.String(),
 			Name:                     c.DisciplineGroupConsolidator.User.Name,
 		})
 	}
+
+	mylog.Debug()
 
 	return dto.DisciplineListDocumentResponse{
 		ID:      disciplineListDocument.ID.String(),

@@ -197,7 +197,7 @@ func (s *disciplineGroupService) GetAllConsolidator(ctx context.Context, search,
 }
 
 func (s *disciplineGroupService) Update(ctx context.Context, req dto.DisciplineGroupRequest) error {
-	// Validate user permission
+	// Validate permission
 	pkg, _, err := s.getPackagePermission(ctx, req.UserId)
 	if err != nil {
 		return err
@@ -212,34 +212,75 @@ func (s *disciplineGroupService) Update(ctx context.Context, req dto.DisciplineG
 		return myerror.New("you not allowed to this package", http.StatusUnauthorized)
 	}
 
+	// Update fields
 	disciplineGroup.UserDiscipline = req.UserDiscipline
 	disciplineGroup.ReviewFocus = req.ReviewFocus
 	disciplineGroup.DisciplineInitial = req.DisciplineInitial
 
-	if err := s.disciplineGroupConsolidatorRepository.DeleteByDisciplineGroupID(ctx, nil, disciplineGroup.ID.String()); err != nil {
+	//---------------------------------------------------------
+	// 🍀 START SYNC CONSOLIDATOR (NO DELETE ALL)
+	//---------------------------------------------------------
+
+	// Ambil data lama dari database
+	oldCons, err := s.disciplineGroupConsolidatorRepository.GetAllConsolidator(ctx, nil, "", disciplineGroup.ID.String())
+	if err != nil {
 		return err
 	}
 
-	var newConsolidators []entity.DisciplineGroupConsolidator
+	// Map: user_id → consolidator struct
+	oldMap := make(map[uuid.UUID]entity.DisciplineGroupConsolidator)
+	for _, oc := range oldCons {
+		oldMap[oc.UserID] = oc
+	}
+
+	// Map user baru untuk cek eksistensi
+	newMap := make(map[uuid.UUID]bool)
+
+	var toCreate []entity.DisciplineGroupConsolidator
+	var toDelete []uuid.UUID
+
+	// Loop data baru → detect CREATE
 	for _, c := range req.DisciplineGroupConsolidators {
 		uid, err := uuid.Parse(c.UserID)
 		if err != nil {
 			return myerror.New("invalid consolidator user_id: "+c.UserID, http.StatusBadRequest)
 		}
 
-		newConsolidators = append(newConsolidators, entity.DisciplineGroupConsolidator{
-			DisciplineGroupID: disciplineGroup.ID,
-			UserID:            uid,
-		})
+		newMap[uid] = true
+
+		// jika tidak ada di DB lama → perlu CREATE
+		if _, exists := oldMap[uid]; !exists {
+			toCreate = append(toCreate, entity.DisciplineGroupConsolidator{
+				DisciplineGroupID: disciplineGroup.ID,
+				UserID:            uid,
+			})
+		}
 	}
 
-	if len(newConsolidators) > 0 {
-		if err := s.disciplineGroupConsolidatorRepository.CreateBulk(ctx, nil, newConsolidators); err != nil {
+	for uid, oc := range oldMap {
+		if !newMap[uid] {
+			toDelete = append(toDelete, oc.ID)
+		}
+	}
+
+	for _, consID := range toDelete {
+		if err := s.disciplineListDocumentConsolidatorRepository.DeleteByDisciplineGroupConsolidatorID(ctx, nil, []string{consID.String()}); err != nil {
+			return err
+		}
+
+		if err := s.disciplineGroupConsolidatorRepository.DeleteByID(ctx, nil, consID.String()); err != nil {
 			return err
 		}
 	}
 
-	if err = s.disciplineGroupRepository.Update(ctx, nil, disciplineGroup); err != nil {
+	if len(toCreate) > 0 {
+		if err := s.disciplineGroupConsolidatorRepository.CreateBulk(ctx, nil, toCreate); err != nil {
+			return err
+		}
+	}
+
+	// Update disciplineGroup record
+	if err := s.disciplineGroupRepository.Update(ctx, nil, disciplineGroup); err != nil {
 		return err
 	}
 

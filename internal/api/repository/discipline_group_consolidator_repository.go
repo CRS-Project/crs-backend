@@ -18,6 +18,7 @@ type (
 		GetByUserID(ctx context.Context, tx *gorm.DB, userID string, preloads ...string) ([]entity.DisciplineGroupConsolidator, error)
 		Update(ctx context.Context, tx *gorm.DB, disciplineGroupConsolidator entity.DisciplineGroupConsolidator, preloads ...string) error
 		Delete(ctx context.Context, tx *gorm.DB, disciplineGroupConsolidator entity.DisciplineGroupConsolidator, preloads ...string) error
+		DeleteByID(ctx context.Context, tx *gorm.DB, id string) error
 		DeleteByUserID(ctx context.Context, tx *gorm.DB, userID string) error
 		DeleteByDisciplineGroupID(ctx context.Context, tx *gorm.DB, disciplineGroupID string) error
 		DeleteBulk(ctx context.Context, tx *gorm.DB, disciplineGroupConcolidatorIDs []string) error
@@ -171,6 +172,20 @@ func (r *disciplineGroupConsolidatorRepository) Delete(ctx context.Context, tx *
 	}
 
 	if err := tx.WithContext(ctx).Delete(&disciplineGroupConsolidator).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *disciplineGroupConsolidatorRepository) DeleteByID(ctx context.Context, tx *gorm.DB, id string) error {
+	if tx == nil {
+		tx = r.db
+	}
+
+	if err := tx.WithContext(ctx).
+		Where("id = ?", id).
+		Delete(&entity.DisciplineGroupConsolidator{}).Error; err != nil {
 		return err
 	}
 
