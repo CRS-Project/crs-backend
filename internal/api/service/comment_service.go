@@ -207,6 +207,7 @@ func (s *commentService) GetAllByDisciplineListDocumentId(ctx context.Context, u
 					CommentAt:             reply.CreatedAt.Format("15.04 • 02 Jan 2006"),
 					DocumentID:            disciplineListDocument.Document.ID.String(),
 					IsCloseOutComment:     reply.IsCloseOutComment,
+					AttachFileUrl:         reply.AttachFileUrl,
 					CompanyDocumentNumber: disciplineListDocument.Document.CompanyDocumentNumber,
 					UserComment: &dto.UserComment{
 						ID:           reply.User.ID.String(),
