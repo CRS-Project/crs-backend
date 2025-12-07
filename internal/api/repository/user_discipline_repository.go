@@ -39,7 +39,7 @@ func (r *userDisciplineRepository) GetAll(ctx context.Context, tx *gorm.DB, meta
 	var userDiscipline []entity.UserDiscipline
 
 	tx = tx.WithContext(ctx).Model(entity.UserDiscipline{})
-	if err := WithFilters(tx.Debug(), &metaReq, AddModels(entity.UserDiscipline{})).Find(&userDiscipline).Error; err != nil {
+	if err := WithFilters(tx, &metaReq, AddModels(entity.UserDiscipline{})).Find(&userDiscipline).Error; err != nil {
 		return nil, err
 	}
 
@@ -59,7 +59,7 @@ func (r *userDisciplineRepository) GetAllNotAdminAndContractor(ctx context.Conte
 
 	tx = tx.WithContext(ctx).Model(entity.UserDiscipline{}).
 		Where("initial NOT IN ?", []string{"CONTRACTOR", "ADMIN"})
-	if err := WithFilters(tx.Debug(), &metaReq, AddModels(entity.UserDiscipline{})).Find(&userDiscipline).Error; err != nil {
+	if err := WithFilters(tx, &metaReq, AddModels(entity.UserDiscipline{})).Find(&userDiscipline).Error; err != nil {
 		return nil, err
 	}
 

@@ -5,15 +5,15 @@ meta {
 }
 
 put {
-  url: {{host}}/api/v1/area-of-concern-group/:discipline_group_id/area-of-concern/:discipline_list_document_id/comment/:comment_id
+  url: {{host}}/api/v1/discipline-group/:discipline_group_id/discipline-list-document/:discipline_list_document_id/comment/:comment_id
   body: json
   auth: bearer
 }
 
 params:path {
-  discipline_group_id: d37cc922-d310-4cdd-829f-d2f18ef6c08d
-  discipline_list_document_id: 0240ddc0-48d3-420c-919d-8f0f4f758cac
-  comment_id: 901e3239-58f3-45eb-abd6-9a3a39b4cc30
+  discipline_group_id: 6f0a80c9-1445-4a6a-936d-469806073ecf
+  discipline_list_document_id: 0ecd872c-890e-498d-9b37-9a055fca850a
+  comment_id: d73b87c4-081e-4f74-a748-0ca743727e73
 }
 
 auth:bearer {
@@ -26,8 +26,8 @@ body:json {
     "comment": "yaudah deh sana",
     "baseline": "",
     "is_close_out_comment": false,
-    "document_id": "be5eb9c9-fbc5-4cf7-b88a-ae72afbb91be",
-    "status":"ACCEPT"
+    "attach_file_url": "abdsbsbfv"
+  //   "status":"ACCEPT"
   }
 }
 

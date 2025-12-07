@@ -95,7 +95,7 @@ func (r *documentRepository) GetAll(ctx context.Context, tx *gorm.DB, packageId 
 			"%"+find+"%")
 	}
 
-	if err := WithFilters(tx.Debug(), &metaReq, AddModels(entity.Document{}),
+	if err := WithFilters(tx, &metaReq, AddModels(entity.Document{}),
 		AddCustomField("search", "")).
 		Find(&documents).Error; err != nil {
 		return nil, meta.Meta{}, err

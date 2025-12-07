@@ -7,7 +7,8 @@ type (
 	}
 
 	DisciplineGroupConsolidatorResponse struct {
-		ID   string `json:"id"`
-		Name string `json:"name"`
+		ID                            string `json:"id"`
+		DisciplineGroupConsolidatorID string `json:"discipline_group_consolidator_id"`
+		Name                          string `json:"name"`
 	}
 )

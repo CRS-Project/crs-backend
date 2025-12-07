@@ -9,6 +9,7 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
+	mylog "github.com/CRS-Project/crs-backend/internal/pkg/logger"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -80,7 +81,6 @@ func (s *disciplineListDocumentService) Create(ctx context.Context, req dto.Disc
 	for _, consolidator := range req.Consolidators {
 		consolidatorsInput = append(consolidatorsInput, entity.DisciplineListDocumentConsolidator{
 			DisciplineGroupConsolidatorID: uuid.MustParse(consolidator.DisciplineGroupConsolidatorID),
-			DisciplineListDocumentID:      uuid.MustParse(consolidator.DisciplineListDocumentID),
 		})
 	}
 
@@ -114,15 +114,16 @@ func (s *disciplineListDocumentService) Create(ctx context.Context, req dto.Disc
 }
 
 func (s *disciplineListDocumentService) GetById(ctx context.Context, id string) (dto.DisciplineListDocumentResponse, error) {
-	disciplineListDocument, err := s.disciplineListDocumentRepository.GetByID(ctx, nil, id, "Package", "Consolidators.DisciplineGroupConsolidator.User")
+	disciplineListDocument, err := s.disciplineListDocumentRepository.GetByID(ctx, nil, id, "Package", "Document", "Consolidators.DisciplineGroupConsolidator.User")
 	if err != nil {
 		return dto.DisciplineListDocumentResponse{}, err
 	}
 
 	var consolidatorResponse []dto.DisciplineListDocumentConsolidatorResponse
 	for _, c := range disciplineListDocument.Consolidators {
+		mylog.Infoln(c)
 		consolidatorResponse = append(consolidatorResponse, dto.DisciplineListDocumentConsolidatorResponse{
-			ID:                       c.DisciplineGroupConsolidator.User.ID.String(),
+			UserID:                   c.DisciplineGroupConsolidator.User.ID.String(),
 			DisciplineListDocumentID: disciplineListDocument.ID.String(),
 			Name:                     c.DisciplineGroupConsolidator.User.Name,
 		})
@@ -157,13 +158,22 @@ func (s *disciplineListDocumentService) GetAll(ctx context.Context, disciplineGr
 		return nil, meta.Meta{}, err
 	}
 
-	disciplineListDocuments, metaRes, err := s.disciplineListDocumentRepository.GetAllByDisciplineGroupID(ctx, nil, disciplineGroupId, metaReq, "Package")
+	disciplineListDocuments, metaRes, err := s.disciplineListDocumentRepository.GetAllByDisciplineGroupID(ctx, nil, disciplineGroupId, metaReq, "Package", "Document", "Consolidators.DisciplineGroupConsolidator.User")
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
 
 	var disciplineListDocumentResponse []dto.DisciplineListDocumentResponse
 	for _, disciplineListDocument := range disciplineListDocuments {
+		var consolidatorResponse []dto.DisciplineListDocumentConsolidatorResponse
+		for _, c := range disciplineListDocument.Consolidators {
+			consolidatorResponse = append(consolidatorResponse, dto.DisciplineListDocumentConsolidatorResponse{
+				UserID:                   c.DisciplineGroupConsolidator.User.ID.String(),
+				DisciplineListDocumentID: disciplineListDocument.ID.String(),
+				Name:                     c.DisciplineGroupConsolidator.User.Name,
+			})
+		}
+
 		disciplineListDocumentResponse = append(disciplineListDocumentResponse, dto.DisciplineListDocumentResponse{
 			ID:      disciplineListDocument.ID.String(),
 			Package: disciplineListDocument.Package.Name,
@@ -183,6 +193,7 @@ func (s *disciplineListDocumentService) GetAll(ctx context.Context, disciplineGr
 				Package:                  disciplineListDocument.Package.Name,
 				Status:                   string(disciplineListDocument.Document.Status),
 			},
+			Consolidators: consolidatorResponse,
 		})
 	}
 
