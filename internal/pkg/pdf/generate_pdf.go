@@ -108,9 +108,9 @@ func drawDisciplineSection(pdf *gofpdf.Fpdf, data DisciplineSectionData) {
 		label string
 	}{
 		{10, 30, "Discipline"},
-		{40, 30, "Area of Concern ID"},
-		{70, 90, "Area of Concern Description"},
-		{160, 87, "Consolidator"},
+		// {40, 30, "Area of Concern ID"},
+		// {70, 90, "Area of Concern Description"},
+		{40, 50, "Consolidator"},
 	}
 
 	pdf.SetFont("Arial", "B", 8)
@@ -133,9 +133,9 @@ func drawDisciplineSection(pdf *gofpdf.Fpdf, data DisciplineSectionData) {
 		vPos  float64
 	}{
 		{10, 30, data.Discipline, 1},
-		{40, 30, data.AreaOfConcernID, 3},
-		{70, 90, data.AreaOfConcernDescription, 3},
-		{160, 87, data.Consolidator, 3},
+		// {40, 30, data.AreaOfConcernID, 3},
+		// {70, 90, data.AreaOfConcernDescription, 3},
+		{40, 50, data.Consolidator, 3},
 	}
 
 	for _, data := range disciplineData {

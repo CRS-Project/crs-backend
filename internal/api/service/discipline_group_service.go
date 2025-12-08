@@ -411,10 +411,10 @@ func (s *disciplineGroupService) ConstructGeneratePDF(disciplineGroup entity.Dis
 				ContractorInitial: contractor.Name,
 			},
 			DisciplineSectionData: mypdf.DisciplineSectionData{
-				Discipline:               disciplineGroup.DisciplineInitial,
-				AreaOfConcernID:          disciplineGroup.Package.Name + "-" + disciplineGroup.DisciplineInitial,
-				AreaOfConcernDescription: disciplineGroup.UserDiscipline,
-				Consolidator:             consolidator,
+				Discipline: disciplineGroup.UserDiscipline,
+				// AreaOfConcernID:          disciplineGroup.Package.Name + "-" + disciplineGroup.DisciplineInitial,
+				// AreaOfConcernDescription: disciplineGroup.UserDiscipline,
+				Consolidator: consolidator,
 			},
 			CommentRow: comments,
 		})
