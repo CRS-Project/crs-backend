@@ -207,6 +207,9 @@ func (s *userService) Update(ctx context.Context, userId string, req dto.UpdateU
 	}
 
 	if req.Password != nil {
+		if curUser.Role != entity.RoleSuperAdmin || curUser.ID.String() == user.ID.String() {
+			return dto.UserNonAdminDetailResponse{}, myerror.New("role not allowed to change password", http.StatusUnauthorized)
+		}
 		hashPassword, err := utils.HashPassword(*req.Password)
 		if err != nil {
 			return dto.UserNonAdminDetailResponse{}, err
