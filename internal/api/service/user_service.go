@@ -10,6 +10,7 @@ import (
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
 	"github.com/CRS-Project/crs-backend/internal/utils"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -239,6 +240,7 @@ func (s *userService) Update(ctx context.Context, userId string, req dto.UpdateU
 		user.UserDisciplineID = discipline.ID
 		user.UserDiscipline = nil
 	}
+	user.UpdatedBy = uuid.MustParse(userId)
 
 	_, err = s.userRepository.Update(ctx, nil, user)
 	if err != nil {
@@ -296,5 +298,6 @@ func (s *userService) Delete(ctx context.Context, userId string) error {
 		return err
 	}
 
+	user.DeletedBy = uuid.MustParse(userId)
 	return s.userRepository.Delete(ctx, nil, user)
 }

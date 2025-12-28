@@ -9,6 +9,8 @@ type DisciplineListDocument struct {
 	DisciplineGroupID uuid.UUID `json:"discipline_group_id" gorm:"not null"`
 	PackageID         uuid.UUID `json:"package_id" gorm:"not null"`
 
+	DeletedBy uuid.UUID `json:"deleted_by" gorm:"type:uuid"`
+	UpdatedBy uuid.UUID `json:"updated_by" gorm:"type:uuid"`
 	Timestamp
 
 	DisciplineGroup *DisciplineGroup                     `json:"discipline_group,omitempty" gorm:"foreignKey:DisciplineGroupID"`

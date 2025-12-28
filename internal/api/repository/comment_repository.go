@@ -5,6 +5,7 @@ import (
 
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -170,6 +171,15 @@ func (r *commentRepository) Delete(ctx context.Context, tx *gorm.DB, comment ent
 
 	for _, preload := range preloads {
 		tx = tx.Preload(preload)
+	}
+
+	// persist deleted_by if provided
+	if comment.DeletedBy != uuid.Nil {
+		if err := tx.WithContext(ctx).Model(&entity.Comment{}).
+			Where("id = ?", comment.ID).
+			Updates(map[string]interface{}{"deleted_by": comment.DeletedBy}).Error; err != nil {
+			return err
+		}
 	}
 
 	if err := tx.WithContext(ctx).Delete(&comment).Error; err != nil {

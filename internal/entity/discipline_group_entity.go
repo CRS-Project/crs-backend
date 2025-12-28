@@ -10,6 +10,8 @@ type DisciplineGroup struct {
 
 	PackageID uuid.UUID `json:"package_id" gorm:"not null"`
 
+	DeletedBy uuid.UUID `json:"deleted_by" gorm:"type:uuid"`
+	UpdatedBy uuid.UUID `json:"updated_by" gorm:"type:uuid"`
 	Timestamp
 
 	Package                      *Package                      `json:"package,omitempty" gorm:"foreignKey:PackageID"`

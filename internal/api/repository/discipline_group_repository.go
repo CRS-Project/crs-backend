@@ -6,6 +6,7 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/dto"
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -117,6 +118,15 @@ func (r *disciplineGroupRepository) Delete(ctx context.Context, tx *gorm.DB, dis
 
 	for _, preload := range preloads {
 		tx = tx.Preload(preload)
+	}
+
+	// Persist DeletedBy (if set) before performing soft-delete so we can keep track who deleted the record
+	if disciplineGroup.DeletedBy != uuid.Nil {
+		if err := tx.WithContext(ctx).Model(&entity.DisciplineGroup{}).
+			Where("id = ?", disciplineGroup.ID).
+			Updates(map[string]interface{}{"deleted_by": disciplineGroup.DeletedBy}).Error; err != nil {
+			return err
+		}
 	}
 
 	if err := tx.WithContext(ctx).Delete(&disciplineGroup).Error; err != nil {
