@@ -374,7 +374,7 @@ func (s *documentService) Delete(ctx context.Context, userId, documentId string)
 	}
 
 	if len(document.DisciplineListDocuments) > 0 {
-		return myerror.New("Dokumen tidak dapat dihapus karena masih terkait dengan data Discipline List", http.StatusBadRequest)
+		return myerror.New("Dokumen tidak dapat dihapus karena masih terkait dengan data Discipline List Document", http.StatusBadRequest)
 	}
 
 	document.DeletedBy = uuid.MustParse(userId)
