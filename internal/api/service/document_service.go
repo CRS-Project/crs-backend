@@ -27,22 +27,25 @@ type (
 	}
 
 	documentService struct {
-		documentRepository repository.DocumentRepository
-		packageRepository  repository.PackageRepository
-		userRepository     repository.UserRepository
-		db                 *gorm.DB ``
+		documentRepository               repository.DocumentRepository
+		disciplineListDocumentRepository repository.DisciplineListDocumentRepository
+		packageRepository                repository.PackageRepository
+		userRepository                   repository.UserRepository
+		db                               *gorm.DB ``
 	}
 )
 
 func NewDocument(documentRepository repository.DocumentRepository,
+	disciplineListDocumentRepository repository.DisciplineListDocumentRepository,
 	packageRepository repository.PackageRepository,
 	userRepository repository.UserRepository,
 	db *gorm.DB) DocumentService {
 	return &documentService{
-		documentRepository: documentRepository,
-		packageRepository:  packageRepository,
-		userRepository:     userRepository,
-		db:                 db,
+		documentRepository:               documentRepository,
+		disciplineListDocumentRepository: disciplineListDocumentRepository,
+		packageRepository:                packageRepository,
+		userRepository:                   userRepository,
+		db:                               db,
 	}
 }
 
@@ -361,13 +364,17 @@ func (s *documentService) Delete(ctx context.Context, userId, documentId string)
 		return err
 	}
 
-	document, err := s.documentRepository.GetByID(ctx, nil, documentId)
+	document, err := s.documentRepository.GetByID(ctx, nil, documentId, "DisciplineListDocuments")
 	if err != nil {
 		return err
 	}
 
 	if pkg != nil && document.PackageID != pkg.ID {
 		return myerror.New("you don't have permission for this package", http.StatusUnauthorized)
+	}
+
+	if len(document.DisciplineListDocuments) > 0 {
+		return myerror.New("Unable to delete the document because it is linked to a discipline list", http.StatusBadRequest)
 	}
 
 	document.DeletedBy = uuid.MustParse(userId)

@@ -49,7 +49,7 @@ func NewRest() RestConfig {
 		authService                   service.AuthService                   = service.NewAuth(userRepository, mailerService, oauthService, db)
 		userService                   service.UserService                   = service.NewUser(userRepository, userDisciplineRepository, disciplineGroupConsolidatorRepository, disciplineListDocumentConsolidatorRepository, packageRepository, db)
 		userDisciplineService         service.UserDisciplineService         = service.NewUserDiscipline(userDisciplineRepository, db)
-		documentService               service.DocumentService               = service.NewDocument(documentRepository, packageRepository, userRepository, db)
+		documentService               service.DocumentService               = service.NewDocument(documentRepository, disciplineListDocumentRepository, packageRepository, userRepository, db)
 		commentService                service.CommentService                = service.NewComment(commentRepository, documentRepository, disciplineListDocumentRepository, userRepository, db)
 		disciplineGroupService        service.DisciplineGroupService        = service.NewDisciplineGroup(disciplineGroupRepository, disciplineGroupConsolidatorRepository, disciplineListDocumentRepository, disciplineListDocumentConsolidatorRepository, packageRepository, commentRepository, userRepository, userDisciplineRepository, db)
 		disciplineListDocumentService service.DisciplineListDocumentService = service.NewDisciplineListDocument(disciplineListDocumentRepository, disciplineGroupRepository, disciplineListDocumentConsolidatorRepository, commentRepository, packageRepository, documentRepository, userRepository, userDisciplineRepository, db)

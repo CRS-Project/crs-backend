@@ -33,6 +33,7 @@ type Document struct {
 	UpdatedBy uuid.UUID `json:"updated_by" gorm:"type:uuid"`
 	Timestamp
 
-	Contractor *User    `json:"contractor,omitempty" gorm:"foreignKey:ContractorID"`
-	Package    *Package `json:"package,omitempty" gorm:"foreignKey:PackageID"`
+	Contractor              *User                    `json:"contractor,omitempty" gorm:"foreignKey:ContractorID"`
+	Package                 *Package                 `json:"package,omitempty" gorm:"foreignKey:PackageID"`
+	DisciplineListDocuments []DisciplineListDocument `json:"discipline_list_documents,omitempty" gorm:"foreignKey:DocumentID"`
 }
