@@ -301,6 +301,8 @@ func (s *commentService) Update(ctx context.Context, req dto.UpdateCommentReques
 	comment.Section = req.Section
 	comment.Status = (*entity.CommentStatus)(req.Status)
 	comment.AttachFileUrl = req.AttachFileUrl
+	comment.UpdatedBy = uuid.MustParse(req.UserId)
+
 	if err = s.commentRepository.Update(ctx, nil, comment); err != nil {
 		return err
 	}
@@ -323,6 +325,7 @@ func (s *commentService) Delete(ctx context.Context, userId, disciplineListDocum
 		return myerror.New("you don't have permission for this comment", http.StatusUnauthorized)
 	}
 
+	comment.DeletedBy = uuid.MustParse(userId)
 	if err = s.commentRepository.Delete(ctx, nil, comment); err != nil {
 		return err
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
+	"github.com/google/uuid"
 	"github.com/xuri/excelize/v2"
 
 	"gorm.io/gorm"
@@ -26,22 +27,25 @@ type (
 	}
 
 	documentService struct {
-		documentRepository repository.DocumentRepository
-		packageRepository  repository.PackageRepository
-		userRepository     repository.UserRepository
-		db                 *gorm.DB ``
+		documentRepository               repository.DocumentRepository
+		disciplineListDocumentRepository repository.DisciplineListDocumentRepository
+		packageRepository                repository.PackageRepository
+		userRepository                   repository.UserRepository
+		db                               *gorm.DB ``
 	}
 )
 
 func NewDocument(documentRepository repository.DocumentRepository,
+	disciplineListDocumentRepository repository.DisciplineListDocumentRepository,
 	packageRepository repository.PackageRepository,
 	userRepository repository.UserRepository,
 	db *gorm.DB) DocumentService {
 	return &documentService{
-		documentRepository: documentRepository,
-		packageRepository:  packageRepository,
-		userRepository:     userRepository,
-		db:                 db,
+		documentRepository:               documentRepository,
+		disciplineListDocumentRepository: disciplineListDocumentRepository,
+		packageRepository:                packageRepository,
+		userRepository:                   userRepository,
+		db:                               db,
 	}
 }
 
@@ -329,6 +333,7 @@ func (s *documentService) Update(ctx context.Context, req dto.UpdateDocumentRequ
 	document.DocumentType = req.DocumentType
 	document.DocumentCategory = req.DocumentCategory
 	document.Status = entity.StatusDocument(req.Status)
+	document.UpdatedBy = uuid.MustParse(req.UserID)
 
 	document, err = s.documentRepository.Update(ctx, nil, document)
 	if err != nil {
@@ -359,7 +364,7 @@ func (s *documentService) Delete(ctx context.Context, userId, documentId string)
 		return err
 	}
 
-	document, err := s.documentRepository.GetByID(ctx, nil, documentId)
+	document, err := s.documentRepository.GetByID(ctx, nil, documentId, "DisciplineListDocuments")
 	if err != nil {
 		return err
 	}
@@ -368,6 +373,11 @@ func (s *documentService) Delete(ctx context.Context, userId, documentId string)
 		return myerror.New("you don't have permission for this package", http.StatusUnauthorized)
 	}
 
+	if len(document.DisciplineListDocuments) > 0 {
+		return myerror.New("Dokumen tidak dapat dihapus karena masih terkait dengan data Discipline List Document", http.StatusBadRequest)
+	}
+
+	document.DeletedBy = uuid.MustParse(userId)
 	if err = s.documentRepository.Delete(ctx, nil, document); err != nil {
 		return err
 	}

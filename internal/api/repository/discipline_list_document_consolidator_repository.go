@@ -5,6 +5,7 @@ import (
 
 	"github.com/CRS-Project/crs-backend/internal/entity"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -123,6 +124,15 @@ func (r *disciplineListDocumentConsolidatorRepository) Delete(ctx context.Contex
 
 	for _, preload := range preloads {
 		tx = tx.Preload(preload)
+	}
+
+	// persist deleted_by if provided
+	if disciplineListDocumentConsolidator.DeletedBy != uuid.Nil {
+		if err := tx.WithContext(ctx).Model(&entity.DisciplineListDocumentConsolidator{}).
+			Where("id = ?", disciplineListDocumentConsolidator.ID).
+			Updates(map[string]interface{}{"deleted_by": disciplineListDocumentConsolidator.DeletedBy}).Error; err != nil {
+			return err
+		}
 	}
 
 	if err := tx.WithContext(ctx).Delete(&disciplineListDocumentConsolidator).Error; err != nil {

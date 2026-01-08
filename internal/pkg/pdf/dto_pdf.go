@@ -13,10 +13,10 @@ type (
 	}
 
 	DisciplineSectionData struct {
-		Discipline               string
-		AreaOfConcernID          string
-		AreaOfConcernDescription string
-		Consolidator             string
+		Discipline string
+		// AreaOfConcernID          string
+		// AreaOfConcernDescription string
+		Consolidator string
 	}
 
 	CommentRow struct {

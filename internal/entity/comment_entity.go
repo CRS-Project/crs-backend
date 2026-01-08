@@ -23,6 +23,8 @@ type Comment struct {
 	UserID                   uuid.UUID  `json:"user_id" gorm:"not null"`
 	CommentReplyID           *uuid.UUID `json:"comment_reply_id" gorm:""`
 
+	DeletedBy uuid.UUID `json:"deleted_by" gorm:"type:uuid"`
+	UpdatedBy uuid.UUID `json:"updated_by" gorm:"type:uuid"`
 	Timestamp
 
 	DisciplineListDocument *DisciplineListDocument `json:"discipline_list_document,omitempty" gorm:"foreignKey:DisciplineListDocumentID"`

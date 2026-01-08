@@ -11,6 +11,9 @@ type Package struct {
 	Description string    `json:"description" gorm:""`
 
 	DisciplineGroups []DisciplineGroup `json:"discipline_groups,omitempty" gorm:"foreignKey:PackageID"`
+
+	DeletedBy uuid.UUID `json:"deleted_by" gorm:"type:uuid"`
+	UpdatedBy uuid.UUID `json:"updated_by" gorm:"type:uuid"`
 	Timestamp
 }
 

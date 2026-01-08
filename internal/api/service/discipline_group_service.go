@@ -216,6 +216,7 @@ func (s *disciplineGroupService) Update(ctx context.Context, req dto.DisciplineG
 	disciplineGroup.UserDiscipline = req.UserDiscipline
 	disciplineGroup.ReviewFocus = req.ReviewFocus
 	disciplineGroup.DisciplineInitial = req.DisciplineInitial
+	disciplineGroup.UpdatedBy = uuid.MustParse(req.UserId)
 
 	//---------------------------------------------------------
 	// 🍀 START SYNC CONSOLIDATOR (NO DELETE ALL)
@@ -321,6 +322,8 @@ func (s *disciplineGroupService) Delete(ctx context.Context, userId, disciplineG
 		return err
 	}
 
+	// mark who deleted
+	disciplineGroup.DeletedBy = uuid.MustParse(userId)
 	if err = s.disciplineGroupRepository.Delete(ctx, nil, disciplineGroup); err != nil {
 		return err
 	}
@@ -411,10 +414,10 @@ func (s *disciplineGroupService) ConstructGeneratePDF(disciplineGroup entity.Dis
 				ContractorInitial: contractor.Name,
 			},
 			DisciplineSectionData: mypdf.DisciplineSectionData{
-				Discipline:               disciplineGroup.DisciplineInitial,
-				AreaOfConcernID:          disciplineGroup.Package.Name + "-" + disciplineGroup.DisciplineInitial,
-				AreaOfConcernDescription: disciplineGroup.UserDiscipline,
-				Consolidator:             consolidator,
+				Discipline: disciplineGroup.UserDiscipline,
+				// AreaOfConcernID:          disciplineGroup.Package.Name + "-" + disciplineGroup.DisciplineInitial,
+				// AreaOfConcernDescription: disciplineGroup.UserDiscipline,
+				Consolidator: consolidator,
 			},
 			CommentRow: comments,
 		})

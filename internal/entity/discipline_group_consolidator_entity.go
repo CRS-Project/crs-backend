@@ -8,6 +8,8 @@ type DisciplineGroupConsolidator struct {
 	UserID            uuid.UUID `json:"user_id" gorm:"not null"`
 	DisciplineGroupID uuid.UUID `json:"discipline_group_id" gorm:"not null"`
 
+	DeletedBy uuid.UUID `json:"deleted_by" gorm:"type:uuid"`
+	UpdatedBy uuid.UUID `json:"updated_by" gorm:"type:uuid"`
 	Timestamp
 
 	User                                *User                                `json:"user,omitempty" gorm:"foreignKey:UserID"`

@@ -29,6 +29,8 @@ type User struct {
 	UserDisciplineID uuid.UUID  `json:"user_discipline_id" gorm:"not null"`
 	PackageID        *uuid.UUID `json:"package_id" gorm:""` // super admin akan null (berarti punya semua akses)
 
+	UpdatedBy uuid.UUID `json:"updated_by" gorm:"type:uuid"`
+	DeletedBy uuid.UUID `json:"deleted_by" gorm:"type:uuid"`
 	Timestamp
 
 	UserDiscipline *UserDiscipline `json:"user_discipline,omitempty" gorm:"foreignKey:UserDisciplineID"`

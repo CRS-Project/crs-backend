@@ -256,7 +256,10 @@ func (s *disciplineListDocumentService) Update(ctx context.Context, req dto.Upda
 		return err
 	}
 
-	if err = s.disciplineListDocumentRepository.Update(ctx, nil, disciplineListDocument); err != nil {
+	// set updated_by and updated_at
+	disciplineListDocument.UpdatedBy = uuid.MustParse(req.UserId)
+
+	if err := s.disciplineListDocumentRepository.Update(ctx, nil, disciplineListDocument); err != nil {
 		return err
 	}
 
@@ -282,6 +285,8 @@ func (s *disciplineListDocumentService) Delete(ctx context.Context, userId, disc
 		return err
 	}
 
+	// mark who deleted
+	disciplineListDocument.DeletedBy = uuid.MustParse(userId)
 	if err = s.disciplineListDocumentRepository.Delete(ctx, nil, disciplineListDocument); err != nil {
 		return err
 	}
