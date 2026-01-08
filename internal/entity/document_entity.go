@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -24,6 +26,7 @@ type Document struct {
 	SubDiscipline            *string        `json:"sub_discipline" gorm:""`
 	DocumentType             string         `json:"document_type" gorm:""`
 	DocumentCategory         string         `json:"document_category" gorm:""`
+	DueDate                  *time.Time     `json:"due_date" gorm:""`
 	Status                   StatusDocument `json:"status" gorm:"not null"`
 
 	ContractorID uuid.UUID `json:"contractor_id" gorm:"not null"`

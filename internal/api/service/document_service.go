@@ -84,6 +84,7 @@ func (s *documentService) Create(ctx context.Context, req dto.CreateDocumentRequ
 		SubDiscipline:            req.SubDiscipline,
 		DocumentType:             req.DocumentType,
 		DocumentCategory:         req.DocumentCategory,
+		DueDate:                  req.DueDate,
 		Status:                   entity.StatusDocument(req.Status),
 	})
 	if err != nil {
@@ -104,6 +105,7 @@ func (s *documentService) Create(ctx context.Context, req dto.CreateDocumentRequ
 		DocumentType:             documentResult.DocumentType,
 		DocumentCategory:         documentResult.DocumentCategory,
 		Package:                  pkg.Name,
+		DueDate:                  documentResult.DueDate,
 		Status:                   string(documentResult.Status),
 	}, nil
 }
@@ -275,6 +277,7 @@ func (s *documentService) GetAll(ctx context.Context, userId string, metaReq met
 			DocumentType:             document.DocumentType,
 			DocumentCategory:         document.DocumentCategory,
 			Package:                  document.Package.Name,
+			DueDate:                  document.DueDate,
 			Status:                   string(document.Status),
 		})
 	}
@@ -302,6 +305,7 @@ func (s *documentService) GetByID(ctx context.Context, documentId string) (dto.D
 		DocumentType:             document.DocumentType,
 		DocumentCategory:         document.DocumentCategory,
 		Package:                  document.Package.Name,
+		DueDate:                  document.DueDate,
 		Status:                   string(document.Status),
 	}, nil
 }
@@ -333,6 +337,7 @@ func (s *documentService) Update(ctx context.Context, req dto.UpdateDocumentRequ
 	document.DocumentType = req.DocumentType
 	document.DocumentCategory = req.DocumentCategory
 	document.Status = entity.StatusDocument(req.Status)
+	document.DueDate = req.DueDate
 	document.UpdatedBy = uuid.MustParse(req.UserID)
 
 	document, err = s.documentRepository.Update(ctx, nil, document)
@@ -354,6 +359,7 @@ func (s *documentService) Update(ctx context.Context, req dto.UpdateDocumentRequ
 		DocumentType:             document.DocumentType,
 		DocumentCategory:         document.DocumentCategory,
 		Package:                  document.Package.Name,
+		DueDate:                  document.DueDate,
 		Status:                   string(document.Status),
 	}, nil
 }

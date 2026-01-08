@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/CRS-Project/crs-backend/internal/api/repository"
 	"github.com/CRS-Project/crs-backend/internal/dto"
@@ -110,6 +111,8 @@ func (s *disciplineListDocumentService) Create(ctx context.Context, req dto.Disc
 	return dto.DisciplineListDocumentResponse{
 		ID:      disciplineListDocumentResult.ID.String(),
 		Package: pkg.Name,
+		IsDueDate: document.DueDate != nil &&
+			time.Now().After(*document.DueDate),
 	}, nil
 }
 
@@ -146,9 +149,12 @@ func (s *disciplineListDocumentService) GetById(ctx context.Context, id string) 
 			DocumentType:             disciplineListDocument.Document.DocumentType,
 			DocumentCategory:         disciplineListDocument.Document.DocumentCategory,
 			Package:                  disciplineListDocument.Package.Name,
+			DueDate:                  disciplineListDocument.Document.DueDate,
 			Status:                   string(disciplineListDocument.Document.Status),
 		},
 		Consolidators: consolidatorResponse,
+		IsDueDate: disciplineListDocument.Document.DueDate != nil &&
+			time.Now().After(*disciplineListDocument.Document.DueDate),
 	}, nil
 }
 
@@ -191,9 +197,12 @@ func (s *disciplineListDocumentService) GetAll(ctx context.Context, disciplineGr
 				DocumentType:             disciplineListDocument.Document.DocumentType,
 				DocumentCategory:         disciplineListDocument.Document.DocumentCategory,
 				Package:                  disciplineListDocument.Package.Name,
+				DueDate:                  disciplineListDocument.Document.DueDate,
 				Status:                   string(disciplineListDocument.Document.Status),
 			},
 			Consolidators: consolidatorResponse,
+			IsDueDate: disciplineListDocument.Document.DueDate != nil &&
+				time.Now().After(*disciplineListDocument.Document.DueDate),
 		})
 	}
 

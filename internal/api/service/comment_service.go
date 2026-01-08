@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/CRS-Project/crs-backend/internal/api/repository"
 	"github.com/CRS-Project/crs-backend/internal/dto"
@@ -57,6 +58,19 @@ func (s *commentService) Create(ctx context.Context, req dto.CommentRequest) (dt
 		return dto.CommentResponse{}, myerror.New("you can't set this comment as close out comment", http.StatusBadRequest)
 	}
 
+	if disciplineListDocument.Document == nil {
+		return dto.CommentResponse{}, myerror.New("document not found", http.StatusNotFound)
+	}
+
+	if disciplineListDocument.Document.DueDate != nil &&
+		time.Now().After(*disciplineListDocument.Document.DueDate) {
+
+		return dto.CommentResponse{}, myerror.New(
+			"document due date has passed, comments are no longer allowed",
+			http.StatusBadRequest,
+		)
+	}
+
 	commentResult, err := s.commentRepository.Create(ctx, nil, entity.Comment{
 		Section:                  req.Section,
 		Comment:                  req.Comment,
@@ -95,6 +109,19 @@ func (s *commentService) Reply(ctx context.Context, req dto.CommentRequest) (dto
 
 	if commentReplied.Status != nil {
 		return dto.CommentResponse{}, myerror.New("this comment already has a status", http.StatusUnauthorized)
+	}
+
+	if disciplineListDocument.Document == nil {
+		return dto.CommentResponse{}, myerror.New("document not found", http.StatusNotFound)
+	}
+
+	if disciplineListDocument.Document.DueDate != nil &&
+		time.Now().After(*disciplineListDocument.Document.DueDate) {
+
+		return dto.CommentResponse{}, myerror.New(
+			"document due date has passed, comments are no longer allowed",
+			http.StatusBadRequest,
+		)
 	}
 
 	if req.IsCloseOutComment {
