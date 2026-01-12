@@ -67,7 +67,7 @@ func (c *disciplineListDocumentController) GetAll(ctx *gin.Context) {
 		return
 	}
 
-	disciplineListDocuments, metaRes, err := c.disciplineListDocumentService.GetAll(ctx.Request.Context(), disciplineGroupId, userId, meta.New(ctx))
+	disciplineListDocuments, metaRes, err := c.disciplineListDocumentService.GetAll(ctx.Request.Context(), disciplineGroupId, userId, meta.NewWithDefault(ctx, 0, 0, "desc", "due_date"))
 	if err != nil {
 		response.NewFailed("failed get all area of Concerns", err).Send(ctx)
 		return
