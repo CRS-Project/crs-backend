@@ -58,6 +58,7 @@ type (
 		Package                  string     `json:"package"`
 		DueDate                  *time.Time `json:"due_date"`
 		Status                   string     `json:"status"`
+		TotalComments            int        `json:"total_comment"`
 	}
 
 	DocumentDetailResponse struct {

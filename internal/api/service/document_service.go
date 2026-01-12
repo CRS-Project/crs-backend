@@ -262,13 +262,18 @@ func (s *documentService) GetAll(ctx context.Context, userId string, metaReq met
 		pkgId = pkg.ID.String()
 	}
 
-	documents, metaRes, err := s.documentRepository.GetAll(ctx, nil, pkgId, metaReq, "Contractor", "Package")
+	documents, metaRes, err := s.documentRepository.GetAll(ctx, nil, pkgId, metaReq, "Contractor", "Package", "DisciplineListDocuments.Comments")
 	if err != nil {
 		return nil, meta.Meta{}, err
 	}
 
 	var getDocuments []dto.GetAllDocumentResponse
 	for _, document := range documents {
+		totalComment := 0
+		for _, disciplineListDocument := range document.DisciplineListDocuments {
+			totalComment += len(disciplineListDocument.Comments)
+		}
+
 		getDocuments = append(getDocuments, dto.GetAllDocumentResponse{
 			ID:                       document.ID.String(),
 			CompanyDocumentNumber:    document.CompanyDocumentNumber,
@@ -279,6 +284,7 @@ func (s *documentService) GetAll(ctx context.Context, userId string, metaReq met
 			Package:                  document.Package.Name,
 			DueDate:                  document.DueDate,
 			Status:                   string(document.Status),
+			TotalComments:            totalComment,
 		})
 	}
 
