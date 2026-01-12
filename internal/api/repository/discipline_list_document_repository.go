@@ -81,13 +81,22 @@ func (r *disciplineListDocumentRepository) GetAllByDisciplineGroupID(ctx context
 	tx = tx.WithContext(ctx).Model(&entity.DisciplineListDocument{}).Where("discipline_group_id = ?", disciplineGroupId)
 
 	filterMap := metaReq.SeparateFilter()
+
+	// Check if we need to join documents
+	// Join if search is present OR if sorting by due_date
+	_, hasSearch := filterMap["search"]
+	if hasSearch || metaReq.SortBy == "due_date" {
+		tx = tx.Joins("LEFT JOIN documents d ON d.id = discipline_list_documents.document_id")
+	}
+
 	if find, ok := filterMap["search"]; ok {
-		tx = tx.Joins("LEFT JOIN documents d ON d.id = discipline_list_documents.document_id").Where("d.company_document_number ILIKE ? OR d.document_serial_number ILIKE ?",
+		tx = tx.Where("d.company_document_number ILIKE ? OR d.document_serial_number ILIKE ?",
 			"%"+find+"%",
 			"%"+find+"%")
 	}
 	if err := WithFilters(tx, &metaReq, AddModels(entity.DisciplineListDocument{}),
-		AddCustomField("search", "")).Find(&disciplineListDocuments).Error; err != nil {
+		AddCustomField("search", ""),
+		AddCustomField("due_date", "", "d.due_date")).Find(&disciplineListDocuments).Error; err != nil {
 		return nil, meta.Meta{}, err
 	}
 

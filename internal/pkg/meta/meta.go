@@ -68,6 +68,64 @@ func New(ctx *gin.Context) Meta {
 	return meta
 }
 
+func NewWithDefault(ctx *gin.Context, dtake int, dpage int, dsort string, dsortBy string) Meta {
+	if dtake == 0 {
+		dtake = 10000000
+	}
+
+	if dpage == 0 {
+		dpage = 0
+	}
+
+	if dsort == "" {
+		dsort = "asc"
+	}
+
+	if dsortBy == "" {
+		dsortBy = "id"
+	}
+
+	meta := Meta{
+		Take:   dtake,
+		Page:   dpage,
+		Sort:   dsort,
+		SortBy: dsortBy,
+	}
+
+	page := ctx.Query("page")
+	take := ctx.Query("take")
+	sort := ctx.Query("sort")
+	sortby := ctx.Query("sort_by")
+	filter := ctx.Query("filter")
+	filterby := ctx.Query("filter_by")
+
+	if page != "" {
+		meta.Page = utils.ToInt(page)
+	}
+
+	if take != "" {
+		meta.Take = utils.DefaultTake(utils.ToInt(take))
+	}
+
+	if sort != "" {
+		meta.Sort = sort
+	}
+
+	if sortby != "" {
+		meta.SortBy = sortby
+	}
+
+	if filter != "" {
+		meta.Filter = filter
+	}
+
+	if filterby != "" {
+		meta.FilterBy = filterby
+	}
+
+	return meta
+}
+
 // Count calculates the total number of pages based on the total data count.
 // It sets the TotalData and TotalPage fields in the Meta struct.
 func (m *Meta) Count(totaldata int) {
@@ -98,4 +156,12 @@ func (m Meta) SeparateFilter() map[string]string {
 	}
 
 	return filterMap
+}
+
+func (m *Meta) SetSort(sort string) {
+	m.Sort = sort
+}
+
+func (m *Meta) SetSortBy(sortBy string) {
+	m.SortBy = sortBy
 }
