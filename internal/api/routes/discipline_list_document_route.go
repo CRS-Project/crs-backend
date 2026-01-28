@@ -14,5 +14,6 @@ func DisciplineListDocument(app *gin.Engine, areaOfConcerncontroller controller.
 		routes.GET("/:discipline_list_document_id", middleware.Authenticate(), areaOfConcerncontroller.GetById)
 		routes.PUT("/:discipline_list_document_id", middleware.Authenticate(), areaOfConcerncontroller.Update)
 		routes.DELETE("/:discipline_list_document_id", middleware.Authenticate(), areaOfConcerncontroller.Delete)
+		routes.GET("/:discipline_list_document_id/generate-excel", middleware.Authenticate(), areaOfConcerncontroller.GenerateExcel)
 	}
 }

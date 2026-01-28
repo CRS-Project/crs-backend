@@ -1,8 +1,10 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -12,6 +14,7 @@ import (
 	myerror "github.com/CRS-Project/crs-backend/internal/pkg/error"
 	mylog "github.com/CRS-Project/crs-backend/internal/pkg/logger"
 	"github.com/CRS-Project/crs-backend/internal/pkg/meta"
+	mypdf "github.com/CRS-Project/crs-backend/internal/pkg/pdf"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -23,6 +26,7 @@ type (
 		GetAll(ctx context.Context, disciplineGroupId, userId string, metaReq meta.Meta) ([]dto.DisciplineListDocumentResponse, meta.Meta, error)
 		Update(ctx context.Context, req dto.UpdateDisciplineListDocumentRequest) error
 		Delete(ctx context.Context, userId, disciplineListDocumentId string) error
+		GenerateExcel(ctx context.Context, userId, disciplineListDocumentId string) (*bytes.Buffer, string, error)
 	}
 
 	disciplineListDocumentService struct {
@@ -301,6 +305,96 @@ func (s *disciplineListDocumentService) Delete(ctx context.Context, userId, disc
 	}
 
 	return nil
+}
+
+func (s *disciplineListDocumentService) GenerateExcel(ctx context.Context, userId, disciplineListDocumentId string) (*bytes.Buffer, string, error) {
+	dld, err := s.disciplineListDocumentRepository.GetByID(ctx, nil, disciplineListDocumentId,
+		"Package",
+		"DisciplineGroup",
+		"Consolidators.DisciplineGroupConsolidator.User",
+		"Comments.CommentReplies",
+		"Comments.User",
+		"Document")
+	if err != nil {
+		return nil, "", err
+	}
+
+	contractor, err := s.userRepository.GetContractorByPackage(ctx, nil, dld.PackageID.String(), "Package")
+	if err != nil {
+		return nil, "", err
+	}
+
+	// Prepare data for Excel
+	var comments []mypdf.CommentRow
+	for i, c := range dld.Comments {
+		if c.CommentReplyID != nil {
+			continue
+		}
+
+		status := "N/A"
+		if c.Status != nil {
+			status = string(*c.Status)
+		}
+
+		closeOutComments := "N/A"
+		for _, cr := range c.CommentReplies {
+			if cr.IsCloseOutComment {
+				closeOutComments = cr.Comment
+				break
+			}
+		}
+		refDocNo, refDocTitle, docStatus := "N/A", "N/A", "N/A"
+		if dld.Document != nil {
+			refDocNo = dld.Document.CompanyDocumentNumber
+			refDocTitle = dld.Document.DocumentTitle
+			docStatus = string(dld.Document.Status)
+		}
+		comments = append(comments, mypdf.CommentRow{
+			No:              fmt.Sprintf("%d", i+1),
+			Page:            c.Section,
+			SMEInitial:      c.User.Name,
+			SMEComment:      c.Comment,
+			RefDocNo:        refDocNo,
+			RefDocTitle:     refDocTitle,
+			DocStatus:       string(docStatus),
+			Status:          status,
+			SMECloseComment: closeOutComments,
+		})
+	}
+
+	consolidatorStr := ""
+	for i, c := range dld.Consolidators {
+		userName := "deleted user"
+		if c.DisciplineGroupConsolidator.User != nil {
+			userName = c.DisciplineGroupConsolidator.User.Name
+		}
+		if i > 0 {
+			consolidatorStr += fmt.Sprintf("\n%d. %s", i+1, userName)
+		} else {
+			consolidatorStr += fmt.Sprintf("%d. %s", i+1, userName)
+		}
+	}
+
+	reqData := []mypdf.GenerateRequestData{
+		{
+			PackageInfoData: mypdf.PackageInfoData{
+				Package:           contractor.Package.Name,
+				ContractorInitial: contractor.Name,
+			},
+			DisciplineSectionData: mypdf.DisciplineSectionData{
+				Discipline:   dld.DisciplineGroup.UserDiscipline,
+				Consolidator: consolidatorStr,
+			},
+			CommentRow: comments,
+		},
+	}
+
+	excelBuffer, filename, err := mypdf.GenerateExcel(reqData)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return excelBuffer, filename, nil
 }
 
 func (s *disciplineListDocumentService) getPackagePermission(ctx context.Context, userId string) (*entity.Package, entity.User, error) {

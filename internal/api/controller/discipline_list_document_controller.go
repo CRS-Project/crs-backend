@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/CRS-Project/crs-backend/internal/api/service"
@@ -19,6 +20,7 @@ type (
 		GetById(ctx *gin.Context)
 		Update(ctx *gin.Context)
 		Delete(ctx *gin.Context)
+		GenerateExcel(ctx *gin.Context)
 	}
 
 	disciplineListDocumentController struct {
@@ -128,4 +130,24 @@ func (c *disciplineListDocumentController) Delete(ctx *gin.Context) {
 	}
 
 	response.NewSuccess("success delete discipline list document", nil).Send(ctx)
+}
+
+func (c *disciplineListDocumentController) GenerateExcel(ctx *gin.Context) {
+	disciplineListDocumentId := ctx.Param("discipline_list_document_id")
+	userId, err := utils.GetUserIdFromCtx(ctx)
+	if err != nil {
+		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
+		return
+	}
+
+	excelBuffer, filename, err := c.disciplineListDocumentService.GenerateExcel(ctx.Request.Context(), userId, disciplineListDocumentId)
+	if err != nil {
+		response.NewFailed("failed generate excel", err).Send(ctx)
+		return
+	}
+
+	ctx.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+	ctx.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelBuffer.Bytes())
+	response.NewSuccess("success generate excel", nil).Send(ctx)
 }

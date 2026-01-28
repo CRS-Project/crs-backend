@@ -26,6 +26,7 @@ type (
 		Update(ctx context.Context, req dto.DisciplineGroupRequest) error
 		Delete(ctx context.Context, userId, disciplineGroupId string) error
 		GeneratePDF(ctx context.Context, userId, disciplineGroupId string) (*bytes.Buffer, string, error)
+		GenerateExcel(ctx context.Context, userId, disciplineGroupId string) (*bytes.Buffer, string, error)
 		GetStatistic(ctx context.Context, packageId string) (dto.DisciplineGroupStatistic, error)
 		ConstructGeneratePDF(disciplineGroup entity.DisciplineGroup, contractor entity.User) []mypdf.GenerateRequestData
 	}
@@ -349,6 +350,26 @@ func (s *disciplineGroupService) GeneratePDF(ctx context.Context, userId, discip
 	}
 
 	return pdfBuffer, filename, nil
+}
+
+func (s *disciplineGroupService) GenerateExcel(ctx context.Context, userId, disciplineGroupId string) (*bytes.Buffer, string, error) {
+	data, err := s.disciplineGroupRepository.GetByID(ctx, nil, disciplineGroupId, "DisciplineGroupConsolidators.User", "DisciplineListDocuments.Comments.CommentReplies", "DisciplineListDocuments.Document", "DisciplineListDocuments.Comments.User", "Package")
+	if err != nil {
+		return nil, "", err
+	}
+
+	contractor, err := s.userRepository.GetContractorByPackage(ctx, nil, data.PackageID.String(), "Package")
+	if err != nil {
+		return nil, "", err
+	}
+
+	requestData := s.ConstructGeneratePDF(data, contractor)
+	excelBuffer, filename, err := mypdf.GenerateExcel(requestData)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return excelBuffer, filename, nil
 }
 
 func (s *disciplineGroupService) GetStatistic(ctx context.Context, packageId string) (dto.DisciplineGroupStatistic, error) {

@@ -1,0 +1,25 @@
+meta {
+  name: Generate Excel
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{host}}/api/v1/discipline-group/:discipline_group_id/discipline-list-document/:discipline_list_document_id/generate-excel
+  body: none
+  auth: bearer
+}
+
+params:path {
+  discipline_group_id: 44a2eb78-63d0-4757-a480-b6b51b33af1a
+  discipline_list_document_id: 06a9a22e-5c1b-4f02-8dbb-50d279d981d8
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -22,6 +22,7 @@ type (
 		DeletePackage(ctx *gin.Context)
 		GetByID(ctx *gin.Context)
 		GeneratePDF(ctx *gin.Context)
+		GenerateExcel(ctx *gin.Context)
 	}
 
 	packageController struct {
@@ -131,4 +132,19 @@ func (c *packageController) GeneratePDF(ctx *gin.Context) {
 	ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
 	ctx.Data(http.StatusOK, "application/pdf", pdfBuffer.Bytes())
 	response.NewSuccess("success generate pdf", nil).Send(ctx)
+}
+
+func (c *packageController) GenerateExcel(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	excelBuffer, filename, err := c.packageService.GenerateExcel(ctx.Request.Context(), id)
+	if err != nil {
+		response.NewFailed("failed generate excel", err).Send(ctx)
+		return
+	}
+
+	ctx.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+	ctx.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelBuffer.Bytes())
+	response.NewSuccess("success generate excel", nil).Send(ctx)
 }
