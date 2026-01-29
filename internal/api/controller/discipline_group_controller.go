@@ -159,7 +159,6 @@ func (c *disciplineGroupController) GeneratePDF(ctx *gin.Context) {
 	ctx.Header("Content-Type", "application/pdf")
 	ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
 	ctx.Data(http.StatusOK, "application/pdf", pdfBuffer.Bytes())
-	response.NewSuccess("success generate pdf", nil).Send(ctx)
 }
 
 func (c *disciplineGroupController) GenerateExcel(ctx *gin.Context) {
@@ -179,7 +178,6 @@ func (c *disciplineGroupController) GenerateExcel(ctx *gin.Context) {
 	ctx.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
 	ctx.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelBuffer.Bytes())
-	response.NewSuccess("success generate excel", nil).Send(ctx)
 }
 
 func (c *disciplineGroupController) Statistic(ctx *gin.Context) {
