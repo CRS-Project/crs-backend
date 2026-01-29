@@ -149,5 +149,4 @@ func (c *disciplineListDocumentController) GenerateExcel(ctx *gin.Context) {
 	ctx.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
 	ctx.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelBuffer.Bytes())
-	response.NewSuccess("success generate excel", nil).Send(ctx)
 }
