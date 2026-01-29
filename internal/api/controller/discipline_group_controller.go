@@ -22,6 +22,7 @@ type (
 		Update(ctx *gin.Context)
 		Delete(ctx *gin.Context)
 		GeneratePDF(ctx *gin.Context)
+		GenerateExcel(ctx *gin.Context)
 		Statistic(ctx *gin.Context)
 	}
 
@@ -159,6 +160,26 @@ func (c *disciplineGroupController) GeneratePDF(ctx *gin.Context) {
 	ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
 	ctx.Data(http.StatusOK, "application/pdf", pdfBuffer.Bytes())
 	response.NewSuccess("success generate pdf", nil).Send(ctx)
+}
+
+func (c *disciplineGroupController) GenerateExcel(ctx *gin.Context) {
+	disciplineGroupId := ctx.Param("discipline_group_id")
+	userId, err := utils.GetUserIdFromCtx(ctx)
+	if err != nil {
+		response.NewFailed("failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
+		return
+	}
+
+	excelBuffer, filename, err := c.disciplineGroupService.GenerateExcel(ctx.Request.Context(), userId, disciplineGroupId)
+	if err != nil {
+		response.NewFailed("failed generate excel", err).Send(ctx)
+		return
+	}
+
+	ctx.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+	ctx.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelBuffer.Bytes())
+	response.NewSuccess("success generate excel", nil).Send(ctx)
 }
 
 func (c *disciplineGroupController) Statistic(ctx *gin.Context) {

@@ -23,6 +23,7 @@ type (
 		UpdatePackage(ctx context.Context, req dto.UpdatePackageRequest) (dto.PackageInfo, error)
 		DeletePackage(ctx context.Context, id string) error
 		GeneratePDF(ctx context.Context, id string) (*bytes.Buffer, string, error)
+		GenerateExcel(ctx context.Context, id string) (*bytes.Buffer, string, error)
 	}
 
 	packageService struct {
@@ -167,4 +168,29 @@ func (s *packageService) GeneratePDF(ctx context.Context, id string) (*bytes.Buf
 	}
 
 	return pdfBuffer, filename, nil
+}
+
+func (s *packageService) GenerateExcel(ctx context.Context, id string) (*bytes.Buffer, string, error) {
+	data, err := s.packageRepository.GetByID(ctx, nil, id, "DisciplineGroups.Package", "DisciplineGroups.DisciplineGroupConsolidators.User", "DisciplineGroups.DisciplineListDocuments.Comments.CommentReplies", "DisciplineGroups.DisciplineListDocuments.Comments.User", "DisciplineGroups.DisciplineListDocuments.Document")
+	if err != nil {
+		return nil, "", err
+	}
+
+	contractor, err := s.userRepository.GetContractorByPackage(ctx, nil, id, "Package")
+	if err != nil {
+		return nil, "", err
+	}
+
+	var requestData []mypdf.GenerateRequestData
+	for _, aocg := range data.DisciplineGroups {
+		generateData := s.disciplineGroupService.ConstructGeneratePDF(aocg, contractor)
+		requestData = append(requestData, generateData...)
+	}
+
+	excelBuffer, filename, err := mypdf.GenerateExcel(requestData)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return excelBuffer, filename, nil
 }
